@@ -79,7 +79,13 @@ They could be used as-is or modified to better suit a project.
 
 ## Email templates
 
+Set the _setPathViews_ and _setPathLayouts_ keys under the _mailerConfig_ module option.
+
 ## Registration/profile form
+
+Altering the form is not currently possible. Ideas are welcome.
+
+The whole module layout can be changed by setting the _layout_ module option.
 
 ## Translations
 

@@ -78,7 +78,10 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 		if ($this->_id===null)
 			return false;
 		if (($record=User::model()->findByPk($this->_id))!==null) {
-			return $record->activkey;
+			return $record->activation_key;
+			$activationKey = md5(time().mt_rand().$record->username);
+			$record->saveAttributes(array('activation_key' => $activationKey));
+			return $activationKey;
 		}
 		return false;
 	}
