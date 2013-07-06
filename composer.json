@@ -1,0 +1,16 @@
+{
+    "name": "nineinchnick/yii-usr",
+    "description": "Yii framework module for user authentication, password reset, registration and profile updating.",
+	"version": "0.7.0",
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Jan Waś",
+            "email": "janek.jan@gmail.com",
+			"homepage": "http://niix.pl/"
+        }
+    ],
+    "require": {
+		"php": ">=5.3.0"
+    }
+}
