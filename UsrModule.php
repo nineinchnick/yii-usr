@@ -158,6 +158,22 @@ class UsrModule extends CWebModule {
 		'setPathViews' => array('usr.views.emails'),
 		'setPathLayouts' => array('usr.views.layouts'),
 	);
+	/**
+	 * @var boolean If true a link for generating passwords will be rendered under new password field.
+	 */
+	public $dicewareEnabled = true;
+	/**
+	 * @var integer Number of words in password generated using the diceware component.
+	 */
+	public $dicewareLength = 4;
+	/**
+	 * @var boolean Should an extra digit be added in password generated using the diceware component.
+	 */
+	public $dicewareExtraDigit = true;
+	/**
+	 * @var integer Should an extra random character be added in password generated using the diceware component.
+	 */
+	public $dicewareExtraChar = false;
 
 	public function init() {
 		parent::init();

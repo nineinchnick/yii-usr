@@ -28,17 +28,7 @@ $this->pageTitle = Yii::app()->name.' - '.$title;
 	<?php echo $form->hiddenField($model,'password'); ?>
 	<?php echo $form->hiddenField($model,'rememberMe'); ?>
 
-	<div class="control-group">
-		<?php echo $form->labelEx($model,'newPassword'); ?>
-		<?php echo $form->passwordField($model,'newPassword'); ?>
-		<?php echo $form->error($model,'newPassword'); ?>
-	</div>
-
-	<div class="control-group">
-		<?php echo $form->labelEx($model,'newVerify'); ?>
-		<?php echo $form->passwordField($model,'newVerify'); ?>
-		<?php echo $form->error($model,'newVerify'); ?>
-	</div>
+<?php $this->renderPartial('_newpassword', array('form'=>$form, 'model'=>$model)); ?>
 
 	<div class="buttons">
 		<?php echo CHtml::submitButton(Yii::t('UsrModule.usr', 'Change password'), array('class'=>$this->module->submitButtonCssClass)); ?>

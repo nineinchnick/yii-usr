@@ -187,8 +187,19 @@ class DefaultController extends CController {
 		if(isset($_POST['ProfileForm'])) {
 			$model->setAttributes($_POST['ProfileForm']);
 			if($model->validate()) {
+				$oldEmail = $model->getIdentity()->getEmail();
 				if ($model->save() && $model->resetPassword()) {
-					Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'Changes have been saved successfully.'));
+					$flashIsSet = false;
+					if ($this->module->requiredVerifiedEmail && $oldEmail != $model->email) {
+						if ($this->sendEmail($model, 'verify')) {
+							Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'An email containing further instructions has been sent to provided email address.'));
+							$flashIsSet = true;
+						} else {
+							Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to send an email.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
+						}
+					}
+					if (!$flashIsSet)
+						Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'Changes have been saved successfully.'));
 					$this->redirect('profile');
 				} else {
 					Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to update profile.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
@@ -200,6 +211,12 @@ class DefaultController extends CController {
 		} else {
 			$this->render('viewProfile',array('model'=>$model));
 		}
+	}
+
+	public function actionPassword() {
+		$diceware = new Diceware;
+		$password = $diceware->get_phrase($this->module->dicewareLength, $this->module->dicewareExtraDigit, $this->module->dicewareExtraChar);
+		echo json_encode($password);
 	}
 
 	/**

@@ -47,17 +47,7 @@ $this->pageTitle = Yii::app()->name.' - '.$title;
 		<?php echo $form->error($model,'email'); ?>
 	</div>
 
-	<div class="control-group">
-		<?php echo $form->labelEx($model,'newPassword'); ?>
-		<?php echo $form->passwordField($model,'newPassword', array('autocomplete'=>'off')); ?>
-		<?php echo $form->error($model,'newPassword'); ?>
-	</div>
-
-	<div class="control-group">
-		<?php echo $form->labelEx($model,'newVerify'); ?>
-		<?php echo $form->passwordField($model,'newVerify'); ?>
-		<?php echo $form->error($model,'newVerify'); ?>
-	</div>
+<?php $this->renderPartial('_newpassword', array('form'=>$form, 'model'=>$model)); ?>
 
 	<div class="control-group">
 		<?php echo $form->labelEx($model,'firstName'); ?>

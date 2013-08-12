@@ -107,15 +107,19 @@ class LoginForm extends CFormModel {
 		$identity = $this->getIdentity();
 		if (!($identity instanceof IPasswordHistoryIdentity))
 			throw new CException(Yii::t('UsrModule.usr','The {class} class must implement the {interface} interface.',array('{class}'=>get_class($identity),'{interface}'=>'IPasswordHistoryIdentity')));
-		if (($lastUsed = $identity->getPasswordDate()) !== null) {
-			$lastUsedDate = new DateTime($lastUsed);
-			$today = new DateTime();
-			if ($today->diff($lastUsedDate)->days >= $passwordTimeout) {
+		$lastUsed = $identity->getPasswordDate();
+		$lastUsedDate = new DateTime($lastUsed);
+		$today = new DateTime();
+		if ($lastUsed === null || $today->diff($lastUsedDate)->days >= $passwordTimeout) {
+			if ($lastUsed === null) {
+				$this->addError('password',Yii::t('UsrModule.usr','This is the first time you login. Current password needs to be changed.'));
+			} else {
 				$this->addError('password',Yii::t('UsrModule.usr','Current password has been used too long and needs to be changed.'));
-				$this->scenario = 'reset';
-				return false;
 			}
+			$this->scenario = 'reset';
+			return false;
 		}
+
 		return true;
 	}
 

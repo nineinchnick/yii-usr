@@ -4,6 +4,7 @@ interface IEditableIdentity
 {
 	/**
 	 * Saves a new or existing identity. Does not set or change the password. @see IPasswordHistoryIdentity.resetPassword()
+	 * Should detect if the email changed and mark it as not verified.
 	 * @return boolean
 	 */
 	public function save();

@@ -36,17 +36,7 @@ $this->pageTitle = Yii::app()->name.' - '.$title;
 	<?php echo $form->hiddenField($model,'email'); ?>
 	<?php echo $form->hiddenField($model,'activationKey'); ?>
 
-	<div class="control-group">
-		<?php echo $form->labelEx($model,'newPassword'); ?>
-		<?php echo $form->passwordField($model,'newPassword'); ?>
-		<?php echo $form->error($model,'newPassword'); ?>
-	</div>
-
-	<div class="control-group">
-		<?php echo $form->labelEx($model,'newVerify'); ?>
-		<?php echo $form->passwordField($model,'newVerify'); ?>
-		<?php echo $form->error($model,'newVerify'); ?>
-	</div>
+<?php $this->renderPartial('_newpassword', array('form'=>$form, 'model'=>$model)); ?>
 <?php else: ?>
 	<div class="control-group">
 		<?php echo $form->labelEx($model,'username'); ?>

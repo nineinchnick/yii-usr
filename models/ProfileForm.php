@@ -69,7 +69,7 @@ class ProfileForm extends CFormModel {
 		}
 		$userIdentityClass = Yii::app()->controller->module->userIdentityClass;
 		if (($identity=$userIdentityClass::find(array($attribute => $this->$attribute))) !== null && ($this->scenario == 'register' || $identity->getId() != $this->getIdentity()->getId())) {
-			$this->addError($attribute,Yii::t('UsrModule.usr','This {attribute} has already been used by another user.'));
+			$this->addError($attribute,Yii::t('UsrModule.usr','{attribute} has already been used by another user.', array('{attribute}'=>$this->$attribute)));
 			return false;
 		}
 		return true;

@@ -11,6 +11,14 @@ Usr module is inspired by the popular Yii-user module but written from scratch. 
 It's goal is to be easier to integrate into current projects by not requiring to modify existing user database table and model.
 Only the UserIdentity class is used to provide all business logic by implementing few provided interfaces.
 
+Key differences from yii-user:
+
+* smaller codebase, easier to read/review
+* use good password hashing
+* no need to modify current tables and models
+* bundled mailer class
+* all basic features
+
 Currently, there is no admin user managment provided and it is not planned. The reason for this is that the CRUDs vary much in every project and it should not be time-expensive to create another one for users utilizing interfaces implemented in UserIdentity for this module.
 Actions provided by this module does not require any more authorization than checking if a user is logged in. An admin interface on the other hand requires to define auth items to check for access.
 
@@ -65,6 +73,8 @@ This interface allows:
 * finding existing identities using one of its attributes.
 * generating and verifying an activation key used to verify email and send a recovery link
 
+Remember to invalidate the email if it changes in the save() method from the Editable interface.
+
 ## Password history
 
 This interface allows password reset with optional tracking of used passwords. This allows to detect expired passwords and avoid reusing old passwords by users.
@@ -74,6 +84,12 @@ This interface allows password reset with optional tracking of used passwords. T
 A sample UserIdentity and corresponding User and UsedPassword classes along with database schema and migrations are provided respectively in the 'components', 'models', 'data' and 'migrations' folders.
 
 They could be used as-is or modified to better suit a project.
+
+# Diceware aka password generator
+
+A simple implementation of a Diceware Passphrase generator is provided to aid users when they need to create a good, long but also easy to remember passphrase.
+
+Read more at [the Diceware Passphrase homepage](http://world.std.com/~reinhold/diceware.html).
 
 # Customize
 
