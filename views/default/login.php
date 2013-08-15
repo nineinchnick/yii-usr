@@ -7,7 +7,7 @@ if (isset($this->breadcrumbs))
 	$this->breadcrumbs=array($this->module->id, $title);
 $this->pageTitle = Yii::app()->name.' - '.$title;
 ?>
-<h2><?php echo $title; ?></h2>
+<h1><?php echo $title; ?></h1>
 
 <div class="<?php echo $this->module->formCssClass; ?>">
 <?php $form=$this->beginWidget($this->module->formClass, array(

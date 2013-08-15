@@ -172,7 +172,7 @@ class Diceware {
 	  $handle = @fopen($file, "r");
 	  if ($handle) {
 		  while (($buffer = fgets($handle, 4096)) !== false) {
-			  $parts = explode(' ',trim($buffer),2);
+			  $parts = explode(' ',str_replace("\t",' ',trim($buffer)),2);
 			  if (count($parts)>1) {
 				  $output[$parts[0]] = $parts[1];
 			  }
