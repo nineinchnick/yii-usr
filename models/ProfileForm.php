@@ -94,12 +94,13 @@ class ProfileForm extends CFormModel {
 	 * Updates the identity with this models attributes and saves it.
 	 */
 	public function save() {
-		return $this->_identity!==null && $this->_identity->setAttributes(array(
+		$identity = $this->getIdentity();
+		return $identity!==null && $identity->setAttributes(array(
 			'username'	=> $this->username,
 			'email'		=> $this->email,
 			'firstName'	=> $this->firstName,
 			'lastName'	=> $this->lastName,
-		)) && $this->_identity->save();
+		)) && $identity->save();
 	}
 
 	/**

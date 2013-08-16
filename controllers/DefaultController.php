@@ -106,7 +106,7 @@ class DefaultController extends CController {
 						Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to change password or log in using new password.'));
 					}
 				}
-				$this->redirect('recovery');
+				$this->redirect(array('recovery'));
 			}
 		}
 		$this->render('recovery',array('model'=>$model));
@@ -124,7 +124,7 @@ class DefaultController extends CController {
 		} else {
 			Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to verify your email address.'));
 		}
-		$this->redirect(Yii::app()->user->isGuest ? 'login' : 'profile');
+		$this->redirect(array(Yii::app()->user->isGuest ? 'login' : 'profile'));
 	}
 
 	public function actionRegister() {
@@ -132,7 +132,7 @@ class DefaultController extends CController {
 			throw new CHttpException(403,Yii::t('UsrModule.usr', 'Registration has not been enabled.'));
 		}
 		if (!Yii::app()->user->isGuest)
-			$this->redirect('profile');
+			$this->redirect(array('profile'));
 
 		$model=new ProfileForm;
 		$model->scenario = 'register';
@@ -146,7 +146,7 @@ class DefaultController extends CController {
 			if($model->validate()) {
 				if ($model->save() && $model->resetPassword()) {
 					$flashIsSet = false;
-					if ($this->module->requiredVerifiedEmail) {
+					if ($this->module->requireVerifiedEmail) {
 						if ($this->sendEmail($model, 'verify')) {
 							Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'An email containing further instructions has been sent to provided email address.'));
 							$flashIsSet = true;
@@ -163,7 +163,7 @@ class DefaultController extends CController {
 					} else {
 						if (!$flashIsSet)
 							Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'Please wait for the account to be activated. A notification will be send to provided email address.'));
-						$this->redirect('login');
+						$this->redirect(array('login'));
 					}
 				} else {
 					Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to register a new user.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
@@ -175,7 +175,7 @@ class DefaultController extends CController {
 
 	public function actionProfile($update=false) {
 		if (Yii::app()->user->isGuest)
-			$this->redirect('login');
+			$this->redirect(array('login'));
 
 		$model=new ProfileForm;
 		$model->setAttributes($model->getIdentity()->getAttributes());
@@ -190,7 +190,7 @@ class DefaultController extends CController {
 				$oldEmail = $model->getIdentity()->getEmail();
 				if ($model->save() && $model->resetPassword()) {
 					$flashIsSet = false;
-					if ($this->module->requiredVerifiedEmail && $oldEmail != $model->email) {
+					if ($this->module->requireVerifiedEmail && $oldEmail != $model->email) {
 						if ($this->sendEmail($model, 'verify')) {
 							Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'An email containing further instructions has been sent to provided email address.'));
 							$flashIsSet = true;
@@ -200,7 +200,7 @@ class DefaultController extends CController {
 					}
 					if (!$flashIsSet)
 						Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'Changes have been saved successfully.'));
-					$this->redirect('profile');
+					$this->redirect(array('profile'));
 				} else {
 					Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to update profile.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
 				}

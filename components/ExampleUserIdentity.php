@@ -20,7 +20,7 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 	 */
 	public function authenticate() {
 		$record=User::model()->findByAttributes(array('username'=>$this->username));
-		if ($record!==null && $record->verifyPassword($this->password)) {
+		if ($record!==null && $record->is_active && !$record->is_disabled && $record->verifyPassword($this->password)) {
 			$this->_id = $record->id;
 			$this->email = $record->email;
 			$this->errorCode=self::ERROR_NONE;
@@ -40,7 +40,7 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 	}
 
 	public function getPasswordDate($password = null) {
-		if ($this->_id===null)
+		if ($this->_id===null || $password !== null)
 			return null;
 		if (($record=User::model()->findByPk($this->_id))!==null) {
 			return $record->password_set_on;
@@ -78,9 +78,10 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 		if ($this->_id===null)
 			return false;
 		if (($record=User::model()->findByPk($this->_id))!==null) {
-			return $record->activation_key;
 			$activationKey = md5(time().mt_rand().$record->username);
-			$record->saveAttributes(array('activation_key' => $activationKey));
+			if (!$record->saveAttributes(array('activation_key' => $activationKey))) {
+				return false;
+			}
 			return $activationKey;
 		}
 		return false;
@@ -90,7 +91,7 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 		if ($this->_id===null)
 			return self::ERROR_AKEY_INVALID;
 		if (($record=User::model()->findByPk($this->_id))!==null) {
-			return $record->activkey === $activationKey ? self::ERROR_AKEY_NONE : self::ERROR_AKEY_INVALID;
+			return $record->activation_key === $activationKey ? self::ERROR_AKEY_NONE : self::ERROR_AKEY_INVALID;
 		}
 		return self::ERROR_AKEY_INVALID;
 	}
@@ -99,7 +100,7 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 		if ($this->_id===null)
 			return false;
 		if (($record=User::model()->findByPk($this->_id))!==null) {
-			return $record->status === User::STATUS_ACTIVE;
+			return $record->is_active;
 		}
 		return false;
 	}
@@ -108,13 +109,21 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 		if ($this->_id===null)
 			return false;
 		if (($record=User::model()->findByPk($this->_id))!==null) {
-			return $record->status === User::STATUS_BANNED;
+			return $record->is_disabled;
 		}
 		return false;
 	}
 
 	public function verifyEmail() {
-		return true;
+		if ($this->_id===null)
+			return false;
+		if (($record=User::model()->findByPk($this->_id))!==null) {
+			if (!$record->saveAttributes(array('email_verified' => 1))) {
+				return false;
+			}
+			return true;
+		}
+		return false;
 	}
 	
 	public function getEmail() {
@@ -122,15 +131,27 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 	}
 
 	public function save() {
-		$record = $this->_id===null ? new User : User::model()->findByPk($this->_id);
+		if ($this->_id === null) {
+			$record = new User;
+			$record->password = 'x';
+		} else {
+			$record = User::model()->findByPk($this->_id);
+		}
 		if ($record!==null) {
 			$record->setAttributes(array(
 				'username' => $this->username,
 				'email' => $this->email,
 				'firstname' => $this->firstName,
 				'lastname' => $this->lastName,
+				'is_active' => 1,
 			));
-			return $record->save();
+			if ($record->save()) {
+				$this->_id = $record->getPrimaryKey();
+				return true;
+			}
+			Yii::log('Failed to save user: '.print_r($record->getErrors(),true), 'warning');
+		} else {
+			Yii::log('Trying to save UserIdentity but no matching User has been found', 'warning');
 		}
 		return false;
 	}
