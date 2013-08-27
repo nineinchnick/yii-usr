@@ -21,7 +21,7 @@
  * @property boolean $is_disabled
  */
 abstract class ExampleUser extends CActiveRecord {
-{
+
 	public function tableName()
 	{
 		return '{{user}}';
