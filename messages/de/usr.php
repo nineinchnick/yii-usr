@@ -66,7 +66,7 @@ return array(
     'Submit' => 'Absenden',
     'The {class} class must implement the {interface} interface.' => 'Die {class} muss ein {interface} haben.',
     'This is the first time you login. Current password needs to be changed.' => 'Sie loggen sich zum ersten mal ein bitte änden Sie aus Sicherheitsgründen Ihr Passwort.',
-    'Username' => 'Nazwa użytkownika',
+    'Username' => 'Username',
     'Username or password recovery' => 'Username oder Passwort vergessen ?',
     'User profile' => 'User Profil',
     'Use this passowrd?\nTo copy it to the clipboard press Ctrl+C.' => 'Möchten Sie dieses Passwort verwenden dann drücken Sie bitte Ctrl+C / Cmd+C.',
