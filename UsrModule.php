@@ -92,7 +92,8 @@
  *
  * @author Jan Was <jwas@nets.com.pl>
  */
-class UsrModule extends CWebModule {
+class UsrModule extends CWebModule
+{
 	/**
 	 * @var boolean Is new user registration enabled.
 	 */
@@ -174,8 +175,19 @@ class UsrModule extends CWebModule {
 	 * @var integer Should an extra random character be added in password generated using the diceware component.
 	 */
 	public $dicewareExtraChar = false;
+	/**
+	 * @var array Available Hybridauth providers as array('enabled'=>true|false, 'keys'=>array('id'=>string, 'key'=>string, 'secret'=>string), 'scope'=>string)
+	 * @see http://hybridauth.sourceforge.net/userguide.html
+	 */
+	public $hybridauthProviders = array();
 
-	public function init() {
+	/**
+	 * @var Hybrid_Auth set if $hybridauthProviders are not empty
+	 */
+	protected $_hybridauth;
+
+	public function init()
+	{
 		parent::init();
 		$this->setImport(array(
 			'usr.models.*',
@@ -202,5 +214,24 @@ class UsrModule extends CWebModule {
 				$this->mailer->$key = $value;
 			}
 		}
+		if ($this->hybridauthEnabled()) {
+			$hybridauthConfig = array(
+				'base_url' => Yii::app()->createAbsoluteUrl('/'.$this->id.'/hybridauth/callback'),
+				'providers' => $this->hybridauthProviders,
+			);
+			require dirname(__FILE__) . '/extensions/Hybrid/Auth.php';
+			$this->_hybridauth = new Hybrid_Auth($hybridauthConfig);
+		}
+	}
+
+	public function hybridauthEnabled()
+	{
+		$providers = array_filter($this->hybridauthProviders, function($p){return !isset($p['enabled']) || $p['enabled'];});
+		return !empty($providers);
+	}
+
+	public function getHybridAuth()
+	{
+		return $this->_hybridauth;
 	}
 }

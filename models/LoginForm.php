@@ -5,7 +5,8 @@
  * LoginForm is the data structure for keeping
  * user login form data. It is used by the 'login' action of 'DefaultController'.
  */
-class LoginForm extends CFormModel {
+class LoginForm extends CFormModel
+{
 	public $username;
 	public $password;
 	public $rememberMe;
@@ -19,7 +20,8 @@ class LoginForm extends CFormModel {
 	 * The rules state that username and password are required,
 	 * and password needs to be authenticated.
 	 */
-	public function rules() {
+	public function rules()
+	{
 		return array(
 			array('username, password', 'filter', 'filter'=>'trim'),
 			array('username, password', 'required'),
@@ -39,7 +41,8 @@ class LoginForm extends CFormModel {
 	/**
 	 * Declares attribute labels.
 	 */
-	public function attributeLabels() {
+	public function attributeLabels()
+	{
 		return array(
 			'username'		=> Yii::t('UsrModule.usr','Username'),
 			'password'		=> Yii::t('UsrModule.usr','Password'),
@@ -49,7 +52,8 @@ class LoginForm extends CFormModel {
 		);
 	}
 
-	protected function getIdentity() {
+	protected function getIdentity()
+	{
 		if($this->_identity===null) {
 			$userIdentityClass = Yii::app()->controller->module->userIdentityClass;
 			$this->_identity=new $userIdentityClass($this->username,$this->password);
@@ -62,7 +66,8 @@ class LoginForm extends CFormModel {
 	 * Authenticates the password.
 	 * This is the 'authenticate' validator as declared in rules().
 	 */
-	public function authenticate($attribute,$params) {
+	public function authenticate($attribute,$params)
+	{
 		if($this->hasErrors()) {
 			return;
 		}
@@ -78,7 +83,8 @@ class LoginForm extends CFormModel {
 	 * Checkes if current password hasn't been used before.
 	 * This is the 'unusedNewPassword' validator as declared in rules().
 	 */
-	public function unusedNewPassword() {
+	public function unusedNewPassword()
+	{
 		if($this->hasErrors()) {
 			return;
 		}
@@ -96,7 +102,8 @@ class LoginForm extends CFormModel {
 	/**
 	 * Checkes if current password has timed out and needs to be reset.
 	 */
-	public function passwordIsFresh() {
+	public function passwordIsFresh()
+	{
 		if($this->hasErrors()) {
 			return;
 		}
@@ -128,7 +135,8 @@ class LoginForm extends CFormModel {
 	 * @param string $password if null, model's password attribute will be used
 	 * @return boolean whether login is successful
 	 */
-	public function login($password = null) {
+	public function login($password = null)
+	{
 		$identity = $this->getIdentity();
 		if ($password !== null) {
 			$identity->password = $password;
@@ -145,7 +153,8 @@ class LoginForm extends CFormModel {
 	 * Resets user password using the new one given in the model.
 	 * @return boolean whether password reset was successful
 	 */
-	public function resetPassword() {
+	public function resetPassword()
+	{
 		$identity = $this->getIdentity();
 		return $identity->resetPassword($this->newPassword);
 	}

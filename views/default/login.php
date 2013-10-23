@@ -47,7 +47,7 @@ $this->pageTitle = Yii::app()->name.' - '.$title;
 	<p>
 		<?php echo Yii::t('UsrModule.usr', 'Don\'t remember username or password?'); ?>
 		<?php echo Yii::t('UsrModule.usr', 'Go to {link}.', array(
-			'{link}'=>CHtml::link(Yii::t('UsrModule.usr', 'password recovery'), array('/usr/recovery')),
+			'{link}'=>CHtml::link(Yii::t('UsrModule.usr', 'password recovery'), array('recovery')),
 		)); ?>
 	</p>
 <?php endif; ?>
@@ -55,8 +55,13 @@ $this->pageTitle = Yii::app()->name.' - '.$title;
 	<p>
 		<?php echo Yii::t('UsrModule.usr', 'Don\'t have an account yet?'); ?>
 		<?php echo Yii::t('UsrModule.usr', 'Go to {link}.', array(
-			'{link}'=>CHtml::link(Yii::t('UsrModule.usr', 'registration'), array('/usr/register')),
+			'{link}'=>CHtml::link(Yii::t('UsrModule.usr', 'registration'), array('register')),
 		)); ?>
+	</p>
+<?php endif; ?>
+<?php if ($this->module->hybridauthEnabled()): ?>
+	<p>
+		<?php echo CHtml::link(Yii::t('UsrModule.usr', 'Sign in using one of your social sites account.'), array('hybridauth/login')); ?>
 	</p>
 <?php endif; ?>
 

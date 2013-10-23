@@ -1,14 +1,17 @@
 <?php
 
-class DefaultController extends CController {
-	public function actionIndex() {
+class DefaultController extends CController
+{
+	public function actionIndex()
+	{
 		$this->render('index');
 	}
 
 	/**
 	 * Redirects user either to returnUrl or main page.
 	 */ 
-	protected function afterLogin() {
+	protected function afterLogin()
+	{
 		$returnUrlParts = explode('/',Yii::app()->user->returnUrl);
 		if(end($returnUrlParts)=='index.php'){
 			$url = '/';
@@ -18,7 +21,8 @@ class DefaultController extends CController {
 		$this->redirect($url);
 	}
 
-	public function actionLogin() {
+	public function actionLogin()
+	{
 		if (!Yii::app()->user->isGuest)
 			$this->redirect(Yii::app()->user->returnUrl);
 
@@ -38,7 +42,8 @@ class DefaultController extends CController {
 		$this->render($model->scenario === 'reset' ? 'reset' : 'login', array('model'=>$model));
 	}
 
-	public function actionReset() {
+	public function actionReset()
+	{
 		if (!Yii::app()->user->isGuest)
 			$this->redirect(Yii::app()->user->returnUrl);
 
@@ -64,12 +69,14 @@ class DefaultController extends CController {
 	/**
 	 * Logs out the current user and redirect to homepage.
 	 */
-	public function actionLogout() {
+	public function actionLogout()
+	{
 		Yii::app()->user->logout();
 		$this->redirect(Yii::app()->homeUrl);
 	}
 
-	public function actionRecovery() {
+	public function actionRecovery()
+	{
 		if (!$this->module->recoveryEnabled) {
 			throw new CHttpException(403,Yii::t('UsrModule.usr', 'Password recovery has not been enabled.'));
 		}
@@ -112,7 +119,8 @@ class DefaultController extends CController {
 		$this->render('recovery',array('model'=>$model));
 	}
 
-	public function actionVerify() {
+	public function actionVerify()
+	{
 		$model=new RecoveryForm;
 		$model->scenario = 'verify';
 		if (!isset($_GET['activationKey'])) {
@@ -127,7 +135,8 @@ class DefaultController extends CController {
 		$this->redirect(array(Yii::app()->user->isGuest ? 'login' : 'profile'));
 	}
 
-	public function actionRegister() {
+	public function actionRegister()
+	{
 		if (!$this->module->registrationEnabled) {
 			throw new CHttpException(403,Yii::t('UsrModule.usr', 'Registration has not been enabled.'));
 		}
@@ -173,7 +182,8 @@ class DefaultController extends CController {
 		$this->render('updateProfile',array('model'=>$model));
 	}
 
-	public function actionProfile($update=false) {
+	public function actionProfile($update=false)
+	{
 		if (Yii::app()->user->isGuest)
 			$this->redirect(array('login'));
 
@@ -213,7 +223,8 @@ class DefaultController extends CController {
 		}
 	}
 
-	public function actionPassword() {
+	public function actionPassword()
+	{
 		$diceware = new Diceware;
 		$password = $diceware->get_phrase($this->module->dicewareLength, $this->module->dicewareExtraDigit, $this->module->dicewareExtraChar);
 		echo json_encode($password);
@@ -226,7 +237,8 @@ class DefaultController extends CController {
 	 * @param strign $mode 'recovery' or 'verify'
 	 * @return boolean if sending the email succeeded
 	 */
-	protected function sendEmail(CFormModel $model, $mode) {
+	protected function sendEmail(CFormModel $model, $mode)
+	{
 		$mail = $this->module->mailer;
 		$mail->AddAddress($model->getIdentity()->getEmail(), $model->getIdentity()->getName());
 		if ($mode == 'recovery') {
