@@ -91,7 +91,7 @@ class HybridauthForm extends CFormModel
 	{
 		$userIdentityClass = Yii::app()->controller->module->userIdentityClass;
 		$fakeIdentity = new $userIdentityClass(null, null);
-		if (!($fakeIdentity instanceof 'IHybridauthIdentity'))
+		if (!($fakeIdentity instanceof IHybridauthIdentity))
 			throw new CException(Yii::t('UsrModule.usr','The {class} class must implement the {interface} interface.',array('{class}'=>get_class($identity),'{interface}'=>'IHybridauthIdentity')));
 
 		$params = $this->getAttributes();
@@ -111,7 +111,7 @@ class HybridauthForm extends CFormModel
 	{
 		$userIdentityClass = Yii::app()->controller->module->userIdentityClass;
 		$identity = new $userIdentityClass(null, null);
-		if (!($identity instanceof 'IHybridauthIdentity'))
+		if (!($identity instanceof IHybridauthIdentity))
 			throw new CException(Yii::t('UsrModule.usr','The {class} class must implement the {interface} interface.',array('{class}'=>get_class($identity),'{interface}'=>'IHybridauthIdentity')));
 		$identity->setId($user_id);
 		$profile = $this->_hybridAuthAdapter->getUserProfile();
