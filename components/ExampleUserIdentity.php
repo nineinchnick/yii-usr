@@ -7,7 +7,7 @@ Yii::import('usr.components.*');
  * It contains the authentication method that checks if the provided
  * data can identity the user.
  */
-abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHistoryIdentity,IActivatedIdentity,IEditableIdentity
+abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHistoryIdentity,IActivatedIdentity,IEditableIdentity,IHybridauthIdentity
 {
 	public $email = null;
 	public $firstName = null;
@@ -18,7 +18,8 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 	 * Authenticates a user.
 	 * @return boolean whether authentication succeeds.
 	 */
-	public function authenticate() {
+	public function authenticate()
+	{
 		$record=User::model()->findByAttributes(array('username'=>$this->username));
 		if ($record!==null && $record->is_active && !$record->is_disabled && $record->verifyPassword($this->password)) {
 			$this->_id = $record->id;
@@ -31,15 +32,18 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 		return !$this->errorCode;
 	}
 	
-	public function setId($id) {
+	public function setId($id)
+	{
 		$this->_id = $id;
 	}
 	
-	public function getId() {
+	public function getId()
+	{
 		return $this->_id;
 	}
 
-	public function getPasswordDate($password = null) {
+	public function getPasswordDate($password = null)
+	{
 		if ($this->_id===null || $password !== null)
 			return null;
 		if (($record=User::model()->findByPk($this->_id))!==null) {
@@ -48,7 +52,8 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 		return null;
 	}
 
-	public function resetPassword($password) {
+	public function resetPassword($password)
+	{
 		if ($this->_id===null)
 			return false;
 		if (($record=User::model()->findByPk($this->_id))!==null) {
@@ -61,20 +66,48 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 		return false;
 	}
 
-	public static function find(array $attributes) {
-		$record = User::model()->findByAttributes($attributes);
-		if ($record === null)
-			return null;
-		$identity = new UserIdentity($record->username, null);
-		$identity->id = $record->id;
-		$identity->username = $record->username;
-		$identity->email = $record->email;
-		$identity->firstName = $record->firstname;
-		$identity->lastName = $record->lastname;
+	protected static function createFromUser(User $user)
+	{
+		$identity = new UserIdentity($user->username, null);
+		$identity->id = $user->id;
+		$identity->username = $user->username;
+		$identity->email = $user->email;
+		$identity->firstName = $user->firstname;
+		$identity->lastName = $user->lastname;
 		return $identity;
 	}
 
-	public function getActivationKey() {
+	public static function find(array $attributes)
+	{
+		$record = User::model()->findByAttributes($attributes);
+		return $record === null ? null : self::createFromUser($record);
+	}
+
+	public static function findByProvider($provider, $identifier)
+	{
+		$criteria = new CDbCriteria;
+		$criteria->with['userRemoteIdentities'] = array('alias'=>'ur');
+		$criteria->compare('ur.provider',$provider)
+		$criteria->compare('ur.identifier',$identifier)
+		$record = User::model()->find($criteria);
+		return $record === null ? null : self::createFromUser($record);
+	}
+
+	public function addRemoteIdentity($provider, $identifier)
+	{
+		if ($this->_id===null)
+			return false;
+		$model = new UserRemoteIdentity;
+		$model->setAttributes(array(
+			'user_id' => $this->_id,
+			'provider' => $provider,
+			'identifier' => $identifier,
+		));
+		return $model->save();
+	}
+
+	public function getActivationKey()
+	{
 		if ($this->_id===null)
 			return false;
 		if (($record=User::model()->findByPk($this->_id))!==null) {
@@ -87,7 +120,8 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 		return false;
 	}
 
-	public function verifyActivationKey($activationKey) {
+	public function verifyActivationKey($activationKey)
+	{
 		if ($this->_id===null)
 			return self::ERROR_AKEY_INVALID;
 		if (($record=User::model()->findByPk($this->_id))!==null) {
@@ -96,7 +130,8 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 		return self::ERROR_AKEY_INVALID;
 	}
 
-	public function isActive() {
+	public function isActive()
+	{
 		if ($this->_id===null)
 			return false;
 		if (($record=User::model()->findByPk($this->_id))!==null) {
@@ -105,7 +140,8 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 		return false;
 	}
 
-	public function isDisabled() {
+	public function isDisabled()
+	{
 		if ($this->_id===null)
 			return false;
 		if (($record=User::model()->findByPk($this->_id))!==null) {
@@ -114,7 +150,8 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 		return false;
 	}
 
-	public function verifyEmail() {
+	public function verifyEmail()
+	{
 		if ($this->_id===null)
 			return false;
 		if (($record=User::model()->findByPk($this->_id))!==null) {
@@ -126,11 +163,13 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 		return false;
 	}
 	
-	public function getEmail() {
+	public function getEmail()
+	{
 		return $this->email;
 	}
 
-	public function save() {
+	public function save()
+	{
 		if ($this->_id === null) {
 			$record = new User;
 			$record->password = 'x';
@@ -156,7 +195,8 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 		return false;
 	}
 
-	public function setAttributes(array $attributes) {
+	public function setAttributes(array $attributes)
+	{
 		if (isset($attributes['username']))
 			$this->username = $attributes['username'];
 		if (isset($attributes['email']))
@@ -168,7 +208,8 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 		return true;
 	}
 
-	public function getAttributes() {
+	public function getAttributes()
+	{
 		return array(
 			'username' => $this->username,
 			'email' => $this->email,

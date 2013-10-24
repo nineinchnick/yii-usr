@@ -20,8 +20,8 @@
  * @property boolean $is_active
  * @property boolean $is_disabled
  */
-abstract class ExampleUser extends CActiveRecord {
-
+abstract class ExampleUser extends CActiveRecord
+{
 	public function tableName()
 	{
 		return '{{user}}';
@@ -46,6 +46,7 @@ abstract class ExampleUser extends CActiveRecord {
 	public function relations()
 	{
 		return array(
+			'userRemoteIdentities' => array(self::HAS_MANY, 'UserRemoteIdentity', 'user_id'),
 		);
 	}
 
@@ -69,6 +70,10 @@ abstract class ExampleUser extends CActiveRecord {
 		);
 	}
 
+	/**
+	 * @return CActiveDataProvider the data provider that can return the models
+	 * based on the search/filter conditions.
+	 */
 	public function search()
 	{
 		$criteria=new CDbCriteria;
@@ -93,6 +98,10 @@ abstract class ExampleUser extends CActiveRecord {
 		));
 	}
 
+	/**
+	 * @param string $className active record class name.
+	 * @return UserRemoteIdentity the static model class
+	 */
 	public static function model($className=__CLASS__)
 	{
 		return parent::model($className);
