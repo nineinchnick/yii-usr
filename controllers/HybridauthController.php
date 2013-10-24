@@ -170,7 +170,7 @@ class HybridauthController extends CController
 				'username'=>$model->getIdentity()->getName(),
 			)),
 		);
-		$body = $this->renderPartial($mail->getPathViews().'.'.$mode, $params, true);
+		$body = $this->renderPartial($mail->getPathViews().'.verify', $params, true);
 		$full = $this->renderPartial($mail->getPathLayouts().'.email', array('content'=>$body), true);
 		$mail->MsgHTML($full);
 		if ($mail->Send()) {
