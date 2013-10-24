@@ -152,30 +152,24 @@ class DefaultController extends CController
 		}
 		if(isset($_POST['ProfileForm'])) {
 			$model->setAttributes($_POST['ProfileForm']);
-			if($model->validate()) {
-				if ($model->save() && $model->resetPassword()) {
-					$flashIsSet = false;
-					if ($this->module->requireVerifiedEmail) {
-						if ($this->sendEmail($model, 'verify')) {
-							Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'An email containing further instructions has been sent to provided email address.'));
-							$flashIsSet = true;
-						} else {
-							Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to send an email.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
-						}
-					}
-					if ($model->getIdentity()->isActive()) {
-						if ($model->login()) {
-							$this->afterLogin();
-						} else {
-							Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to log in.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
-						}
+			if ($model->register()) {
+				if ($this->module->requireVerifiedEmail) {
+					if ($this->sendEmail($model, 'verify')) {
+						Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'An email containing further instructions has been sent to provided email address.'));
 					} else {
-						if (!$flashIsSet)
-							Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'Please wait for the account to be activated. A notification will be send to provided email address.'));
-						$this->redirect(array('login'));
+						Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to send an email.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
+					}
+				}
+				if ($model->getIdentity()->isActive()) {
+					if ($model->login()) {
+						$this->afterLogin();
+					} else {
+						Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to log in.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
 					}
 				} else {
-					Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to register a new user.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
+					if (!Yii::app()->user->hasFlash('success'))
+						Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'Please wait for the account to be activated. A notification will be send to provided email address.'));
+					$this->redirect(array('login'));
 				}
 			}
 		}

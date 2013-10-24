@@ -5,7 +5,8 @@
  * ProfileForm is the data structure for keeping
  * password recovery form data. It is used by the 'recovery' action of 'DefaultController'.
  */
-class ProfileForm extends CFormModel {
+class ProfileForm extends CFormModel
+{
 	public $username;
 	public $email;
 	public $newPassword;
@@ -20,7 +21,8 @@ class ProfileForm extends CFormModel {
 	 * The rules state that username and password are required,
 	 * and password needs to be authenticated.
 	 */
-	public function rules() {
+	public function rules()
+	{
 		return array(
 			array('username, email, newPassword, newVerify, firstName, lastName', 'filter', 'filter'=>'trim'),
 			array('username, email, newPassword, newVerify, firstName, lastName', 'default', 'setOnEmpty'=>true, 'value' => null),
@@ -37,7 +39,8 @@ class ProfileForm extends CFormModel {
 	/**
 	 * Declares attribute labels.
 	 */
-	public function attributeLabels() {
+	public function attributeLabels()
+	{
 		return array(
 			'username'		=> Yii::t('UsrModule.usr','Username'),
 			'email'			=> Yii::t('UsrModule.usr','Email'),
@@ -48,10 +51,11 @@ class ProfileForm extends CFormModel {
 		);
 	}
 
-	public function getIdentity() {
+	public function getIdentity()
+	{
 		if($this->_identity===null) {
 			$userIdentityClass = Yii::app()->controller->module->userIdentityClass;
-			if ($this->scenario == 'register') {
+			if ($this->scenario == 'register' || $this->scenario == 'registerWithoutPassword') {
 				$this->_identity = new $userIdentityClass(null, null);
 			} else {
 				$this->_identity = $userIdentityClass::find(array('id'=>Yii::app()->user->getId()));
@@ -63,12 +67,13 @@ class ProfileForm extends CFormModel {
 		return $this->_identity;
 	}
 
-	public function uniqueIdentity($attribute,$params) {
+	public function uniqueIdentity($attribute,$params)
+	{
 		if($this->hasErrors()) {
 			return;
 		}
 		$userIdentityClass = Yii::app()->controller->module->userIdentityClass;
-		if (($identity=$userIdentityClass::find(array($attribute => $this->$attribute))) !== null && ($this->scenario == 'register' || $identity->getId() != $this->getIdentity()->getId())) {
+		if (($identity=$userIdentityClass::find(array($attribute => $this->$attribute))) !== null && ($this->scenario == 'register' || $this->scenario == 'registerWithoutPassword' || $identity->getId() != $this->getIdentity()->getId())) {
 			$this->addError($attribute,Yii::t('UsrModule.usr','{attribute} has already been used by another user.', array('{attribute}'=>$this->$attribute)));
 			return false;
 		}
@@ -79,7 +84,8 @@ class ProfileForm extends CFormModel {
 	 * Logs in the user using the given username and new password.
 	 * @return boolean whether login is successful
 	 */
-	public function login() {
+	public function login()
+	{
 		$identity = $this->getIdentity();
 
 		$identity->password = $this->newPassword;
@@ -93,7 +99,8 @@ class ProfileForm extends CFormModel {
 	/**
 	 * Updates the identity with this models attributes and saves it.
 	 */
-	public function save() {
+	public function save()
+	{
 		$identity = $this->getIdentity();
 		return $identity!==null && $identity->setAttributes(array(
 			'username'	=> $this->username,
@@ -107,7 +114,24 @@ class ProfileForm extends CFormModel {
 	 * Resets user password using the new one given in the model.
 	 * @return boolean whether password reset was successful
 	 */
-	public function resetPassword() {
+	public function resetPassword()
+	{
 		return empty($this->newPassword) || $this->getIdentity()->resetPassword($this->newPassword);
+	}
+
+	/**
+	 * Processes the form filled with POST data. Sets proper flash messages and sends emails.
+	 * @return boolean
+	 */
+	public function register($savePassword=true)
+	{
+		if(!$this->validate()) {
+			return false;
+		}
+		if (!$this->save() || ($savePassword && !$this->resetPassword())) {
+			Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to register a new user.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
+			return false;
+		}
+		return true;
 	}
 }

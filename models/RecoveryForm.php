@@ -56,7 +56,7 @@ class RecoveryForm extends CFormModel {
 			// generate a fake object just to check if it implements a correct interface
 			$fakeIdentity = new $userIdentityClass(null, null);
 			if (!($fakeIdentity instanceof IActivatedIdentity)) {
-				throw new CException(Yii::t('UsrModule.usr','The {class} class must implement the IActivatedIdentity interface.',array('{class}'=>$userIdentityClass)));
+				throw new CException(Yii::t('UsrModule.usr','The {class} class must implement the {interface} interface.',array('{class}'=>$userIdentityClass, '{interface}'=>'IActivatedIdentity')));
 			}
 			$attributes = array();
 			if ($this->username !== null) $attributes['username'] = $this->username;
@@ -121,7 +121,7 @@ class RecoveryForm extends CFormModel {
 
 		$identity = $this->getIdentity();
 		if (!($identity instanceof IPasswordHistoryIdentity))
-			throw new CException(Yii::t('UsrModule.usr','The {class} class must implement the IPasswordHistoryIdentity interface.',array('{class}'=>get_class($identity))));
+			throw new CException(Yii::t('UsrModule.usr','The {class} class must implement the {interface} interface.',array('{class}'=>get_class($identity),'{interface}'=>'IPasswordHistoryIdentity')));
 		if (($lastUsed = $identity->getPasswordDate($this->newPassword)) !== null) {
 			$this->addError('password',Yii::t('UsrModule.usr','New password has been already used on {date}.'), array('{date}'=>$lastUsed));
 			return false;

@@ -52,7 +52,7 @@ class LoginForm extends CFormModel
 		);
 	}
 
-	protected function getIdentity()
+	public function getIdentity()
 	{
 		if($this->_identity===null) {
 			$userIdentityClass = Yii::app()->controller->module->userIdentityClass;

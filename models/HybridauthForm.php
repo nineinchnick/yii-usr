@@ -82,10 +82,17 @@ class HybridauthForm extends CFormModel
 		return false;
 	}
 
+	public function loggedInRemotely()
+	{
+		return ($adapter=$this->getHybridAuthAdapter()) !== null && $adapter->isUserConnected();
+	}
+
 	public function login()
 	{
 		$userIdentityClass = Yii::app()->controller->module->userIdentityClass;
-		//! @todo validate if $userIdentityClass implements IActivatedIdentity
+		$fakeIdentity = new $userIdentityClass(null, null);
+		if (!($fakeIdentity instanceof 'IHybridauthIdentity'))
+			throw new CException(Yii::t('UsrModule.usr','The {class} class must implement the {interface} interface.',array('{class}'=>get_class($identity),'{interface}'=>'IHybridauthIdentity')));
 
 		$params = $this->getAttributes();
 		unset($params['provider']);
@@ -93,27 +100,21 @@ class HybridauthForm extends CFormModel
 
 		if ($this->_hybridAuthAdapter->isUserConnected()) {
 			$profile = $this->_hybridAuthAdapter->getUserProfile();
-			$username = $profile->identifier;
-			$email = $profile->emailVerified !== null ? $profile->emailVerified : $profile->email;
-			if (($this->_identity=$userIdentityClass::find(array('username'=>$username))) !== null || ($this->_identity=$userIdentityClass::find(array('email'=>$email))) !== null) {
+			if (($this->_identity=$userIdentityClass::findByProvider($this->provider, $profile->identifier)) !== null) {
 				return Yii::app()->user->login($this->_identity,0);
 			}
 		}
 		return false;
 	}
 
-	public function register()
+	public function associate($user_id)
 	{
+		$userIdentityClass = Yii::app()->controller->module->userIdentityClass;
+		$identity = new $userIdentityClass(null, null);
+		if (!($identity instanceof 'IHybridauthIdentity'))
+			throw new CException(Yii::t('UsrModule.usr','The {class} class must implement the {interface} interface.',array('{class}'=>get_class($identity),'{interface}'=>'IHybridauthIdentity')));
+		$identity->setId($user_id);
 		$profile = $this->_hybridAuthAdapter->getUserProfile();
-		$this->_identity->setAttributes(array(
-			'username' => $profile->identifier,
-			'email' => $profile->emailVerifier !== null ? $profile->emailVerifier : $profile->email,
-			'firstName' => $profile->firstName,
-			'lastName' => $profile->lastName,
-		));
-		if ($this->_identity->save())
-			return Yii::app()->user->login($this->_identity,0);
-
-		return false;
+		return $identity->addRemoteIdentity($this->provider, $profile->identifier);
 	}
 }
