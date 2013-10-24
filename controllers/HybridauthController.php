@@ -122,7 +122,8 @@ class HybridauthController extends CController
 				}
 
 				if ($localProfile->getIdentity()->isActive()) {
-					if ($localProfile->login()) {
+					// don't use the $localProfile->login() method because there is no password set so we can't authenticate this identity
+					if (Yii::app()->user->login($localProfile->getIdentity(),0)) {
 						$this->afterLogin();
 					} else {
 						Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to log in.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
