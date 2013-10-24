@@ -26,7 +26,7 @@ $this->pageTitle = Yii::app()->name.' - '.$title;
 	'clientOptions'=>array(
 		'validateOnSubmit'=>true,
 	),
-	'focus'=>array($localProfile,'username') : null,
+	'focus'=>array($localProfile,'username'),
 )); ?>
 
 	<?php echo $form->hiddenField($remoteLogin,'provider'); ?>
@@ -81,7 +81,7 @@ $this->pageTitle = Yii::app()->name.' - '.$title;
 	'clientOptions'=>array(
 		'validateOnSubmit'=>true,
 	),
-	'focus'=>array($localLogin,'username') : null,
+	'focus'=>array($localLogin,'username'),
 )); ?>
 
 	<?php echo $form->hiddenField($remoteLogin,'provider'); ?>
