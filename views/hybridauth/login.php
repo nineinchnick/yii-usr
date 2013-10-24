@@ -59,7 +59,6 @@ Yii::app()->clientScript->registerCssFile($assetsUrl.'/zocial.css');
 	</div>
 
 	</div>
-<?php endif; ?>
 <?php $this->endWidget(); ?>
 </div><!-- form -->
 
