@@ -20,7 +20,7 @@ class UsrController extends CController
 	 * @param strign $mode 'recovery', 'verify' or 'oneTimePassword'
 	 * @return boolean if sending the email succeeded
 	 */
-	protected function sendEmail(CFormModel $model, $mode)
+	public function sendEmail(CFormModel $model, $mode)
 	{
 		$mail = $this->module->mailer;
 		$mail->AddAddress($model->getIdentity()->getEmail(), $model->getIdentity()->getName());
