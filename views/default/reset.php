@@ -19,7 +19,7 @@ $this->pageTitle = Yii::app()->name.' - '.$title;
 		'validateOnSubmit'=>true,
 	),
 	'focus'=>array($model,'newPassword'),
-	'action'=>array('reset'),
+	'action'=>array('login', 'scenario'=>'reset'),
 )); ?>
 
 	<p class="note"><?php echo Yii::t('UsrModule.usr', 'Fields marked with <span class="required">*</span> are required.'); ?></p>

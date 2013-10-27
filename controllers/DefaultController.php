@@ -21,12 +21,15 @@ class DefaultController extends UsrController
 		$this->redirect($url);
 	}
 
-	public function actionLogin()
+	public function actionLogin($scenario = null)
 	{
 		if (!Yii::app()->user->isGuest)
 			$this->redirect(Yii::app()->user->returnUrl);
 
 		$model = new LoginForm;
+		if ($scenario !== null && in_array($scenario, array('reset', 'verifyOTP'))) {
+			$model->scenario = $scenario;
+		}
 
 		if(isset($_POST['ajax']) && $_POST['ajax']==='login-form') {
 			echo CActiveForm::validate($model);
@@ -39,31 +42,12 @@ class DefaultController extends UsrController
 				$this->afterLogin();
 			}
 		}
-		$this->render($model->scenario === 'reset' ? 'reset' : 'login', array('model'=>$model));
-	}
-
-	public function actionReset()
-	{
-		if (!Yii::app()->user->isGuest)
-			$this->redirect(Yii::app()->user->returnUrl);
-
-		$model = new LoginForm;
-		$model->scenario = 'reset';
-
-		if(isset($_POST['ajax']) && $_POST['ajax']==='login-form') {
-			echo CActiveForm::validate($model);
-			Yii::app()->end();
+		switch($model->scenario) {
+		default: $view = 'login'; break;
+		case 'reset': $view = 'reset'; break;
+		case 'verifyOTP': $view = 'verifyOTP'; break;
 		}
-
-		if(isset($_POST['LoginForm'])) {
-			$model->setAttributes($_POST['LoginForm']);
-			if($model->validate() && $model->resetPassword() && $model->login($model->newPassword)) {
-				$this->afterLogin();
-			}
-		}
-		$title = Yii::t('UsrModule.usr', 'Password reset');
-		$this->pageTitle = Yii::app()->name.' - '.$title;
-		$this->render('reset',array('model'=>$model, 'title'=>$title));
+		$this->render($view, array('model'=>$model));
 	}
 
 	/**
@@ -107,7 +91,7 @@ class DefaultController extends UsrController
 					}
 				} else {
 					$model->getIdentity()->verifyEmail();
-					if ($model->resetPassword() && $model->login()) {
+					if ($model->login()) {
 						$this->afterLogin();
 					} else {
 						Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to change password or log in using new password.'));
@@ -254,27 +238,22 @@ class DefaultController extends UsrController
 
 		if ($identity->getOneTimePasswordSecret() !== null) {
 			$identity->setOneTimePasswordSecret(null);
+			Yii::app()->request->cookies->remove(UsrModule::OTP_COOKIE);
 			$this->redirect('profile');
 			return;
 		}
 
-		$googleAuthenticator = $this->module->googleAuthenticator;
-		list($previousCode, $previousCounter) = $identity->getOneTimePassword();
-		$model->setMode($this->module->oneTimePasswordMode)
-			->setAuthenticator($googleAuthenticator)
-			->setPreviousCode($previousCode)
-			->setPreviousCounter($previousCounter);
+		$model->setMode($this->module->oneTimePasswordMode)->setAuthenticator($this->module->googleAuthenticator);
 
 		// generate a secret and save it in session if it hasn't been done yet
 		if (($secret=Yii::app()->session[UsrModule::OTP_SECRET_PREFIX.'newSecret']) === null) {
-			$secret = Yii::app()->session[UsrModule::OTP_SECRET_PREFIX.'newSecret'] = $googleAuthenticator->generateSecret();
+			$secret = Yii::app()->session[UsrModule::OTP_SECRET_PREFIX.'newSecret'] = $this->module->googleAuthenticator->generateSecret();
 
 			$model->setSecret($secret);
 			if ($this->module->oneTimePasswordMode === UsrModule::OTP_COUNTER) {
 				$this->sendEmail($model, 'oneTimePassword');
 			}
 		}
-
 		$model->setSecret($secret);
 
 		if (isset($_POST['OneTimePasswordForm'])) {
@@ -284,12 +263,12 @@ class DefaultController extends UsrController
 				$identity->setOneTimePasswordSecret($secret);
 				Yii::app()->session[UsrModule::OTP_SECRET_PREFIX.'newSecret'] = null;
 				// save current code as used
-				$identity->setOneTimePassword($model->code, $this->module->oneTimePasswordMode === UsrModule::OTP_TIME ? floor(time() / 30) : $previousCounter + 1);
+				$identity->setOneTimePassword($model->oneTimePassword, $this->module->oneTimePasswordMode === UsrModule::OTP_TIME ? floor(time() / 30) : $model->getPreviousCounter() + 1);
 				$this->redirect('profile');
 			}
 		}
 		if (YII_DEBUG) {
-			$model->code = $googleAuthenticator->getCode($secret, $this->module->oneTimePasswordMode === UsrModule::OTP_TIME ? null : $previousCounter);
+			$model->oneTimePassword = $this->module->googleAuthenticator->getCode($secret, $this->module->oneTimePasswordMode === UsrModule::OTP_TIME ? null : $model->getPreviousCounter());
 		}
 
 		if ($this->module->oneTimePasswordMode === UsrModule::OTP_TIME) {

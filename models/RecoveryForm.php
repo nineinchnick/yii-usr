@@ -130,6 +130,15 @@ class RecoveryForm extends CFormModel {
 	}
 
 	/**
+	 * Resets user password using the new one given in the model.
+	 * @return boolean whether password reset was successful
+	 */
+	public function resetPassword() {
+		$identity = $this->getIdentity();
+		return $identity->resetPassword($this->newPassword);
+	}
+
+	/**
 	 * Logs in the user using the given username and new password.
 	 * @return boolean whether login is successful
 	 */
@@ -142,14 +151,5 @@ class RecoveryForm extends CFormModel {
 			return Yii::app()->user->login($identity,0);
 		}
 		return false;
-	}
-
-	/**
-	 * Resets user password using the new one given in the model.
-	 * @return boolean whether password reset was successful
-	 */
-	public function resetPassword() {
-		$identity = $this->getIdentity();
-		return $identity->resetPassword($this->newPassword);
 	}
 }

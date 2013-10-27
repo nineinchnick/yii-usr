@@ -7,13 +7,14 @@
  */
 class OneTimePasswordForm extends CFormModel
 {
-	public $code;
+	public $oneTimePassword;
 
 	private $_identity;
 
 	private $_mode;
 	private $_authenticator;
 	private $_secret;
+
 	private $_previousCounter;
 	private $_previousCode;
 
@@ -23,10 +24,10 @@ class OneTimePasswordForm extends CFormModel
 	public function rules()
 	{
 		return array(
-			array('code', 'filter', 'filter'=>'trim'),
-			array('code', 'default', 'setOnEmpty'=>true, 'value' => null),
-			array('code', 'required'),
-			array('code', 'validOneTimePassword'),
+			array('oneTimePassword', 'filter', 'filter'=>'trim'),
+			array('oneTimePassword', 'default', 'setOnEmpty'=>true, 'value' => null),
+			array('oneTimePassword', 'required'),
+			array('oneTimePassword', 'validOneTimePassword'),
 		);
 	}
 
@@ -36,7 +37,7 @@ class OneTimePasswordForm extends CFormModel
 	public function attributeLabels()
 	{
 		return array(
-			'code' => Yii::t('UsrModule.usr','One Time Password'),
+			'oneTimePassword' => Yii::t('UsrModule.usr','One Time Password'),
 		);
 	}
 
@@ -58,21 +59,25 @@ class OneTimePasswordForm extends CFormModel
 		return $this;
 	}
 
-	public function setPreviousCode($code)
+	public function getPreviousCode()
 	{
-		$this->_previousCode = $code;
-		return $this;
+		if ($this->_previousCode === null) {
+			list($this->_previousCode, $this->_previousCounter) = $this->getIdentity()->getOneTimePassword();
+		}
+		return $this->_previousCode;
 	}
 
-	public function setPreviousCounter($counter)
+	public function getPreviousCounter()
 	{
-		$this->_previousCounter = $counter;
-		return $this;
+		if ($this->_previousCounter === null) {
+			list($this->_previousCode, $this->_previousCounter) = $this->getIdentity()->getOneTimePassword();
+		}
+		return $this->_previousCounter;
 	}
 
 	public function getNewCode()
 	{
-		return $this->_authenticator->getCode($this->_secret, $this->_mode == UsrModule::OTP_TIME ? null : $this->_previousCounter);
+		return $this->_authenticator->getCode($this->_secret, $this->_mode == UsrModule::OTP_TIME ? null : $this->getPreviousCounter());
 	}
 
     public function getUrl($user, $hostname, $secret) {
@@ -98,7 +103,7 @@ class OneTimePasswordForm extends CFormModel
 		if ($this->_mode === UsrModule::OTP_TIME) {
 			$valid = $this->_authenticator->checkCode($this->_secret, $this->$attribute);
 		} elseif ($this->_mode === UsrModule::OTP_COUNTER) {
-			$valid = $this->_authenticator->getCode($this->_secret, $this->_previousCounter);
+			$valid = $this->_authenticator->getCode($this->_secret, $this->getPreviousCounter()) == $this->$attribute;
 		} else {
 			$valid = false;
 		}
@@ -106,13 +111,14 @@ class OneTimePasswordForm extends CFormModel
 			$this->addError($attribute,Yii::t('UsrModule.usr','Entered code is invalid.'));
 			return false;
 		}
-		if ($this->$attribute == $this->_previousCode) {
+		if ($this->$attribute == $this->getPreviousCode()) {
 			if ($this->_mode === UsrModule::OTP_TIME) {
 				$message = Yii::t('UsrModule.usr','Please wait until next code will be generated.');
 			} elseif ($this->_mode === UsrModule::OTP_COUNTER) {
 				$message = Yii::t('UsrModule.usr','Please log in again to request a new code.');
 			}
 			$this->addError($attribute,Yii::t('UsrModule.usr','Entered code has already been used.').' '.$message);
+			$this->scenario = 'verifyOTP';
 			return false;
 		}
 		return true;

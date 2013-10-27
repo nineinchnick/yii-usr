@@ -95,6 +95,7 @@
 class UsrModule extends CWebModule
 {
 	const OTP_SECRET_PREFIX = 'UsrModule.oneTimePassword.';
+	const OTP_COOKIE = 'otp';
 	const OTP_NONE = 'none';
 	const OTP_TIME = 'time';
 	const OTP_COUNTER = 'counter';

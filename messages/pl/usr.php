@@ -36,6 +36,7 @@ return array(
   'Email' => 'Email',
   'Enable' => 'Włącz',
   'Enabled' => 'Włączona',
+  'Enter a valid one time password.' => 'Wprowadź poprawne hasło jednorazowe.',
   'Entered code is invalid.' => 'Podany kod jest nieprawidłowy.',
   'Entered code has already been used.' => 'Podany kod został już wykorzystany.',
   'Failed to associate current user with {provider}.' => 'Nie udało się powiązać bieżącego użytkownika z {provider}.',

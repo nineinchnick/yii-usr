@@ -12,8 +12,19 @@ class LoginForm extends CFormModel
 	public $rememberMe;
 	public $newPassword;
 	public $newVerify;
+	public $oneTimePassword;
 
 	private $_identity;
+
+	private $_oneTimePasswordConfig = array(
+		'authenticator' => null,
+		'mode' => null,
+		'required' => null,
+		'timeout' => null,
+		'secret' => null,
+		'previousCode' => null,
+		'previousCounter' => null,
+	);
 
 	/**
 	 * Declares the validation rules.
@@ -27,7 +38,7 @@ class LoginForm extends CFormModel
 			array('username, password', 'required'),
 			array('rememberMe', 'boolean'),
 			array('password', 'authenticate'),
-			array('password', 'passwordIsFresh', 'except'=>'reset, hybridauth'),
+			array('password', 'passwordIsFresh', 'except'=>'reset, hybridauth, verifyOTP'),
 
 			array('newPassword, newVerify', 'filter', 'filter'=>'trim', 'on'=>'reset'),
 			array('newPassword, newVerify', 'required', 'on'=>'reset'),
@@ -36,6 +47,12 @@ class LoginForm extends CFormModel
 			array('newPassword', 'match', 'pattern' => '/^.*(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/', 'message'	=> Yii::t('UsrModule.usr', 'New password must contain at least one lower and upper case character and a digit.'), 'on'=>'reset'),
 			array('newVerify', 'compare', 'compareAttribute'=>'newPassword', 'message' => Yii::t('UsrModule.usr', 'Please type the same new password twice to verify it.'), 'on'=>'reset'),
 			array('newPassword', 'compare', 'compareAttribute'=>'password', 'operator' => '!=', 'message' => Yii::t('UsrModule.usr', 'New password must be different than the old one.'), 'on'=>'reset'),
+			array('newPassword', 'resetPassword', 'on'=>'reset'),
+
+			array('oneTimePassword', 'filter', 'filter'=>'trim', 'on'=>'verifyOTP'),
+			array('oneTimePassword', 'default', 'setOnEmpty'=>true, 'value' => null, 'on'=>'verifyOTP'),
+			array('oneTimePassword', 'required', 'on'=>'verifyOTP'),
+			array('oneTimePassword', 'validOneTimePassword', 'except'=>'hybridauth'),
 		);
 	}
 
@@ -50,7 +67,42 @@ class LoginForm extends CFormModel
 			'rememberMe'	=> Yii::t('UsrModule.usr','Remember me when logging in next time'),
 			'newPassword'	=> Yii::t('UsrModule.usr','New password'),
 			'newVerify'		=> Yii::t('UsrModule.usr','Verify'),
+			'oneTimePassword' => Yii::t('UsrModule.usr','One Time Password'),
 		);
+	}
+
+	public function setOneTimePasswordConfig(array $config)
+	{
+		foreach($config as $key => $value) {
+			if ($this->_oneTimePasswordConfig[$key] === null)
+				$this->_oneTimePasswordConfig[$key] = $value;
+		}
+		return $this;
+	}
+
+	protected function loadOneTimePasswordConfig()
+	{
+		$module = Yii::app()->controller->module;
+		$identity = $this->getIdentity();
+		list($previousCode, $previousCounter) = $identity->getOneTimePassword();
+		$this->setOneTimePasswordConfig(array(
+			'authenticator' => $module->googleAuthenticator,
+			'mode' => $module->oneTimePasswordMode,
+			'required' => $module->oneTimePasswordRequired,
+			'timeout' => $module->oneTimePasswordTimeout,
+			'secret' => $identity->getOneTimePasswordSecret(),
+			'previousCode' => $previousCode,
+			'previousCounter' => $previousCounter,
+		));
+		return $this;
+	}
+
+	public function getOTP($key)
+	{
+		if ($this->_oneTimePasswordConfig[$key] === null) {
+			$this->loadOneTimePasswordConfig();
+		}
+		return $this->_oneTimePasswordConfig[$key];
 	}
 
 	public function getIdentity()
@@ -132,15 +184,27 @@ class LoginForm extends CFormModel
 	}
 
 	/**
+	 * Resets user password using the new one given in the model.
+	 * @return boolean whether password reset was successful
+	 */
+	public function resetPassword()
+	{
+		if($this->hasErrors()) {
+			return;
+		}
+		$identity = $this->getIdentity();
+		return $identity->resetPassword($this->newPassword);
+	}
+
+	/**
 	 * Logs in the user using the given username and password in the model.
-	 * @param string $password if null, model's password attribute will be used
 	 * @return boolean whether login is successful
 	 */
-	public function login($password = null)
+	public function login()
 	{
 		$identity = $this->getIdentity();
-		if ($password !== null) {
-			$identity->password = $password;
+		if ($this->scenario === 'reset') {
+			$identity->password = $this->newPassword;
 			$identity->authenticate();
 		}
 		if($identity->getIsAuthenticated()) {
@@ -150,13 +214,87 @@ class LoginForm extends CFormModel
 		return false;
 	}
 
-	/**
-	 * Resets user password using the new one given in the model.
-	 * @return boolean whether password reset was successful
-	 */
-	public function resetPassword()
+	public function validOneTimePassword($attribute,$params)
 	{
-		$identity = $this->getIdentity();
-		return $identity->resetPassword($this->newPassword);
+		if($this->hasErrors()) {
+			return;
+		}
+		$this->loadOneTimePasswordConfig();
+		// extracts: $authenticator, $mode, $required, $timeout, $secret, $previousCode, $previousCounter
+		extract($this->_oneTimePasswordConfig);
+
+		if (($mode !== UsrModule::OTP_TIME && $mode !== UsrModule::OTP_COUNTER) || (!$required && $secret === null)) {
+			return true;
+		}
+		if ($required && $secret === null) {
+			// generate and save a new secret only if required to do so, in other cases user must verify that the secret works
+			$secret = $this->_oneTimePasswordConfig['secret'] = $authenticator->generateSecret();
+			$identity->setOneTimePasswordSecret($secret);
+		}
+
+		if ($this->hasValidOTPCookie($this->username, $secret, $timeout)) {
+			return true;
+		}
+		if (empty($this->$attribute)) {
+			$this->addError($attribute,Yii::t('UsrModule.usr','Enter a valid one time password.'));
+			$this->scenario = 'verifyOTP';
+			if (YII_DEBUG) {
+				$this->oneTimePassword = $authenticator->getCode($secret, $mode === UsrModule::OTP_TIME ? null : $previousCounter);
+			}
+			return false;
+		}
+		if ($mode === UsrModule::OTP_TIME) {
+			$valid = $authenticator->checkCode($secret, $this->$attribute);
+		} elseif ($mode === UsrModule::OTP_COUNTER) {
+			$valid = $authenticator->getCode($secret, $previousCounter) == $this->$attribute;
+		} else {
+			$valid = false;
+		}
+		if (!$valid) {
+			$this->addError($attribute,Yii::t('UsrModule.usr','Entered code is invalid.'));
+			$this->scenario = 'verifyOTP';
+			return false;
+		}
+		if ($this->$attribute == $previousCode) {
+			if ($mode === UsrModule::OTP_TIME) {
+				$message = Yii::t('UsrModule.usr','Please wait until next code will be generated.');
+			} elseif ($mode === UsrModule::OTP_COUNTER) {
+				$message = Yii::t('UsrModule.usr','Please log in again to request a new code.');
+			}
+			$this->addError($attribute,Yii::t('UsrModule.usr','Entered code has already been used.').' '.$message);
+			$this->scenario = 'verifyOTP';
+			return false;
+		}
+		$this->setOTPCookie($this->username, $secret, $timeout);
+		return true;
+	}
+
+	public function setOTPCookie($username, $secret, $timeout, $time = null) {
+		if ($time === null)
+			$time = time();
+		$cookie=new CHttpCookie(UsrModule::OTP_COOKIE,'');
+		$cookie->expire=time() + ($timeout <= 0 ? 10*365*24*3600 : $timeout);
+		$cookie->httpOnly=true;
+		$data=array('username'=>$username, 'time'=>$time, 'timeout'=>$timeout);
+		$cookie->value=$time.':'.Yii::app()->getSecurityManager()->computeHMAC(serialize($data), $secret);
+		Yii::app()->request->cookies->add($cookie->name,$cookie);
+	}
+
+	public function hasValidOTPCookie($username, $secret, $timeout, $time = null) {
+		if ($time === null)
+			$time = time();
+
+		$cookie=Yii::app()->request->cookies->itemAt(UsrModule::OTP_COOKIE);
+		if(!$cookie || empty($cookie->value) || !is_string($cookie->value)) {
+			return false;
+		}
+		$parts = explode(":",$cookie->value,2);
+		if (count($parts)!=2) {
+			return false;
+		}
+		list($creationTime,$hash) = $parts;
+		$data=array('username'=>$username, 'time'=>(int)$creationTime, 'timeout'=>$timeout);
+		$validHash = Yii::app()->getSecurityManager()->computeHMAC(serialize($data), $secret);
+		return ($timeout <= 0 || $creationTime + $timeout <= $time) && $hash === $validHash;
 	}
 }
