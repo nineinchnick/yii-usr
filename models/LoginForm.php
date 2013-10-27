@@ -229,7 +229,7 @@ class LoginForm extends CFormModel
 		if ($required && $secret === null) {
 			// generate and save a new secret only if required to do so, in other cases user must verify that the secret works
 			$secret = $this->_oneTimePasswordConfig['secret'] = $authenticator->generateSecret();
-			$identity->setOneTimePasswordSecret($secret);
+			$this->getIdentity()->setOneTimePasswordSecret($secret);
 		}
 
 		if ($this->hasValidOTPCookie($this->username, $secret, $timeout)) {
@@ -266,6 +266,7 @@ class LoginForm extends CFormModel
 			return false;
 		}
 		$this->setOTPCookie($this->username, $secret, $timeout);
+		$this->getIdentity()->setOneTimePassword($this->$attribute, $mode === UsrModule::OTP_TIME ? floor(time() / 30) : $previousCounter + 1);
 		return true;
 	}
 
