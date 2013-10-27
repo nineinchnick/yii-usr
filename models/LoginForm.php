@@ -214,6 +214,14 @@ class LoginForm extends CFormModel
 		return false;
 	}
 
+	public function getNewCode()
+	{
+		$this->loadOneTimePasswordConfig();
+		// extracts: $authenticator, $mode, $required, $timeout, $secret, $previousCode, $previousCounter
+		extract($this->_oneTimePasswordConfig);
+		return $authenticator->getCode($secret, $mode == UsrModule::OTP_TIME ? null : $previousCounter);
+	}
+
 	public function validOneTimePassword($attribute,$params)
 	{
 		if($this->hasErrors()) {
@@ -238,6 +246,7 @@ class LoginForm extends CFormModel
 		if (empty($this->$attribute)) {
 			$this->addError($attribute,Yii::t('UsrModule.usr','Enter a valid one time password.'));
 			$this->scenario = 'verifyOTP';
+			Yii::app()->controller->sendEmail($this, 'oneTimePassword');
 			if (YII_DEBUG) {
 				$this->oneTimePassword = $authenticator->getCode($secret, $mode === UsrModule::OTP_TIME ? null : $previousCounter);
 			}
