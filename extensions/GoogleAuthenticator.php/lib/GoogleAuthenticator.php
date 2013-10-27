@@ -39,7 +39,7 @@ class GoogleAuthenticator {
     
     public function getCode($secret,$time = null) {
         
-        if (!$time) {
+        if ($time === null) {
             $time = floor(time() / 30);
         }
         $base32 = new FixedBitNotation(5, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567', TRUE, TRUE);
