@@ -9,6 +9,8 @@ $this->pageTitle = Yii::app()->name.' - '.$title;
 ?>
 <h1><?php echo $title; ?></h1>
 
+<?php $this->displayFlashes(); ?>
+
 <div class="<?php echo $this->module->formCssClass; ?>">
 <?php $form=$this->beginWidget($this->module->formClass, array(
 	'id'=>'login-form',

@@ -8,13 +8,7 @@ $this->pageTitle = Yii::app()->name.' - '.$title;
 ?>
 <h1><?php echo $title; ?></h1>
 
-<?php if (($flashMessages = Yii::app()->user->getFlashes())): ?>
-<ul class="flashes">
-<?php foreach($flashMessages as $key => $message): ?>
-	<li><div class="<?php echo $this->module->alertCssClassPrefix.$key; ?>"><?php echo $message; ?></div></li>
-<?php endforeach; ?>
-</ul>
-<?php endif; ?>
+<?php $this->displayFlashes(); ?>
 
 <?php if ($this->module->registrationEnabled): ?>
 

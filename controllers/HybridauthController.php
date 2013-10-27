@@ -1,6 +1,6 @@
 <?php
 
-class HybridauthController extends CController
+class HybridauthController extends UsrController
 {
 	public function actionIndex()
 	{
@@ -89,7 +89,7 @@ class HybridauthController extends CController
 			return $localLogin;
 		}
 		$localLogin->setAttributes($_POST['LoginForm']);
-		if($localLogin->validate() && $localLogin->passwordIsFresh() && $localLogin->login()) {
+		if($localLogin->validate() && $localLogin->login()) {
 			// don't forget to associate the new profile with remote provider
 			if (!$remoteLogin->associate($localLogin->getIdentity()->getId())) {
 				Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to associate current user with {provider}.', array('{provider}'=>$remoteLogin->provider)));
@@ -151,34 +151,5 @@ class HybridauthController extends CController
 	{
 		require dirname(__FILE__) . '/../extensions/Hybrid/Endpoint.php';
 		Hybrid_Endpoint::process();
-	}
-
-	/**
-	 * Sends out an email containing instructions and link to the email verification
-	 * or password recovery page, containing an activation key.
-	 * @param CFormModel $model
-	 * @return boolean if sending the email succeeded
-	 */
-	protected function sendEmail(CFormModel $model)
-	{
-		$mail = $this->module->mailer;
-		$mail->AddAddress($model->getIdentity()->getEmail(), $model->getIdentity()->getName());
-		$mail->Subject = Yii::t('UsrModule.usr', 'Email address verification');
-		$params = array(
-			'siteUrl' => $this->createAbsoluteUrl('/'), 
-			'actionUrl' => $this->createAbsoluteUrl('default/verify', array(
-				'activationKey'=>$model->getIdentity()->getActivationKey(),
-				'username'=>$model->getIdentity()->getName(),
-			)),
-		);
-		$body = $this->renderPartial($mail->getPathViews().'.verify', $params, true);
-		$full = $this->renderPartial($mail->getPathLayouts().'.email', array('content'=>$body), true);
-		$mail->MsgHTML($full);
-		if ($mail->Send()) {
-			return true;
-		} else {
-			Yii::log($mail->ErrorInfo, 'error');
-			return false;
-		}
 	}
 }

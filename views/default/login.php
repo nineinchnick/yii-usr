@@ -9,6 +9,8 @@ $this->pageTitle = Yii::app()->name.' - '.$title;
 ?>
 <h1><?php echo $title; ?></h1>
 
+<?php $this->displayFlashes(); ?>
+
 <div class="<?php echo $this->module->formCssClass; ?>">
 <?php $form=$this->beginWidget($this->module->formClass, array(
 	'id'=>'login-form',
@@ -61,7 +63,17 @@ $this->pageTitle = Yii::app()->name.' - '.$title;
 <?php endif; ?>
 <?php if ($this->module->hybridauthEnabled()): ?>
 	<p>
-		<?php echo CHtml::link(Yii::t('UsrModule.usr', 'Sign in using one of your social sites account.'), array('hybridauth/login')); ?>
+		<?php //echo CHtml::link(Yii::t('UsrModule.usr', 'Sign in using one of your social sites account.'), array('hybridauth/login')); ?>
+		<ul>
+<?php Yii::app()->clientScript->registerCssFile(Yii::app()->getAssetManager()->publish(Yii::getPathOfAlias($this->module->id.'.components.assets.zocial')).'/zocial.css'); ?>
+<?php foreach ($this->module->hybridauthProviders as $provider => $settings): if(!$settings['enabled']) continue; ?>
+			<li>
+				<a class="zocial <?php echo strtolower($provider); ?>" href="<?php echo $this->createUrl('hybridauth/login', array('provider'=>$provider)); ?>">
+					<?php echo Yii::t('UsrModule.usr', 'Log in using {provider}', array('{provider}'=>$provider)); ?>
+				</a>
+			</li>
+<?php endforeach; ?>
+		</ul>
 	</p>
 <?php endif; ?>
 

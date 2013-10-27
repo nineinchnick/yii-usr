@@ -94,6 +94,11 @@
  */
 class UsrModule extends CWebModule
 {
+	const OTP_SECRET_PREFIX = 'UsrModule.oneTimePassword.';
+	const OTP_NONE = 'none';
+	const OTP_TIME = 'time';
+	const OTP_COUNTER = 'counter';
+
 	/**
 	 * @var boolean Is new user registration enabled.
 	 */
@@ -176,11 +181,30 @@ class UsrModule extends CWebModule
 	 */
 	public $dicewareExtraChar = false;
 	/**
-	 * @var array Available Hybridauth providers as array('enabled'=>true|false, 'keys'=>array('id'=>string, 'key'=>string, 'secret'=>string), 'scope'=>string)
+	 * @var array Available Hybridauth providers, indexed by name, defined as array('enabled'=>true|false, 'keys'=>array('id'=>string, 'key'=>string, 'secret'=>string), 'scope'=>string)
 	 * @see http://hybridauth.sourceforge.net/userguide.html
 	 */
 	public $hybridauthProviders = array();
+	/**
+	 * @var string If set to UsrModule::OTP_TIME or UsrModule::OTP_COUNTER, two step authentication is enabled using one time passwords.
+	 * Time mode uses codes generated using current time and requires the user to use an external application, like Google Authenticator on Android.
+	 * Counter mode uses codes generated using a sequence and sends them to user's email.
+	 */
+	public $oneTimePasswordMode = self::OTP_NONE;
+	/**
+	 * @var integer Number of seconds for how long is the last verified code valid.
+	 */
+	public $oneTimePasswordTimeout = -1;
+	/**
+	 * @var boolean Should the user be allowed to log in even if a secret hasn't been generated yet (is null).
+	 * This only makes sense when mode is 'counter', secrets are generated when registering users and a code is sent via email.
+	 */
+	public $oneTimePasswordRequired = false;
 
+	/**
+	 * @var GoogleAuthenticator set if $oneTimePasswordMode is not UsrModule::OTP_NONE
+	 */
+	protected $_googleAuthenticator;
 	/**
 	 * @var Hybrid_Auth set if $hybridauthProviders are not empty
 	 */
@@ -233,5 +257,14 @@ class UsrModule extends CWebModule
 	public function getHybridAuth()
 	{
 		return $this->_hybridauth;
+	}
+
+	public function getGoogleAuthenticator()
+	{
+		if ($this->_googleAuthenticator === null) {
+				require dirname(__FILE__) . '/extensions/GoogleAuthenticator.php/lib/GoogleAuthenticator.php';
+			$this->_googleAuthenticator = new GoogleAuthenticator;
+		}
+		return $this->_googleAuthenticator;
 	}
 }

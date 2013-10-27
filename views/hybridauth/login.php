@@ -1,35 +1,17 @@
 <?php /*
 @var $this HybridauthController */
 
-$title = Yii::t('UsrModule.usr', 'Log in');
+$title = Yii::t('UsrModule.usr', 'Log in using {provider}', array('{provider}'=>$remoteLogin->provider));
 if (isset($this->breadcrumbs))
 	$this->breadcrumbs=array($this->module->id, $title);
 $this->pageTitle = Yii::app()->name.' - '.$title;
 
-$assetsUrl = Yii::app()->getAssetManager()->publish(Yii::getPathOfAlias($this->module->id.'.components.assets.zocial'));
-Yii::app()->clientScript->registerCssFile($assetsUrl.'/zocial.css');
 ?>
-<h1><?php echo $title; ?></h1>
+<h1><?php echo CHtml::encode($title); ?></h1>
 
-<?php if (($flashMessages = Yii::app()->user->getFlashes())): ?>
-<ul class="flashes">
-<?php foreach($flashMessages as $key => $message): ?>
-	<li><div class="<?php echo $this->module->alertCssClassPrefix.$key; ?>"><?php echo $message; ?></div></li>
-<?php endforeach; ?>
-</ul>
-<?php endif; ?>
-
+<?php $this->displayFlashes(); ?>
 
 <div class="<?php echo $this->module->formCssClass; ?>">
-	<ul>
-<?php foreach ($this->module->hybridauthProviders as $provider => $settings): if(!$settings['enabled']) continue; ?>
-		<li>
-			<a class="zocial <?php echo strtolower($provider); ?>" href="<?php echo $this->createUrl('login', array('provider'=>$provider)); ?>">
-				<?php echo Yii::t('UsrModule.usr', 'Log in using {provider}.', array('{provider}'=>$provider)); ?>
-			</a>
-		</li>
-<?php endforeach; ?>
-	</ul>
 <?php $form=$this->beginWidget($this->module->formClass, array(
 	'id'=>'remoteLogin-form',
 	'action'=>array($this->action->id),

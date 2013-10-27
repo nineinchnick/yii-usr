@@ -1,6 +1,6 @@
 <?php
 
-class DefaultController extends CController
+class DefaultController extends UsrController
 {
 	public function actionIndex()
 	{
@@ -26,7 +26,7 @@ class DefaultController extends CController
 		if (!Yii::app()->user->isGuest)
 			$this->redirect(Yii::app()->user->returnUrl);
 
-		$model=new LoginForm;
+		$model = new LoginForm;
 
 		if(isset($_POST['ajax']) && $_POST['ajax']==='login-form') {
 			echo CActiveForm::validate($model);
@@ -35,7 +35,7 @@ class DefaultController extends CController
 
 		if(isset($_POST['LoginForm'])) {
 			$model->setAttributes($_POST['LoginForm']);
-			if($model->validate() && $model->passwordIsFresh() && $model->login()) {
+			if($model->validate() && $model->login()) {
 				$this->afterLogin();
 			}
 		}
@@ -47,7 +47,7 @@ class DefaultController extends CController
 		if (!Yii::app()->user->isGuest)
 			$this->redirect(Yii::app()->user->returnUrl);
 
-		$model=new LoginForm;
+		$model = new LoginForm;
 		$model->scenario = 'reset';
 
 		if(isset($_POST['ajax']) && $_POST['ajax']==='login-form') {
@@ -83,7 +83,7 @@ class DefaultController extends CController
 		if (!Yii::app()->user->isGuest)
 			$this->redirect(Yii::app()->user->returnUrl);
 
-		$model=new RecoveryForm;
+		$model = new RecoveryForm;
 
 		if(isset($_POST['ajax']) && $_POST['ajax']==='recovery-form') {
 			echo CActiveForm::validate($model);
@@ -121,7 +121,7 @@ class DefaultController extends CController
 
 	public function actionVerify()
 	{
-		$model=new RecoveryForm;
+		$model = new RecoveryForm;
 		$model->scenario = 'verify';
 		if (!isset($_GET['activationKey'])) {
 			throw new CHttpException(400,Yii::t('UsrModule.usr', 'Activation key is missing.'));
@@ -143,7 +143,7 @@ class DefaultController extends CController
 		if (!Yii::app()->user->isGuest)
 			$this->redirect(array('profile'));
 
-		$model=new ProfileForm;
+		$model = new ProfileForm;
 		$model->scenario = 'register';
 
 		if(isset($_POST['ajax']) && $_POST['ajax']==='profile-form') {
@@ -217,44 +217,95 @@ class DefaultController extends CController
 		}
 	}
 
+	protected function displayOneTimePasswordSecret()
+	{
+		$model = new OneTimePasswordForm;
+		$identity = $model->getIdentity();
+		$secret = $identity->getOneTimePasswordSecret();
+		/*
+		if ($secret === null && $this->module->oneTimePasswordRequired) {
+			$googleAuthenticator = $this->module->googleAuthenticator;
+			$secret = $googleAuthenticator->generateSecret();
+			$identity->setOneTimePasswordSecret($secret);
+		}
+		$hostInfo = Yii::app()->request->hostInfo;
+		$url = $model->getUrl($identity->username, parse_url($hostInfo, PHP_URL_HOST), $secret);
+		 */
+		if ($secret === null) {
+			$label = CHtml::link(Yii::t('UsrModule.usr', 'Enable'), array('toggleOneTimePassword'));
+		} else {
+			$label = CHtml::link(Yii::t('UsrModule.usr', 'Disable'), array('toggleOneTimePassword'));
+			/*if ($this->module->oneTimePasswordMode === UsrModule::OTP_TIME) {
+				$label .= '<br/>'.CHtml::image($url, Yii::t('UsrModule.usr', 'One Time Password Secret'));
+			}*/
+		}
+		return $label;
+	}
+
+	public function actionToggleOneTimePassword()
+	{
+		if (Yii::app()->user->isGuest)
+			$this->redirect(array('login'));
+		if ($this->module->oneTimePasswordRequired)
+			$this->redirect(array('profile'));
+
+		$model = new OneTimePasswordForm;
+		$identity = $model->getIdentity();
+
+		if ($identity->getOneTimePasswordSecret() !== null) {
+			$identity->setOneTimePasswordSecret(null);
+			$this->redirect('profile');
+			return;
+		}
+
+		$googleAuthenticator = $this->module->googleAuthenticator;
+		list($previousCode, $previousCounter) = $identity->getOneTimePassword();
+		$model->setMode($this->module->oneTimePasswordMode)
+			->setAuthenticator($googleAuthenticator)
+			->setPreviousCode($previousCode)
+			->setPreviousCounter($previousCounter);
+
+		// generate a secret and save it in session if it hasn't been done yet
+		if (($secret=Yii::app()->session[UsrModule::OTP_SECRET_PREFIX.'newSecret']) === null) {
+			$secret = Yii::app()->session[UsrModule::OTP_SECRET_PREFIX.'newSecret'] = $googleAuthenticator->generateSecret();
+
+			$model->setSecret($secret);
+			if ($this->module->oneTimePasswordMode === UsrModule::OTP_COUNTER) {
+				$this->sendEmail($model, 'oneTimePassword');
+			}
+		}
+
+		$model->setSecret($secret);
+
+		if (isset($_POST['OneTimePasswordForm'])) {
+			$model->setAttributes($_POST['OneTimePasswordForm']);
+			if ($model->validate()) {
+				// save secret
+				$identity->setOneTimePasswordSecret($secret);
+				Yii::app()->session[UsrModule::OTP_SECRET_PREFIX.'newSecret'] = null;
+				// save current code as used
+				$identity->setOneTimePassword($model->code, $this->module->oneTimePasswordMode === UsrModule::OTP_TIME ? floor(time() / 30) : $previousCounter + 1);
+				$this->redirect('profile');
+			}
+		}
+		if (YII_DEBUG) {
+			$model->code = $googleAuthenticator->getCode($secret, $this->module->oneTimePasswordMode === UsrModule::OTP_TIME ? null : $previousCounter);
+		}
+
+		if ($this->module->oneTimePasswordMode === UsrModule::OTP_TIME) {
+			$hostInfo = Yii::app()->request->hostInfo;
+			$url = $model->getUrl($identity->username, parse_url($hostInfo, PHP_URL_HOST), $secret);
+		} else {
+			$url = '';
+		}
+
+		$this->render('generateOTPSecret', array('model'=>$model, 'url'=>$url));
+	}
+
 	public function actionPassword()
 	{
 		$diceware = new Diceware;
 		$password = $diceware->get_phrase($this->module->dicewareLength, $this->module->dicewareExtraDigit, $this->module->dicewareExtraChar);
 		echo json_encode($password);
-	}
-
-	/**
-	 * Sends out an email containing instructions and link to the email verification
-	 * or password recovery page, containing an activation key.
-	 * @param CFormModel $model
-	 * @param strign $mode 'recovery' or 'verify'
-	 * @return boolean if sending the email succeeded
-	 */
-	protected function sendEmail(CFormModel $model, $mode)
-	{
-		$mail = $this->module->mailer;
-		$mail->AddAddress($model->getIdentity()->getEmail(), $model->getIdentity()->getName());
-		if ($mode == 'recovery') {
-			$mail->Subject = Yii::t('UsrModule.usr', 'Password recovery');
-		} else {
-			$mail->Subject = Yii::t('UsrModule.usr', 'Email address verification');
-		}
-		$params = array(
-			'siteUrl' => $this->createAbsoluteUrl('/'), 
-			'actionUrl' => $this->createAbsoluteUrl('default/'.$mode, array(
-				'activationKey'=>$model->getIdentity()->getActivationKey(),
-				'username'=>$model->getIdentity()->getName(),
-			)),
-		);
-		$body = $this->renderPartial($mail->getPathViews().'.'.$mode, $params, true);
-		$full = $this->renderPartial($mail->getPathLayouts().'.email', array('content'=>$body), true);
-		$mail->MsgHTML($full);
-		if ($mail->Send()) {
-			return true;
-		} else {
-			Yii::log($mail->ErrorInfo, 'error');
-			return false;
-		}
 	}
 }

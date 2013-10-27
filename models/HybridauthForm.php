@@ -22,7 +22,8 @@ class HybridauthForm extends CFormModel
 	{
 		return array(
 			array('provider, openid_identifier', 'filter', 'filter'=>'trim'),
-			array('provider', 'filter', 'filter'=>'strtolower'),
+			// can't filter this because it's displayed to the user
+			//array('provider', 'filter', 'filter'=>'strtolower'),
 			array('provider', 'required'),
 			array('provider', 'validProvider'),
 			array('openid_identifier', 'required', 'on'=>'openid'),
@@ -31,7 +32,7 @@ class HybridauthForm extends CFormModel
 
 	public function validProvider($attribute, $params)
 	{
-		$provider = $this->$attribute;
+		$provider = strtolower($this->$attribute);
 		return isset($this->_validProviders[$provider]) && $this->_validProviders[$provider];
 	}
 
@@ -76,7 +77,7 @@ class HybridauthForm extends CFormModel
 
 	public function requiresFilling()
 	{
-		if ($this->provider == 'openid' && empty($this->openid_identifier))
+		if (strtolower($this->provider) == 'openid' && empty($this->openid_identifier))
 			return true;
 
 		return false;
@@ -96,11 +97,11 @@ class HybridauthForm extends CFormModel
 
 		$params = $this->getAttributes();
 		unset($params['provider']);
-		$this->_hybridAuthAdapter = $this->_hybridAuth->authenticate($this->provider, $params);
+		$this->_hybridAuthAdapter = $this->_hybridAuth->authenticate(strtolower($this->provider), $params);
 
 		if ($this->_hybridAuthAdapter->isUserConnected()) {
 			$profile = $this->_hybridAuthAdapter->getUserProfile();
-			if (($this->_identity=$userIdentityClass::findByProvider($this->provider, $profile->identifier)) !== null) {
+			if (($this->_identity=$userIdentityClass::findByProvider(strtolower($this->provider), $profile->identifier)) !== null) {
 				return Yii::app()->user->login($this->_identity,0);
 			}
 		}
@@ -115,6 +116,6 @@ class HybridauthForm extends CFormModel
 			throw new CException(Yii::t('UsrModule.usr','The {class} class must implement the {interface} interface.',array('{class}'=>get_class($identity),'{interface}'=>'IHybridauthIdentity')));
 		$identity->setId($user_id);
 		$profile = $this->_hybridAuthAdapter->getUserProfile();
-		return $identity->addRemoteIdentity($this->provider, $profile->identifier);
+		return $identity->addRemoteIdentity(strtolower($this->provider), $profile->identifier);
 	}
 }
