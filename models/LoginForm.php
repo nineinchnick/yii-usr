@@ -27,7 +27,7 @@ class LoginForm extends CFormModel
 			array('username, password', 'required'),
 			array('rememberMe', 'boolean'),
 			array('password', 'authenticate'),
-			array('password', 'passwordIsFresh', 'except'=>'reset'),
+			array('password', 'passwordIsFresh', 'except'=>'reset, hybridauth'),
 
 			array('newPassword, newVerify', 'filter', 'filter'=>'trim', 'on'=>'reset'),
 			array('newPassword, newVerify', 'required', 'on'=>'reset'),

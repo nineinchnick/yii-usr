@@ -26,7 +26,7 @@ class HybridauthController extends UsrController
 		if ($provider!==null)
 			$_POST['HybridauthForm']['provider'] = $provider;
 		$remoteLogin = new HybridauthForm;
-		$localLogin = new LoginForm;
+		$localLogin = new LoginForm('hybridauth');
 		$localProfile = new ProfileForm('registerWithoutPassword');
 
 		if(isset($_POST['ajax'])) {
