@@ -17,7 +17,8 @@ Key differences from yii-user:
 * use good password hashing
 * no need to modify current tables and models
 * bundled mailer class
-* all basic features
+* built-in Hybridauth for logging using social site identities
+* built-in Google Authenticator for two step authentication using one time passwords
 
 Currently, there is no admin user managment provided and it is not planned. The reason for this is that the CRUDs vary much in every project and it should not be time-expensive to create another one for users utilizing interfaces implemented in UserIdentity for this module.
 Actions provided by this module does not require any more authorization than checking if a user is logged in. An admin interface on the other hand requires to define auth items to check for access.
@@ -79,11 +80,21 @@ Remember to invalidate the email if it changes in the save() method from the Edi
 
 This interface allows password reset with optional tracking of used passwords. This allows to detect expired passwords and avoid reusing old passwords by users.
 
+## Hybridauth
+
+This interface allows finding local identity associated with a remote one (from an external social site) and creating such associations.
+
+## One Time Password
+
+This interface allow saving and retrieving a secret used to generate one time passwords. Also, last used password and counter used to generate last password are saved and retrieve to protect against reply attacks.
+
 # User model example
 
 A sample UserIdentity and corresponding User and UsedPassword classes along with database schema and migrations are provided respectively in the 'components', 'models', 'data' and 'migrations' folders.
 
 They could be used as-is or modified to better suit a project.
+
+If you want to use the provided migrations it's best to copy them to your migrations directory and adjust the filenames and classnames to current date and time. Also, you could modify them to remove features you don't need and don't plan to use.
 
 # Diceware aka password generator
 
@@ -151,6 +162,5 @@ MIT or BSD
 # Todo
 
 * finish profile view/update
-* add example schema and migrations
 * finish docs, especially about implementing interfaces, using example User model and customizing templates
 * write unit tests
