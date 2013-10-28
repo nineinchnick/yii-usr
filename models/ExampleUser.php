@@ -1,10 +1,9 @@
 <?php
 
 /**
- * This is the model class for the table "{{user}}".
+ * This is the model class for table "{{user}}".
  *
- * Columns in table "{{user}}" available as properties of the model.
- *
+ * The followings are the available columns in table '{{user}}':
  * @property integer $id
  * @property string $username
  * @property string $password
@@ -19,6 +18,12 @@
  * @property boolean $email_verified
  * @property boolean $is_active
  * @property boolean $is_disabled
+ * @property string $one_time_password_secret
+ * @property string $one_time_password_code
+ * @property integer $one_time_password_counter
+ *
+ * The followings are the available model relations:
+ * @property UserRemoteIdentity[] $userRemoteIdentities
  */
 abstract class ExampleUser extends CActiveRecord
 {
@@ -67,6 +72,9 @@ abstract class ExampleUser extends CActiveRecord
 			'email_verified' => Yii::t('models', 'Email Verified'),
 			'is_active' => Yii::t('models', 'Is Active'),
 			'is_disabled' => Yii::t('models', 'Is Disabled'),
+			'one_time_password_secret' => 'One Time Password Secret',
+			'one_time_password_code' => 'One Time Password Code',
+			'one_time_password_counter' => 'One Time Password Counter',
 		);
 	}
 
@@ -100,7 +108,7 @@ abstract class ExampleUser extends CActiveRecord
 
 	/**
 	 * @param string $className active record class name.
-	 * @return UserRemoteIdentity the static model class
+	 * @return User the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{

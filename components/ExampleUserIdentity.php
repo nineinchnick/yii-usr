@@ -7,7 +7,7 @@ Yii::import('usr.components.*');
  * It contains the authentication method that checks if the provided
  * data can identity the user.
  */
-abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHistoryIdentity,IActivatedIdentity,IEditableIdentity,IHybridauthIdentity
+abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHistoryIdentity,IActivatedIdentity,IEditableIdentity,IHybridauthIdentity,IOneTimePasswordIdentity
 {
 	public $email = null;
 	public $firstName = null;
@@ -216,5 +216,51 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 			'firstName' => $this->firstName,
 			'lastName' => $this->lastName,
 		);
+	}
+
+	public function getOneTimePasswordSecret()
+	{
+		if ($this->_id===null)
+			return false;
+		if (($record=User::model()->findByPk($this->_id))!==null) {
+			return $record->one_time_password_secret;
+		}
+		return false;
+	}
+
+	public function setOneTimePasswordSecret($secret)
+	{
+		if ($this->_id===null)
+			return false;
+		if (($record=User::model()->findByPk($this->_id))!==null) {
+			return $record->saveAttributes(array('one_time_password_secret' => $secret));
+		}
+		return false;
+	}
+
+	public function getOneTimePassword()
+	{
+		if ($this->_id===null)
+			return array(null, null);
+		if (($record=User::model()->findByPk($this->_id))!==null) {
+			return array(
+				$record->one_time_password_code,
+				$record->one_time_password_counter,
+			);
+		}
+		return array(null, null);
+	}
+
+	public function setOneTimePassword($password, $counter = 0)
+	{
+		if ($this->_id===null)
+			return false;
+		if (($record=User::model()->findByPk($this->_id))!==null) {
+			return $record->saveAttributes(array(
+				'one_time_password_code' => $password,
+				'one_time_password_counter' => $counter,
+			));
+		}
+		return false;
 	}
 }

@@ -246,7 +246,9 @@ class LoginForm extends CFormModel
 		if (empty($this->$attribute)) {
 			$this->addError($attribute,Yii::t('UsrModule.usr','Enter a valid one time password.'));
 			$this->scenario = 'verifyOTP';
-			Yii::app()->controller->sendEmail($this, 'oneTimePassword');
+			if ($mode === UsrModule::OTP_COUNTER) {
+				Yii::app()->controller->sendEmail($this, 'oneTimePassword');
+			}
 			if (YII_DEBUG) {
 				$this->oneTimePassword = $authenticator->getCode($secret, $mode === UsrModule::OTP_TIME ? null : $previousCounter);
 			}
