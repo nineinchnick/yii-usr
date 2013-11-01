@@ -11,6 +11,7 @@ class RecoveryForm extends CFormModel {
 	public $activationKey;
 	public $newPassword;
 	public $newVerify;
+	public $verifyCode;
 
 	private $_identity;
 
@@ -34,6 +35,8 @@ class RecoveryForm extends CFormModel {
 			array('newPassword', 'length', 'min' => 8, 'message' => Yii::t('UsrModule.usr', 'New password must contain at least 8 characters.'), 'on'=>'reset'),
 			array('newPassword', 'match', 'pattern' => '/^.*(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/', 'message'	=> Yii::t('UsrModule.usr', 'New password must contain at least one lower and upper case character and a digit.'), 'on'=>'reset'),
 			array('newVerify', 'compare', 'compareAttribute'=>'newPassword', 'message' => Yii::t('UsrModule.usr', 'Please type the same new password twice to verify it.'), 'on'=>'reset'),
+
+			array('verifyCode', 'captcha', 'except'=>'reset,verify', 'allowEmpty'=>Yii::app()->controller->module->captcha === null),
 		);
 	}
 
@@ -47,6 +50,7 @@ class RecoveryForm extends CFormModel {
 			'activationKey'	=> Yii::t('UsrModule.usr','Activation Key'),
 			'newPassword'	=> Yii::t('UsrModule.usr','New password'),
 			'newVerify'		=> Yii::t('UsrModule.usr','Verify'),
+			'verifyCode'	=> Yii::t('UsrModule.usr','Verification code'),
 		);
 	}
 

@@ -2,6 +2,19 @@
 
 class DefaultController extends UsrController
 {
+	public function actions()
+	{
+		$actions = array();
+		if ($this->module->captcha !== null) {
+			// captcha action renders the CAPTCHA image displayed on the register and recovery page
+			$actions['captcha'] = array(
+				'class'=>'CCaptchaAction',
+				'backColor'=>0xFFFFFF,
+			);
+		}
+		return $actions;
+	}
+
 	public function actionIndex()
 	{
 		$this->render('index');

@@ -203,6 +203,11 @@ class UsrModule extends CWebModule
 	public $oneTimePasswordRequired = false;
 
 	/**
+	 * @var array If not null, CAPTCHA will be enabled on the registration and recovery form and this will be passed as arguments to the CCaptcha widget.
+	 */
+	public $captcha;
+
+	/**
 	 * @var GoogleAuthenticator set if $oneTimePasswordMode is not UsrModule::OTP_NONE
 	 */
 	protected $_googleAuthenticator;

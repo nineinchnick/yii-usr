@@ -13,6 +13,7 @@ class ProfileForm extends CFormModel
 	public $newVerify;
 	public $firstName;
 	public $lastName;
+	public $verifyCode;
 
 	private $_identity;
 
@@ -33,6 +34,8 @@ class ProfileForm extends CFormModel
 			array('newPassword', 'length', 'min' => 8, 'message' => Yii::t('UsrModule.usr', 'New password must contain at least 8 characters.')),
 			array('newPassword', 'match', 'pattern' => '/^.*(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/', 'message'	=> Yii::t('UsrModule.usr', 'New password must contain at least one lower and upper case character and a digit.')),
 			array('newVerify', 'compare', 'compareAttribute'=>'newPassword', 'message' => Yii::t('UsrModule.usr', 'Please type the same new password twice to verify it.')),
+
+			array('verifyCode', 'captcha', 'on'=>'register', 'allowEmpty'=>Yii::app()->controller->module->captcha === null),
 		);
 	}
 
@@ -48,6 +51,7 @@ class ProfileForm extends CFormModel
 			'newVerify'		=> Yii::t('UsrModule.usr','Verify'),
 			'firstName'		=> Yii::t('UsrModule.usr','First name'),
 			'lastName'		=> Yii::t('UsrModule.usr','Last name'),
+			'verifyCode'	=> Yii::t('UsrModule.usr','Verification code'),
 		);
 	}
 
