@@ -33,7 +33,7 @@ class LoginForm extends CFormModel
 	 */
 	public function rules()
 	{
-		return array(
+		$rules = array(
 			array('username, password', 'filter', 'filter'=>'trim'),
 			array('username, password', 'required'),
 			array('rememberMe', 'boolean'),
@@ -48,12 +48,16 @@ class LoginForm extends CFormModel
 			array('newVerify', 'compare', 'compareAttribute'=>'newPassword', 'message' => Yii::t('UsrModule.usr', 'Please type the same new password twice to verify it.'), 'on'=>'reset'),
 			array('newPassword', 'compare', 'compareAttribute'=>'password', 'operator' => '!=', 'message' => Yii::t('UsrModule.usr', 'New password must be different than the old one.'), 'on'=>'reset'),
 			array('newPassword', 'resetPassword', 'on'=>'reset'),
-
-			array('oneTimePassword', 'filter', 'filter'=>'trim', 'on'=>'verifyOTP'),
-			array('oneTimePassword', 'default', 'setOnEmpty'=>true, 'value' => null, 'on'=>'verifyOTP'),
-			array('oneTimePassword', 'required', 'on'=>'verifyOTP'),
-			array('oneTimePassword', 'validOneTimePassword', 'except'=>'hybridauth'),
 		);
+		if (Yii::app()->controller->module->oneTimePasswordMode != UsrModule::OTP_NONE) {
+			$rules = array_merge($rules, array(
+				array('oneTimePassword', 'filter', 'filter'=>'trim', 'on'=>'verifyOTP'),
+				array('oneTimePassword', 'default', 'setOnEmpty'=>true, 'value' => null, 'on'=>'verifyOTP'),
+				array('oneTimePassword', 'required', 'on'=>'verifyOTP'),
+				array('oneTimePassword', 'validOneTimePassword', 'except'=>'hybridauth'),
+			));
+		}
+		return $rules;
 	}
 
 	/**
@@ -84,6 +88,8 @@ class LoginForm extends CFormModel
 	{
 		$module = Yii::app()->controller->module;
 		$identity = $this->getIdentity();
+		if (!($identity instanceof IOneTimePasswordIdentity))
+			throw new CException(Yii::t('UsrModule.usr','The {class} class must implement the {interface} interface.',array('{class}'=>get_class($identity),'{interface}'=>'IOneTimePasswordIdentity')));
 		list($previousCode, $previousCounter) = $identity->getOneTimePassword();
 		$this->setOneTimePasswordConfig(array(
 			'authenticator' => $module->googleAuthenticator,
@@ -144,7 +150,7 @@ class LoginForm extends CFormModel
 
 		$identity = $this->getIdentity();
 		if (!($identity instanceof IPasswordHistoryIdentity))
-			throw new CException(Yii::t('UsrModule.usr','The {class} class must implement the {interface} interface.',array('{class}'=>get_class($identity),'{interface}'=>'IPasswordHistoryIdentity')));
+			return true;
 		if (($lastUsed = $identity->getPasswordDate($this->newPassword)) !== null) {
 			$this->addError('password',Yii::t('UsrModule.usr','New password has been already used on {date}.'), array('{date}'=>$lastUsed));
 			return false;

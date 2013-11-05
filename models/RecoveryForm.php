@@ -125,7 +125,7 @@ class RecoveryForm extends CFormModel {
 
 		$identity = $this->getIdentity();
 		if (!($identity instanceof IPasswordHistoryIdentity))
-			throw new CException(Yii::t('UsrModule.usr','The {class} class must implement the {interface} interface.',array('{class}'=>get_class($identity),'{interface}'=>'IPasswordHistoryIdentity')));
+			return true;
 		if (($lastUsed = $identity->getPasswordDate($this->newPassword)) !== null) {
 			$this->addError('password',Yii::t('UsrModule.usr','New password has been already used on {date}.'), array('{date}'=>$lastUsed));
 			return false;
