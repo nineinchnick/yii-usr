@@ -104,7 +104,7 @@ class DefaultController extends UsrController
 					}
 				} else {
 					$model->getIdentity()->verifyEmail();
-					if ($model->login()) {
+					if ($model->resetPassword() && $model->login()) {
 						$this->afterLogin();
 					} else {
 						Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to change password or log in using new password.'));
