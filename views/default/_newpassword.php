@@ -6,7 +6,7 @@
 		<p><a id="Users_generatePassword" href="#"><?php echo Yii::t('UsrModule.usr', 'Generate a password'); ?></a></p>
 <?php
 $diceUrl = $this->createUrl('password');
-$diceLabel = Yii::t('UsrModule.usr', 'Use this passowrd?\nTo copy it to the clipboard press Ctrl+C.');
+$diceLabel = Yii::t('UsrModule.usr', 'Use this password?\nTo copy it to the clipboard press Ctrl+C.');
 $passwordId = CHtml::activeId($model, 'newPassword');
 $verifyId = CHtml::activeId($model, 'newVerify');
 $script = <<<JavaScript

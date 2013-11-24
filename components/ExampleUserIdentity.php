@@ -29,7 +29,7 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 		} else {
 			$this->errorCode=self::ERROR_USERNAME_INVALID;
 		}
-		return !$this->errorCode;
+		return $this->getIsAuthenticated();
 	}
 	
 	public function setId($id)
@@ -44,10 +44,16 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 
 	public function getPasswordDate($password = null)
 	{
-		if ($this->_id===null || $password !== null)
+		if ($this->_id === null || ($record=User::model()->findByPk($this->_id)) === null)
 			return null;
-		if (($record=User::model()->findByPk($this->_id))!==null) {
+
+		if ($password === null) {
 			return $record->password_set_on;
+		} else {
+			foreach($record->userUsedPasswords as $usedPassword) {
+				if ($usedPassword->verifyPassword($password))
+					return $usedPassword->set_on;
+			}
 		}
 		return null;
 	}
@@ -57,9 +63,14 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 		if ($this->_id===null)
 			return false;
 		if (($record=User::model()->findByPk($this->_id))!==null) {
-			//! @todo update password change column and password history table
-			return $record->saveAttributes(array(
-				'password'=>User::hashPassword($password),
+			$hashedPassword = User::hashPassword($password);
+			$usedPassword = new UserUsedPassword;
+			$usedPassword->setAttributes(array(
+				'password'=>$hashedPassword,
+				'set_on'=>date('Y-m-d H:i:s'),
+			));
+			return $usedPassword->save() && $record->saveAttributes(array(
+				'password'=>$hashedPassword,
 				'password_set_on'=>date('Y-m-d H:i:s'),
 			));
 		}

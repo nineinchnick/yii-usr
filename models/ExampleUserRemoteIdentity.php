@@ -1,9 +1,9 @@
 <?php
 
 /**
- * This is the model class for table "{{user_remote_identity}}".
+ * This is the model class for table "{{user_remote_identities}}".
  *
- * The followings are the available columns in table '{{user_remote_identity}}':
+ * The followings are the available columns in table '{{user_remote_identities}}':
  * @property integer $id
  * @property integer $user_id
  * @property string $provider
@@ -21,7 +21,7 @@ abstract class ExampleUserRemoteIdentity extends CActiveRecord
 	 */
 	public function tableName()
 	{
-		return '{{user_remote_identity}}';
+		return '{{user_remote_identities}}';
 	}
 
 	/**

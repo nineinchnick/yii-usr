@@ -90,11 +90,11 @@ This interface allow saving and retrieving a secret used to generate one time pa
 
 # User model example
 
-A sample UserIdentity and corresponding User and UsedPassword classes along with database schema and migrations are provided respectively in the 'components', 'models', 'data' and 'migrations' folders.
+A sample ExampleUserIdentity and corresponding ExampleUser and ExampleUserUsedPassword models along with database migrations are provided respectively in the 'components', 'models' and 'migrations' folders.
 
-They could be used as-is or modified to better suit a project.
+They could be used as-is by extending from or copying to be modified to better suit a project.
 
-If you want to use the provided migrations it's best to copy them to your migrations directory and adjust the filenames and classnames to current date and time. Also, you could modify them to remove features you don't need and don't plan to use.
+To use the provided migrations it's best to copy them to your migrations directory and adjust the filenames and classnames to current date and time. Also, they could be modified to remove not needed features.
 
 # Diceware aka password generator
 
@@ -149,6 +149,10 @@ If using the [bootstrap extension](http://www.yiiframework.com/extension/bootstr
 		'formCssClass'=>'form well',
 		'alertCssClassPrefix'=>'alert alert-',
 		'submitButtonCssClass'=>'btn btn-primary',
+		'htmlCss' => array(
+			'errorSummaryCss' => 'alert alert-error',
+			'errorMessageCss' => 'text-error',
+		),
 		// mail
 		...mail config...
 	),

@@ -1,10 +1,10 @@
 <?php
 
-class m130701_104658_create_table_user extends CDbMigration
+class m130701_104658_create_table_users extends CDbMigration
 {
 	public function safeUp()
 	{
-		$this->createTable('{{user}}', array(
+		$this->createTable('{{users}}', array(
 			'id'=>'pk',
 			'username'=>'string NOT NULL',
 			'password'=>'string NOT NULL',
@@ -20,15 +20,15 @@ class m130701_104658_create_table_user extends CDbMigration
 			'is_active'=>'boolean NOT NULL DEFAULT FALSE',
 			'is_disabled'=>'boolean NOT NULL DEFAULT FALSE',
 		));
-		$this->createIndex('{{user}}_username_idx', '{{user}}', 'username', true);
-		$this->createIndex('{{user}}_email_idx', '{{user}}', 'email', true);
-		$this->createIndex('{{user}}_email_verified_idx', '{{user}}', 'email_verified');
-		$this->createIndex('{{user}}_is_active_idx', '{{user}}', 'is_active');
-		$this->createIndex('{{user}}_is_disabled_idx', '{{user}}', 'is_disabled');
+		$this->createIndex('{{users}}_username_idx', '{{users}}', 'username', true);
+		$this->createIndex('{{users}}_email_idx', '{{users}}', 'email', true);
+		$this->createIndex('{{users}}_email_verified_idx', '{{users}}', 'email_verified');
+		$this->createIndex('{{users}}_is_active_idx', '{{users}}', 'is_active');
+		$this->createIndex('{{users}}_is_disabled_idx', '{{users}}', 'is_disabled');
 	}
 
 	public function safeDown()
 	{
-		$this->dropTable('{{user}}');
+		$this->dropTable('{{users}}');
 	}
 }

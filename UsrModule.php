@@ -8,12 +8,14 @@
  * * logging in and out
  * * checking if user email has been confirmed (or account activated)
  * * registration
+ * * updating profile data
  * * account activation via email
  * * password recovery via email
  * * updating password
  * * force old password reset
- * * (todo) measuring password strength
- * * (todo) forbidding reusing old passwords
+ * * forbidding reusing old passwords
+ * * two step authentication using one time passwords
+ * * log in using social sites credentials
  *
  * Usr module does not provide user managment. It's not aware of data structures holding user information
  * and only requires the user identity to implement some interfaces.
@@ -122,6 +124,12 @@ class UsrModule extends CWebModule
 	 */
 	public $passwordTimeout;
 	/**
+	 * @var array Set of rules to measure the password strength when choosing new password in the registration or recovery forms.
+	 * If null, defaults to minimum 8 characters and at least one of each: lower and upper case character and a digit.
+	 * @see BasePasswordForm
+	 */
+	public $passwordStrengthRules;
+	/**
 	 * @var string Class name of user identity object used to authenticate user.
 	 * Must implement the IPasswordHistoryIdentity interface if passwordTimeout is set.
 	 */
@@ -138,6 +146,10 @@ class UsrModule extends CWebModule
 	 * @var string CSS class for html forms.
 	 */
 	public $formCssClass = 'form';
+	/**
+	 * @var array static properties of CHtml class, such as errorSummaryCss and errorMessageCss.
+	 */
+	public $htmlCss;
 	/**
 	 * @var string CSS class prefix for flash messages. Set to 'alert alert-' if using Twitter Bootstrap.
 	 */
@@ -216,6 +228,11 @@ class UsrModule extends CWebModule
 	 */
 	protected $_hybridauth;
 
+	public function getVersion()
+	{
+		return '0.9.8';
+	}
+
 	public function init()
 	{
 		parent::init();
@@ -230,6 +247,11 @@ class UsrModule extends CWebModule
 				'pathLayouts' => 'usr.views.layouts',
 			),
 		), false);
+		if (is_array($this->htmlCss)) {
+			foreach($this->htmlCss as $name=>$value) {
+				CHtml::$$name = $value;
+			}
+		}
 		$mailerConfig = array_merge(array(
 			'IsHTML' => array(true),
 			'CharSet' => 'UTF-8',

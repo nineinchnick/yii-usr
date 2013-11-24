@@ -69,7 +69,7 @@ return array(
     'Username' => 'Username',
     'Username or password recovery' => 'Username oder Passwort vergessen ?',
     'User profile' => 'User Profil',
-    'Use this passowrd?\nTo copy it to the clipboard press Ctrl+C.' => 'Möchten Sie dieses Passwort verwenden dann drücken Sie bitte Ctrl+C / Cmd+C.',
+    'Use this password?\nTo copy it to the clipboard press Ctrl+C.' => 'Möchten Sie dieses Passwort verwenden dann drücken Sie bitte Ctrl+C / Cmd+C.',
     'Your email address has been successfully verified.' => 'Ihre E-Mail Adresse wurde überprüft.',
     'Verify' => 'Überprüfen',
     'update' => 'aktualisieren',

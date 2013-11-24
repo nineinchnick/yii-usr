@@ -5,13 +5,11 @@
  * RecoveryForm is the data structure for keeping
  * password recovery form data. It is used by the 'recovery' action of 'DefaultController'.
  */
-class RecoveryForm extends CFormModel {
+class RecoveryForm extends BasePasswordForm
+{
 	public $username;
 	public $email;
 	public $activationKey;
-	public $newPassword;
-	public $newVerify;
-	public $verifyCode;
 
 	private $_identity;
 
@@ -21,7 +19,7 @@ class RecoveryForm extends CFormModel {
 	 * and password needs to be authenticated.
 	 */
 	public function rules() {
-		return array(
+		$rules = array_merge($this->getBehaviorRules(), array(
 			array('username, email', 'filter', 'filter'=>'trim'),
 			array('username, email', 'default', 'setOnEmpty'=>true, 'value' => null),
 			array('username, email', 'existingIdentity'),
@@ -29,29 +27,34 @@ class RecoveryForm extends CFormModel {
 			array('activationKey', 'filter', 'filter'=>'trim', 'on'=>'reset,verify'),
 			array('activationKey', 'default', 'setOnEmpty'=>true, 'value' => null, 'on'=>'reset,verify'),
 			array('activationKey', 'required', 'on'=>'reset,verify'),
-			array('newPassword, newVerify', 'required', 'on'=>'reset'),
 			array('activationKey', 'validActivationKey', 'on'=>'reset,verify'),
-			array('newPassword', 'unusedNewPassword', 'on'=>'reset'),
-			array('newPassword', 'length', 'min' => 8, 'message' => Yii::t('UsrModule.usr', 'New password must contain at least 8 characters.'), 'on'=>'reset'),
-			array('newPassword', 'match', 'pattern' => '/^.*(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/', 'message'	=> Yii::t('UsrModule.usr', 'New password must contain at least one lower and upper case character and a digit.'), 'on'=>'reset'),
-			array('newVerify', 'compare', 'compareAttribute'=>'newPassword', 'message' => Yii::t('UsrModule.usr', 'Please type the same new password twice to verify it.'), 'on'=>'reset'),
+		), $this->rulesAddScenario(parent::rules(), 'reset'));
 
-			array('verifyCode', 'captcha', 'except'=>'reset,verify', 'allowEmpty'=>Yii::app()->controller->module->captcha === null),
-		);
+		return $rules;
 	}
 
 	/**
 	 * Declares attribute labels.
 	 */
 	public function attributeLabels() {
-		return array(
+		return array_merge($this->getBehaviorLabels(), parent::attributeLabels(), array(
 			'username'		=> Yii::t('UsrModule.usr','Username'),
 			'email'			=> Yii::t('UsrModule.usr','Email'),
 			'activationKey'	=> Yii::t('UsrModule.usr','Activation Key'),
-			'newPassword'	=> Yii::t('UsrModule.usr','New password'),
-			'newVerify'		=> Yii::t('UsrModule.usr','Verify'),
-			'verifyCode'	=> Yii::t('UsrModule.usr','Verification code'),
-		);
+		));
+	}
+
+	public function behaviors()
+	{
+		if (Yii::app()->controller->module->captcha !== null && CCaptcha::checkRequirements()) {
+			return array(
+				'captcha' => array(
+					'class' => 'CaptchaFormBehavior',
+					'ruleOptions' => array('except'=>'reset,verify'),
+				),
+			);
+		}
+		return array();
 	}
 
 	public function getIdentity() {
@@ -110,25 +113,6 @@ class RecoveryForm extends CFormModel {
 				return false;
 			case $identity::ERROR_AKEY_NONE:
 				return true;
-		}
-		return true;
-	}
-
-	/**
-	 * Checkes if current password hasn't been used before.
-	 * This is the 'unusedNewPassword' validator as declared in rules().
-	 */
-	public function unusedNewPassword() {
-		if($this->hasErrors()) {
-			return;
-		}
-
-		$identity = $this->getIdentity();
-		if (!($identity instanceof IPasswordHistoryIdentity))
-			return true;
-		if (($lastUsed = $identity->getPasswordDate($this->newPassword)) !== null) {
-			$this->addError('password',Yii::t('UsrModule.usr','New password has been already used on {date}.'), array('{date}'=>$lastUsed));
-			return false;
 		}
 		return true;
 	}

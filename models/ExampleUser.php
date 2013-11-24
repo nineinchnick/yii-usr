@@ -1,9 +1,9 @@
 <?php
 
 /**
- * This is the model class for table "{{user}}".
+ * This is the model class for table "{{users}}".
  *
- * The followings are the available columns in table '{{user}}':
+ * The followings are the available columns in table '{{users}}':
  * @property integer $id
  * @property string $username
  * @property string $password
@@ -24,12 +24,13 @@
  *
  * The followings are the available model relations:
  * @property UserRemoteIdentity[] $userRemoteIdentities
+ * @property UserUsedPassword[] $userUsedPassword
  */
 abstract class ExampleUser extends CActiveRecord
 {
 	public function tableName()
 	{
-		return '{{user}}';
+		return '{{users}}';
 	}
 
 	public function rules()
@@ -52,6 +53,7 @@ abstract class ExampleUser extends CActiveRecord
 	{
 		return array(
 			'userRemoteIdentities' => array(self::HAS_MANY, 'UserRemoteIdentity', 'user_id'),
+			'userUsedPasswords' => array(self::HAS_MANY, 'UserUsedPassword', 'user_id', 'order'=>'set_on DESC'),
 		);
 	}
 

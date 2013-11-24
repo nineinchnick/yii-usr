@@ -18,7 +18,8 @@ $this->pageTitle = Yii::app()->name.' - '.$title;
 <div class="<?php echo $this->module->formCssClass; ?>">
 <?php $form=$this->beginWidget($this->module->formClass, array(
 	'id'=>'profile-form',
-	'enableClientValidation'=>true,
+	'enableAjaxValidation'=>true,
+	'enableClientValidation'=>false,
 	'clientOptions'=>array(
 		'validateOnSubmit'=>true,
 	),
@@ -41,7 +42,14 @@ $this->pageTitle = Yii::app()->name.' - '.$title;
 		<?php echo $form->error($model,'email'); ?>
 	</div>
 
-<?php $this->renderPartial('_newpassword', array('form'=>$form, 'model'=>$model)); ?>
+<?php if ($passwordForm->scenario !== 'register'): ?>
+	<div class="control-group">
+		<?php echo $form->labelEx($passwordForm,'password'); ?>
+		<?php echo $form->passwordField($passwordForm,'password', array('autocomplete'=>'off')); ?>
+		<?php echo $form->error($passwordForm,'password'); ?>
+	</div>
+<?php endif; ?>
+<?php $this->renderPartial('_newpassword', array('form'=>$form, 'model'=>$passwordForm)); ?>
 
 	<div class="control-group">
 		<?php echo $form->labelEx($model,'firstName'); ?>
@@ -55,20 +63,9 @@ $this->pageTitle = Yii::app()->name.' - '.$title;
 		<?php echo $form->error($model,'lastName'); ?>
 	</div>
 
-	<?php if($this->module->captcha !== null && CCaptcha::checkRequirements()): ?>
-	<div class="control-group">
-		<?php echo $form->labelEx($model,'verifyCode'); ?>
-		<div>
-		<?php $this->widget('CCaptcha', $this->module->captcha === true ? array() : $this->module->captcha); ?><br/>
-		<?php echo $form->textField($model,'verifyCode'); ?>
-		</div>
-		<div class="hint">
-			<?php echo Yii::t('UsrModule.usr', 'Please enter the letters as they are shown in the image above.'); ?><br/>
-			<?php echo Yii::t('UsrModule.usr', 'Letters are not case-sensitive.'); ?>
-		</div>
-		<?php echo $form->error($model,'verifyCode'); ?>
-	</div>
-	<?php endif; ?>
+<?php if($model->asa('captcha') !== null): ?>
+<?php $this->renderPartial('_captcha', array('form'=>$form, 'model'=>$model)); ?>
+<?php endif; ?>
 
 	<div class="buttons">
 		<?php echo CHtml::submitButton(Yii::t('UsrModule.usr', 'Submit'), array('class'=>$this->module->submitButtonCssClass)); ?>

@@ -5,38 +5,27 @@
  * ProfileForm is the data structure for keeping
  * password recovery form data. It is used by the 'recovery' action of 'DefaultController'.
  */
-class ProfileForm extends CFormModel
+class ProfileForm extends BaseUsrForm
 {
 	public $username;
 	public $email;
-	public $newPassword;
-	public $newVerify;
 	public $firstName;
 	public $lastName;
-	public $verifyCode;
 
 	private $_identity;
 
 	/**
 	 * Declares the validation rules.
-	 * The rules state that username and password are required,
-	 * and password needs to be authenticated.
 	 */
 	public function rules()
 	{
-		return array(
-			array('username, email, newPassword, newVerify, firstName, lastName', 'filter', 'filter'=>'trim'),
-			array('username, email, newPassword, newVerify, firstName, lastName', 'default', 'setOnEmpty'=>true, 'value' => null),
+		return array_merge($this->getBehaviorRules(), array(
+			array('username, email, firstName, lastName', 'filter', 'filter'=>'trim'),
+			array('username, email, firstName, lastName', 'default', 'setOnEmpty'=>true, 'value' => null),
 
 			array('username, email', 'required'),
 			array('username, email', 'uniqueIdentity'),
-			array('newPassword, newVerify', 'required', 'on' => 'register'),
-			array('newPassword', 'length', 'min' => 8, 'message' => Yii::t('UsrModule.usr', 'New password must contain at least 8 characters.')),
-			array('newPassword', 'match', 'pattern' => '/^.*(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/', 'message'	=> Yii::t('UsrModule.usr', 'New password must contain at least one lower and upper case character and a digit.')),
-			array('newVerify', 'compare', 'compareAttribute'=>'newPassword', 'message' => Yii::t('UsrModule.usr', 'Please type the same new password twice to verify it.')),
-
-			array('verifyCode', 'captcha', 'on'=>'register', 'allowEmpty'=>Yii::app()->controller->module->captcha === null),
-		);
+		));
 	}
 
 	/**
@@ -44,22 +33,32 @@ class ProfileForm extends CFormModel
 	 */
 	public function attributeLabels()
 	{
-		return array(
+		return array_merge($this->getBehaviorLabels(), array(
 			'username'		=> Yii::t('UsrModule.usr','Username'),
 			'email'			=> Yii::t('UsrModule.usr','Email'),
-			'newPassword'	=> Yii::t('UsrModule.usr','New password'),
-			'newVerify'		=> Yii::t('UsrModule.usr','Verify'),
 			'firstName'		=> Yii::t('UsrModule.usr','First name'),
 			'lastName'		=> Yii::t('UsrModule.usr','Last name'),
-			'verifyCode'	=> Yii::t('UsrModule.usr','Verification code'),
-		);
+		));
+	}
+
+	public function behaviors()
+	{
+		if (Yii::app()->controller->module->captcha !== null) {
+			return array(
+				'captcha' => array(
+					'class' => 'CaptchaFormBehavior',
+					'ruleOptions' => array('except'=>'reset,verify'),
+				),
+			);
+		}
+		return array();
 	}
 
 	public function getIdentity()
 	{
 		if($this->_identity===null) {
 			$userIdentityClass = Yii::app()->controller->module->userIdentityClass;
-			if ($this->scenario == 'register' || $this->scenario == 'registerWithoutPassword') {
+			if ($this->scenario == 'register') {
 				$this->_identity = new $userIdentityClass(null, null);
 			} else {
 				$this->_identity = $userIdentityClass::find(array('id'=>Yii::app()->user->getId()));
@@ -77,7 +76,8 @@ class ProfileForm extends CFormModel
 			return;
 		}
 		$userIdentityClass = Yii::app()->controller->module->userIdentityClass;
-		if (($identity=$userIdentityClass::find(array($attribute => $this->$attribute))) !== null && ($this->scenario == 'register' || $this->scenario == 'registerWithoutPassword' || $identity->getId() != $this->getIdentity()->getId())) {
+		$existingIdentity = $userIdentityClass::find(array($attribute => $this->$attribute));
+		if ($existingIdentity !== null && ($this->scenario == 'register' || $existingIdentity->getId() != $this->getIdentity()->getId())) {
 			$this->addError($attribute,Yii::t('UsrModule.usr','{attribute} has already been used by another user.', array('{attribute}'=>$this->$attribute)));
 			return false;
 		}
@@ -85,19 +85,14 @@ class ProfileForm extends CFormModel
 	}
 
 	/**
-	 * Logs in the user using the given username and new password.
+	 * Logs in the user using the given username.
 	 * @return boolean whether login is successful
 	 */
 	public function login()
 	{
 		$identity = $this->getIdentity();
 
-		$identity->password = $this->newPassword;
-		$identity->authenticate();
-		if($identity->getIsAuthenticated()) {
-			return Yii::app()->user->login($identity,0);
-		}
-		return false;
+		return Yii::app()->user->login($identity,0);
 	}
 
 	/**
@@ -106,36 +101,19 @@ class ProfileForm extends CFormModel
 	public function save()
 	{
 		$identity = $this->getIdentity();
-		return $identity!==null && $identity->setAttributes(array(
+		if ($identity === null)
+			return false;
+
+		$identity->setAttributes(array(
 			'username'	=> $this->username,
 			'email'		=> $this->email,
 			'firstName'	=> $this->firstName,
 			'lastName'	=> $this->lastName,
-		)) && $identity->save();
-	}
-
-	/**
-	 * Resets user password using the new one given in the model.
-	 * @return boolean whether password reset was successful
-	 */
-	public function resetPassword()
-	{
-		return empty($this->newPassword) || $this->getIdentity()->resetPassword($this->newPassword);
-	}
-
-	/**
-	 * Processes the form filled with POST data. Sets proper flash messages and sends emails.
-	 * @return boolean
-	 */
-	public function register($savePassword=true)
-	{
-		if(!$this->validate()) {
-			return false;
+		));
+		if ($identity->save()) {
+			$this->_identity = $identity;
+			return true;
 		}
-		if (!$this->save() || ($savePassword && !$this->resetPassword())) {
-			Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to register a new user.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
-			return false;
-		}
-		return true;
+		return false;
 	}
 }

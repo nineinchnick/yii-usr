@@ -27,7 +27,7 @@ class HybridauthController extends UsrController
 			$_POST['HybridauthForm']['provider'] = $provider;
 		$remoteLogin = new HybridauthForm;
 		$localLogin = new LoginForm('hybridauth');
-		$localProfile = new ProfileForm('registerWithoutPassword');
+		$localProfile = new ProfileForm('register');
 
 		if(isset($_POST['ajax'])) {
 			if ($_POST['ajax']==='remoteLogin-form')
@@ -106,7 +106,7 @@ class HybridauthController extends UsrController
 		if (isset($_POST['ProfileForm'])) {
 			$localProfile->setAttributes($_POST['ProfileForm']);
 
-			if ($localProfile->register(false)) {
+			if ($localProfile->register()) {
 				if ($this->module->requireVerifiedEmail) {
 					if ($this->sendEmail($localProfile, 'verify')) {
 						Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'An email containing further instructions has been sent to provided email address.'));
