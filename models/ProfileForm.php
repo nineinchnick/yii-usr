@@ -44,11 +44,10 @@ class ProfileForm extends BaseUsrForm
 	public function getIdentity()
 	{
 		if($this->_identity===null) {
-			$userIdentityClass = Yii::app()->controller->module->userIdentityClass;
 			if ($this->scenario == 'register') {
-				$this->_identity = new $userIdentityClass(null, null);
+				$this->_identity = new $this->userIdentityClass(null, null);
 			} else {
-				$this->_identity = $userIdentityClass::find(array('id'=>Yii::app()->user->getId()));
+				$this->_identity = $this->userIdentityClass::find(array('id'=>Yii::app()->user->getId()));
 			}
 			if (!($this->_identity instanceof IEditableIdentity)) {
 				throw new CException(Yii::t('UsrModule.usr','The {class} class must implement the {interface} interface.',array('{class}'=>get_class($this->_identity),'{interface}'=>'IEditableIdentity')));
@@ -62,8 +61,7 @@ class ProfileForm extends BaseUsrForm
 		if($this->hasErrors()) {
 			return;
 		}
-		$userIdentityClass = Yii::app()->controller->module->userIdentityClass;
-		$existingIdentity = $userIdentityClass::find(array($attribute => $this->$attribute));
+		$existingIdentity = $this->userIdentityClass::find(array($attribute => $this->$attribute));
 		if ($existingIdentity !== null && ($this->scenario == 'register' || $existingIdentity->getId() != $this->getIdentity()->getId())) {
 			$this->addError($attribute,Yii::t('UsrModule.usr','{attribute} has already been used by another user.', array('{attribute}'=>$this->$attribute)));
 			return false;

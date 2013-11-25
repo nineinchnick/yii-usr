@@ -301,9 +301,10 @@ class UsrModule extends CWebModule
 		return $this->_googleAuthenticator;
 	}
 
-	public function createForm($class, $scenario)
+	public function createFormModel($class, $scenario='')
 	{
 		$form = new $class($scenario);
+		$form->userIdentityClass = $this->userIdentityClass;
 		switch($class) {
 			default:
 				break;
@@ -319,6 +320,9 @@ class UsrModule extends CWebModule
 			case 'LoginForm':
 				if (Yii::app()->controller->module->oneTimePasswordMode != UsrModule::OTP_NONE) {
 					$form->attachBehavior('oneTimePasswordBehavior', array('class' => 'OneTimePasswordFormBehavior'));
+				}
+				if (Yii::app()->controller->module->passwordTimeout !== null) {
+					$form->attachBehavior('expiredPasswordBehavior', array('class' => 'ExpiredPasswordBehavior'));
 				}
 				break;
 		}

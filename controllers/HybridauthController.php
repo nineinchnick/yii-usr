@@ -26,8 +26,8 @@ class HybridauthController extends UsrController
 		if ($provider!==null)
 			$_POST['HybridauthForm']['provider'] = $provider;
 		$remoteLogin = new HybridauthForm;
-		$localLogin = new LoginForm('hybridauth');
-		$localProfile = new ProfileForm('register');
+		$localLogin = $this->module->createFormModel('LoginForm', 'hybridauth');
+		$localProfile = $this->module->createFormModel('ProfileForm', 'register');
 
 		if(isset($_POST['ajax'])) {
 			if ($_POST['ajax']==='remoteLogin-form')

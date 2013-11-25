@@ -17,9 +17,13 @@ return array(
 	'components'=>array(
 		'db'=>array(
 			'connectionString' => 'sqlite::memory:',
+			'initSQLs' => array('PRAGMA foreign_keys = ON'),
+			//'connectionString' => 'mysql:host=localhost;dbname=test',
 			'tablePrefix' => 'tbl_',
 			'enableParamLogging'=>true,
-			'initSQLs' => array('PRAGMA foreign_keys = ON'),
+		),
+		'fixture'=>array(
+			'class'=>'system.test.CDbFixtureManager',
 		),
 	),
 );

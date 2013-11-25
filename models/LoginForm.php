@@ -25,7 +25,6 @@ class LoginForm extends BaseUsrForm
 			array('username, password', 'required'),
 			array('rememberMe', 'boolean'),
 			array('password', 'authenticate'),
-			array('password', 'passwordIsFresh', 'except'=>'reset, hybridauth, verifyOTP'),
 		), $this->getBehaviorRules());
 
 		return $rules;
@@ -46,8 +45,7 @@ class LoginForm extends BaseUsrForm
 	public function getIdentity()
 	{
 		if($this->_identity===null) {
-			$userIdentityClass = Yii::app()->controller->module->userIdentityClass;
-			$this->_identity=new $userIdentityClass($this->username,$this->password);
+			$this->_identity=new $this->userIdentityClass($this->username,$this->password);
 			$this->_identity->authenticate();
 		}
 		return $this->_identity;
@@ -71,33 +69,15 @@ class LoginForm extends BaseUsrForm
 	}
 
 	/**
-	 * Checkes if current password has timed out and needs to be reset.
+	 * A wrapper for the passwordHasNotExpired method from ExpiredPasswordBehavior.
+	 * @param $attribute string
+	 * @param $params array
 	 */
-	public function passwordIsFresh()
+	public function passwordHasNotExpired($attribute, $params)
 	{
-		if($this->hasErrors()) {
-			return;
+		if (($behavior=$this->asa('ExpiredPasswordBehavior')) !== null) {
+			return $behavior->passwordHasNotExpired($attribute, $params);
 		}
-		$passwordTimeout = Yii::app()->controller->module->passwordTimeout;
-		if ($passwordTimeout === null)
-			return true;
-
-		$identity = $this->getIdentity();
-		if (!($identity instanceof IPasswordHistoryIdentity))
-			throw new CException(Yii::t('UsrModule.usr','The {class} class must implement the {interface} interface.',array('{class}'=>get_class($identity),'{interface}'=>'IPasswordHistoryIdentity')));
-		$lastUsed = $identity->getPasswordDate();
-		$lastUsedDate = new DateTime($lastUsed);
-		$today = new DateTime();
-		if ($lastUsed === null || $today->diff($lastUsedDate)->days >= $passwordTimeout) {
-			if ($lastUsed === null) {
-				$this->addError('password',Yii::t('UsrModule.usr','This is the first time you login. Current password needs to be changed.'));
-			} else {
-				$this->addError('password',Yii::t('UsrModule.usr','Current password has been used too long and needs to be changed.'));
-			}
-			$this->scenario = 'reset';
-			return false;
-		}
-
 		return true;
 	}
 
@@ -133,9 +113,10 @@ class LoginForm extends BaseUsrForm
 
 	/**
 	 * Logs in the user using the given username and password in the model.
+	 * @param integer $duration For how long the user will be logged in without any activity, in seconds.
 	 * @return boolean whether login is successful
 	 */
-	public function login()
+	public function login($duration = 0)
 	{
 		$identity = $this->getIdentity();
 		if ($this->scenario === 'reset') {
@@ -143,8 +124,7 @@ class LoginForm extends BaseUsrForm
 			$identity->authenticate();
 		}
 		if($identity->getIsAuthenticated()) {
-			$duration=$this->rememberMe ? Yii::app()->controller->module->rememberMeDuration : 0;
-			return Yii::app()->user->login($identity,$duration);
+			return Yii::app()->user->login($identity, $this->rememberMe ? $duration : 0);
 		}
 		return false;
 	}

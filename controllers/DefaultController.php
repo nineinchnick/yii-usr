@@ -39,7 +39,7 @@ class DefaultController extends UsrController
 		if (!Yii::app()->user->isGuest)
 			$this->redirect(Yii::app()->user->returnUrl);
 
-		$model = new LoginForm;
+		$model = $this->module->createFormModel('LoginForm');
 		if ($scenario !== null && in_array($scenario, array('reset', 'verifyOTP'))) {
 			$model->scenario = $scenario;
 		}
@@ -52,7 +52,7 @@ class DefaultController extends UsrController
 		if(isset($_POST['LoginForm'])) {
 			$model->setAttributes($_POST['LoginForm']);
 			if($model->validate()) {
-				if (($model->scenario !== 'reset' || $model->resetPassword()) && $model->login()) {
+				if (($model->scenario !== 'reset' || $model->resetPassword()) && $model->login($this->module->rememberMeDuration)) {
 					$this->afterLogin();
 				} else {
 					Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to change password or log in using new password.'));
@@ -84,7 +84,7 @@ class DefaultController extends UsrController
 		if (!Yii::app()->user->isGuest)
 			$this->redirect(Yii::app()->user->returnUrl);
 
-		$model = new RecoveryForm;
+		$model = $this->module->createFormModel('RecoveryForm');
 
 		if(isset($_POST['ajax']) && $_POST['ajax']==='recovery-form') {
 			echo CActiveForm::validate($model);
@@ -122,8 +122,7 @@ class DefaultController extends UsrController
 
 	public function actionVerify()
 	{
-		$model = new RecoveryForm;
-		$model->scenario = 'verify';
+		$model = $this->module->createFormModel('RecoveryForm', 'verify');
 		if (!isset($_GET['activationKey'])) {
 			throw new CHttpException(400,Yii::t('UsrModule.usr', 'Activation key is missing.'));
 		}
@@ -144,10 +143,8 @@ class DefaultController extends UsrController
 		if (!Yii::app()->user->isGuest)
 			$this->redirect(array('profile'));
 
-		$model = new ProfileForm;
-		$model->scenario = 'register';
-		$passwordForm = new PasswordForm;
-		$passwordForm->scenario = 'register';
+		$model = $this->module->createFormModel('ProfileForm', 'register');
+		$passwordForm = $this->module->createFormModel('PasswordForm', 'register');
 
 		if(isset($_POST['ajax']) && $_POST['ajax']==='profile-form') {
 			echo CActiveForm::validate(array($model, $passwordForm));
@@ -190,9 +187,9 @@ class DefaultController extends UsrController
 		if (Yii::app()->user->isGuest)
 			$this->redirect(array('login'));
 
-		$model=new ProfileForm;
+		$model = $this->module->createFormModel('ProfileForm');
 		$model->setAttributes($model->getIdentity()->getAttributes());
-		$passwordForm=new PasswordForm;
+		$passwordForm = $this->module->createFormModel('PasswordForm');
 
 		if(isset($_POST['ajax']) && $_POST['ajax']==='profile-form') {
 			$models = array($model);

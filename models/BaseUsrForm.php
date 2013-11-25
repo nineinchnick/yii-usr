@@ -8,6 +8,17 @@ abstract class BaseUsrForm extends CFormModel
 {
 	private static $_names=array();
 	private $_behaviors=array();
+	private $_userIdentityClass;
+
+	public function getUserIdentityClass()
+	{
+		return $this->_userIdentityClass;
+	}
+
+	public function setUserIdentityClass($value)
+	{
+		$this->_userIdentityClass = $value;
+	}
 
 	public function attachBehavior($name, $behavior)
 	{
