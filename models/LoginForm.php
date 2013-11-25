@@ -43,16 +43,6 @@ class LoginForm extends BaseUsrForm
 		));
 	}
 
-	public function behaviors()
-	{
-		if (Yii::app()->controller->module->oneTimePasswordMode != UsrModule::OTP_NONE) {
-			return array(
-				'oneTimePasswordBehavior' => array('class' => 'OneTimePasswordFormBehavior'),
-			);
-		}
-		return array();
-	}
-
 	public function getIdentity()
 	{
 		if($this->_identity===null) {

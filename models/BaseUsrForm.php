@@ -7,6 +7,20 @@
 abstract class BaseUsrForm extends CFormModel
 {
 	private static $_names=array();
+	private $_behaviors=array();
+
+	public function attachBehavior($name, $behavior)
+	{
+		$this->_behaviors[$name] = true;
+		return parent::attachBehavior($name, $behavior);
+	}
+
+	public function detachBehavior($name)
+	{
+		if (isset($this->_behaviors[$name]))
+			unset($this->_behaviors[$name]);
+		return parent::attachBehavior($name, $behavior);
+	}
 
 	public function attributeNames()
 	{
@@ -21,7 +35,7 @@ abstract class BaseUsrForm extends CFormModel
 				if($property->isPublic() && !$property->isStatic())
 					$names[]=$name;
 			}
-			foreach($this->behaviors() as $name=>$options) {
+			foreach($this->_behaviors as $name=>$foo) {
 				if (($behavior=$this->asa($name)) instanceof FormModelBehavior)
 					$names = array_merge($names, $behavior->attributeNames());
 			}
@@ -34,7 +48,7 @@ abstract class BaseUsrForm extends CFormModel
 	public function getBehaviorLabels()
 	{
 		$labels = array();
-		foreach($this->behaviors() as $name=>$options) {
+		foreach($this->_behaviors as $name=>$foo) {
 			if (($behavior=$this->asa($name)) instanceof FormModelBehavior)
 				$labels = array_merge($labels, $behavior->attributeLabels());
 		}
@@ -44,7 +58,7 @@ abstract class BaseUsrForm extends CFormModel
 	public function getBehaviorRules()
 	{
 		$rules = array();
-		foreach($this->behaviors() as $name=>$options) {
+		foreach($this->_behaviors as $name=>$foo) {
 			if (($behavior=$this->asa($name)) instanceof FormModelBehavior)
 				$rules = array_merge($rules, $behavior->rules());
 		}

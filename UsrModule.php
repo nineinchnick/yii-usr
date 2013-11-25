@@ -252,6 +252,19 @@ class UsrModule extends CWebModule
 				CHtml::$$name = $value;
 			}
 		}
+		$this->setupMailer();
+		if ($this->hybridauthEnabled()) {
+			$hybridauthConfig = array(
+				'base_url' => Yii::app()->createAbsoluteUrl('/'.$this->id.'/hybridauth/callback'),
+				'providers' => $this->hybridauthProviders,
+			);
+			require dirname(__FILE__) . '/extensions/Hybrid/Auth.php';
+			$this->_hybridauth = new Hybrid_Auth($hybridauthConfig);
+		}
+	}
+
+	public function setupMailer()
+	{
 		$mailerConfig = array_merge(array(
 			'IsHTML' => array(true),
 			'CharSet' => 'UTF-8',
@@ -265,14 +278,6 @@ class UsrModule extends CWebModule
 			} else {
 				$this->mailer->$key = $value;
 			}
-		}
-		if ($this->hybridauthEnabled()) {
-			$hybridauthConfig = array(
-				'base_url' => Yii::app()->createAbsoluteUrl('/'.$this->id.'/hybridauth/callback'),
-				'providers' => $this->hybridauthProviders,
-			);
-			require dirname(__FILE__) . '/extensions/Hybrid/Auth.php';
-			$this->_hybridauth = new Hybrid_Auth($hybridauthConfig);
 		}
 	}
 
@@ -294,5 +299,29 @@ class UsrModule extends CWebModule
 			$this->_googleAuthenticator = new GoogleAuthenticator;
 		}
 		return $this->_googleAuthenticator;
+	}
+
+	public function createForm($class, $scenario)
+	{
+		$form = new $class($scenario);
+		switch($class) {
+			default:
+				break;
+			case 'ProfileForm':
+			case 'RecoveryForm':
+				if ($this->captcha !== null && CCaptcha::checkRequirements()) {
+					$form->attachBehavior('captcha', array(
+						'class' => 'CaptchaFormBehavior',
+						'ruleOptions' => $class == 'ProfileForm' ? array('on'=>'register') : array('except'=>'reset,verify'),
+					));
+				}
+				break;
+			case 'LoginForm':
+				if (Yii::app()->controller->module->oneTimePasswordMode != UsrModule::OTP_NONE) {
+					$form->attachBehavior('oneTimePasswordBehavior', array('class' => 'OneTimePasswordFormBehavior'));
+				}
+				break;
+		}
+		return $form;
 	}
 }

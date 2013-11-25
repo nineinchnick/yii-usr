@@ -41,19 +41,6 @@ class ProfileForm extends BaseUsrForm
 		));
 	}
 
-	public function behaviors()
-	{
-		if (Yii::app()->controller->module->captcha !== null) {
-			return array(
-				'captcha' => array(
-					'class' => 'CaptchaFormBehavior',
-					'ruleOptions' => array('except'=>'reset,verify'),
-				),
-			);
-		}
-		return array();
-	}
-
 	public function getIdentity()
 	{
 		if($this->_identity===null) {
