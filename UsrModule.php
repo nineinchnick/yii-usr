@@ -322,7 +322,10 @@ class UsrModule extends CWebModule
 					$form->attachBehavior('oneTimePasswordBehavior', array('class' => 'OneTimePasswordFormBehavior'));
 				}
 				if (Yii::app()->controller->module->passwordTimeout !== null) {
-					$form->attachBehavior('expiredPasswordBehavior', array('class' => 'ExpiredPasswordBehavior'));
+					$form->attachBehavior('expiredPasswordBehavior', array(
+						'class' => 'ExpiredPasswordBehavior',
+						'passwordTimeout' => Yii::app()->controller->module->passwordTimeout,
+					));
 				}
 				break;
 		}
