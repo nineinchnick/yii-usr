@@ -319,7 +319,15 @@ class UsrModule extends CWebModule
 				break;
 			case 'LoginForm':
 				if (Yii::app()->controller->module->oneTimePasswordMode != UsrModule::OTP_NONE) {
-					$form->attachBehavior('oneTimePasswordBehavior', array('class' => 'OneTimePasswordFormBehavior'));
+					$form->attachBehavior('oneTimePasswordBehavior', array(
+						'class' => 'OneTimePasswordFormBehavior',
+						'oneTimePasswordConfig' => array(
+							'authenticator' => $this->googleAuthenticator,
+							'mode' => $this->oneTimePasswordMode,
+							'required' => $this->oneTimePasswordRequired,
+							'timeout' => $this->oneTimePasswordTimeout,
+						),
+					));
 				}
 				if (Yii::app()->controller->module->passwordTimeout !== null) {
 					$form->attachBehavior('expiredPasswordBehavior', array(

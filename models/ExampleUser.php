@@ -127,14 +127,6 @@ abstract class ExampleUser extends CActiveRecord
 		return parent::beforeSave();
 	}
 
-	protected function afterSave() {
-		Yii::import('nfy.models.NfyChannels');
-		foreach(NfyChannels::model()->findAll() as $channel) {
-			$channel->unsubscribe($this->id);
-			$channel->subscribe($this->id, 'db');
-		}
-	}
-
 	public static function hashPassword($password)
 	{
 		require(Yii::getPathOfAlias('usr.extensions').DIRECTORY_SEPARATOR.'password.php');

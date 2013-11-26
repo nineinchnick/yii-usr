@@ -5,7 +5,7 @@ Yii::import('vendors.nineinchnick.yii-usr.tests.UserIdentity');
 Yii::import('vendors.nineinchnick.yii-usr.models.BaseUsrForm');
 Yii::import('vendors.nineinchnick.yii-usr.models.LoginForm');
 
-class CModelTest extends CDbTestCase
+class LoginFormTest extends CDbTestCase
 {
 	public $fixtures=array(
 		'users'=>'User',

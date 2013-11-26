@@ -55,16 +55,11 @@ class OneTimePasswordFormBehavior extends FormModelBehavior
 
 	protected function loadOneTimePasswordConfig()
 	{
-		$module = Yii::app()->controller->module;
 		$identity = $this->owner->getIdentity();
 		if (!($identity instanceof IOneTimePasswordIdentity))
 			throw new CException(Yii::t('UsrModule.usr','The {class} class must implement the {interface} interface.',array('{class}'=>get_class($identity),'{interface}'=>'IOneTimePasswordIdentity')));
 		list($previousCode, $previousCounter) = $identity->getOneTimePassword();
 		$this->setOneTimePasswordConfig(array(
-			'authenticator' => $module->googleAuthenticator,
-			'mode' => $module->oneTimePasswordMode,
-			'required' => $module->oneTimePasswordRequired,
-			'timeout' => $module->oneTimePasswordTimeout,
 			'secret' => $identity->getOneTimePasswordSecret(),
 			'previousCode' => $previousCode,
 			'previousCounter' => $previousCounter,

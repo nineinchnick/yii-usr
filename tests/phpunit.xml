@@ -5,6 +5,16 @@
 		convertWarningsToExceptions="true"
 		stopOnFailure="false">
 
+		<filter>
+			<blacklist>
+				<directory>../migrations</directory>
+				<directory>../extensions</directory>
+				<file>../models/ExampleUser.php</file>
+				<file>../models/ExampleUserRemoteIdentity.php</file>
+				<file>../models/ExampleUserUsedPassword.php</file>
+			</blacklist>
+		</filter>
+
 	<selenium>
 		<browser name="Internet Explorer" browser="*iexplore" />
 		<browser name="Firefox" browser="*firefox" />

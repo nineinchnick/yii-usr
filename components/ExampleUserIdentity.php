@@ -66,9 +66,10 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 			$hashedPassword = User::hashPassword($password);
 			$usedPassword = new UserUsedPassword;
 			$usedPassword->setAttributes(array(
+				'user_id'=>$this->_id,
 				'password'=>$hashedPassword,
 				'set_on'=>date('Y-m-d H:i:s'),
-			));
+			), false);
 			return $usedPassword->save() && $record->saveAttributes(array(
 				'password'=>$hashedPassword,
 				'password_set_on'=>date('Y-m-d H:i:s'),
@@ -113,7 +114,7 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 			'user_id' => $this->_id,
 			'provider' => $provider,
 			'identifier' => $identifier,
-		));
+		), false);
 		return $model->save();
 	}
 
@@ -146,7 +147,7 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 		if ($this->_id===null)
 			return false;
 		if (($record=User::model()->findByPk($this->_id))!==null) {
-			return $record->is_active;
+			return (bool)$record->is_active;
 		}
 		return false;
 	}
@@ -156,7 +157,7 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 		if ($this->_id===null)
 			return false;
 		if (($record=User::model()->findByPk($this->_id))!==null) {
-			return $record->is_disabled;
+			return (bool)$record->is_disabled;
 		}
 		return false;
 	}
@@ -208,14 +209,11 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 
 	public function setAttributes(array $attributes)
 	{
-		if (isset($attributes['username']))
-			$this->username = $attributes['username'];
-		if (isset($attributes['email']))
-			$this->email = $attributes['email'];
-		if (isset($attributes['firstName']))
-			$this->firstName = $attributes['firstName'];
-		if (isset($attributes['lastName']))
-			$this->lastName = $attributes['lastName'];
+		$allowedAttributes = array('username','email','firstName','lastName');
+		foreach($attributes as $name=>$value) {
+			if (in_array($name, $allowedAttributes))
+				$this->$name = $value;
+		}
 		return true;
 	}
 

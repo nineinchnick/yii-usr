@@ -3,9 +3,9 @@
 require(Yii::getPathOfAlias('usr.extensions').DIRECTORY_SEPARATOR.'password.php');
 
 /**
- * This is the model class for table "{{user_used_password}}".
+ * This is the model class for table "{{user_used_passwords}}".
  *
- * The followings are the available columns in table '{{user_used_password}}':
+ * The followings are the available columns in table '{{user_used_passwords}}':
  * @property integer $id
  * @property integer $user_id
  * @property string $password
@@ -18,7 +18,7 @@ abstract class ExampleUserUsedPassword extends CActiveRecord
 {
 	public function tableName()
 	{
-		return '{{user_used_password}}';
+		return '{{user_used_passwords}}';
 	}
 
 	public function rules()
