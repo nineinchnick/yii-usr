@@ -19,9 +19,15 @@ abstract class FormModelBehavior extends CModelBehavior
 
 	private $_ruleOptions = array();
 
-	abstract public function rules();
+	public function rules()
+	{
+		return array();
+	}
 
-	abstract public function attributeLabels();
+	public function attributeLabels()
+	{
+		return array();
+	}
 
 	public function attributeNames()
 	{
