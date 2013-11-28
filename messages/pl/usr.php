@@ -16,7 +16,7 @@
  *
  * NOTE, this file must be saved in UTF-8 encoding.
  */
-return array(
+return array (
   'A one time password has been sent to your email. Enter it below.' => 'Hasło jednorazowe zostało wysłane na Twój email. Wprowadź je poniżej.',
   'Activation Key' => 'Klucz aktywacyjny',
   'Activation key is invalid.' => 'Klucz aktywacyjny jest nieprawidłowy.',
@@ -30,19 +30,17 @@ return array(
   'Current password' => 'Bieżące hasło',
   'Current password has been used too long and needs to be changed.' => 'Bieżące hasło jest używane zbyt długo i musi zostać zmienione.',
   'Disable' => 'Wyłącz',
-  'Disabled' => 'Wyłączona',
   'Don\'t have an account yet?' => 'Nie masz jeszcze konta?',
   'Don\'t remember username or password?' => 'Nie pamiętasz nazwy użytkownika lub hasła?',
   'Email' => 'Email',
   'Email address verification' => 'Weryfikacja adresu email',
   'Enable' => 'Włącz',
-  'Enabled' => 'Włączona',
   'Enter a valid one time password.' => 'Wprowadź poprawne hasło jednorazowe.',
   'Entered code has already been used.' => 'Podany kod został już wykorzystany.',
   'Entered code is invalid.' => 'Podany kod jest nieprawidłowy.',
   'Failed to associate current user with {provider}.' => 'Nie udało się powiązać bieżącego użytkownika z {provider}.',
-  'Failed to change password.' => 'Nie udało się zmienić hasła.',
   'Failed to change password or log in using new password.' => 'Nie udało się zmienić hasła albo zalogować z użyciem nowego hasła.',
+  'Failed to change password.' => 'Nie udało się zmienić hasła.',
   'Failed to log in using {provider}.' => 'Nie udało się zalogować za pomocą {provider}.',
   'Failed to log in.' => 'Nie udało się zalogować.',
   'Failed to register a new user.' => 'Nie udało się zarejestrować nowego użytkownika.',
@@ -56,7 +54,6 @@ return array(
   'Go to {link}.' => 'Przejdź do {link}.',
   'Invalid password.' => 'Nieprawidłowe hasło.',
   'Invalid username or password.' => 'Nieprawidłowa nazwa użytkownika lub hasło.',
-  'Invalid username.' => 'Nieprawidłowa nazwa użytkownika.',
   'Last name' => 'Nazwisko',
   'Letters are not case-sensitive.' => 'Wielkość liter nie ma znaczenia.',
   'Log in' => 'Zaloguj się',
@@ -94,9 +91,8 @@ return array(
   'Try again or contact the site administrator.' => 'Spróbuj ponownie lub skontaktuj się z administratorem serwisu.',
   'Two step authentication' => 'Uwierzytelnienie dwuetapowe',
   'Use the Google Authenticator application to generate a one time password and enter it below.' => 'Użyj aplikacji Google Authenticator aby wygenerować hasło jednorazowe i wprowadź je poniżej.',
-  'Use this password?\nTo copy it to the clipboard press Ctrl+C.' => 'Użyć tego hasła?\nAby skopiować do schowka wciśnij Ctrl+C.',
+  'Use this password?\\nTo copy it to the clipboard press Ctrl+C.' => 'Użyć tego hasła?\\nAby skopiować do schowka wciśnij Ctrl+C.',
   'User profile' => 'Profil użytkownika',
-  'Unknown provider: {provider}.' => 'Nieznany dostawca usługi: {provider}.',
   'Username' => 'Nazwa użytkownika',
   'Username or password recovery' => 'Odzyskiwanie nazwy użytkownika lub hasła',
   'Verification code' => 'Kod weryfikacyjny',
