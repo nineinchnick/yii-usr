@@ -1,6 +1,6 @@
 <?php
 
-class UsrController extends CController
+abstract class UsrController extends CController
 {
 	protected function displayFlashes()
 	{

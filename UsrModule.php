@@ -318,7 +318,7 @@ class UsrModule extends CWebModule
 				}
 				break;
 			case 'LoginForm':
-				if (Yii::app()->controller->module->oneTimePasswordMode != UsrModule::OTP_NONE) {
+				if ($this->oneTimePasswordMode != UsrModule::OTP_NONE) {
 					$form->attachBehavior('oneTimePasswordBehavior', array(
 						'class' => 'OneTimePasswordFormBehavior',
 						'oneTimePasswordConfig' => array(
@@ -327,12 +327,13 @@ class UsrModule extends CWebModule
 							'required' => $this->oneTimePasswordRequired,
 							'timeout' => $this->oneTimePasswordTimeout,
 						),
+						'controller' => Yii::app()->controller,
 					));
 				}
-				if (Yii::app()->controller->module->passwordTimeout !== null) {
+				if ($this->passwordTimeout !== null) {
 					$form->attachBehavior('expiredPasswordBehavior', array(
 						'class' => 'ExpiredPasswordBehavior',
-						'passwordTimeout' => Yii::app()->controller->module->passwordTimeout,
+						'passwordTimeout' => $this->passwordTimeout,
 					));
 				}
 				break;

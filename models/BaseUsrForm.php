@@ -22,7 +22,8 @@ abstract class BaseUsrForm extends CFormModel
 
 	public function attachBehavior($name, $behavior)
 	{
-		$this->_behaviors[$name] = true;
+		$this->_behaviors[$name] = $name;
+		unset(self::$_names[get_class($this)]);
 		return parent::attachBehavior($name, $behavior);
 	}
 
@@ -30,7 +31,8 @@ abstract class BaseUsrForm extends CFormModel
 	{
 		if (isset($this->_behaviors[$name]))
 			unset($this->_behaviors[$name]);
-		return parent::attachBehavior($name, $behavior);
+		unset(self::$_names[get_class($this)]);
+		return parent::detachBehavior($name);
 	}
 
 	public function attributeNames()
@@ -46,11 +48,11 @@ abstract class BaseUsrForm extends CFormModel
 				if($property->isPublic() && !$property->isStatic())
 					$names[]=$name;
 			}
-			foreach($this->_behaviors as $name=>$foo) {
+			foreach($this->_behaviors as $name=>$name) {
 				if (($behavior=$this->asa($name)) instanceof FormModelBehavior)
 					$names = array_merge($names, $behavior->attributeNames());
 			}
-			return self::$_names[$className]=array_merge($this->attributeNames(), $names);
+			return self::$_names[$className]=$names;
 		}
 		else
 			return self::$_names[$className];

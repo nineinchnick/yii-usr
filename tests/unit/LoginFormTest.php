@@ -33,6 +33,24 @@ class LoginFormTest extends CDbTestCase
 		return array_merge(self::validDataProvider(), self::invalidDataProvider());
 	}
 
+	public function testWithBehavior()
+	{
+		$form = new LoginForm;
+		$formAttributes = $form->attributeNames();
+		$formRules = $form->rules();
+		$formLabels = $form->attributeLabels();
+		$form->attachBehavior('captcha', array('class' => 'CaptchaFormBehavior'));
+		$behaviorAttributes = $form->asa('captcha')->attributeNames();
+		$behaviorRules = $form->asa('captcha')->rules();
+		$behaviorLabels = $form->asa('captcha')->attributeLabels();
+		$this->assertEquals(array_merge($formAttributes, $behaviorAttributes), $form->attributeNames());
+		$this->assertEquals(array_merge($formRules, $behaviorRules), $form->rules());
+		$this->assertEquals(array_merge($formLabels, $behaviorLabels), $form->attributeLabels());
+		$form->detachBehavior('captcha');
+		$this->assertEquals($formAttributes, $form->attributeNames());
+		$this->assertEquals($formAttributes, $form->attributeNames());
+	}
+
 	/**
 	 * @dataProvider validDataProvider
 	 */

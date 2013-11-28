@@ -254,13 +254,13 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 		if (($record=User::model()->findByPk($this->_id))!==null) {
 			return array(
 				$record->one_time_password_code,
-				$record->one_time_password_counter,
+				$record->one_time_password_counter === null ? 1 : $record->one_time_password_counter,
 			);
 		}
 		return array(null, null);
 	}
 
-	public function setOneTimePassword($password, $counter = 0)
+	public function setOneTimePassword($password, $counter = 1)
 	{
 		if ($this->_id===null)
 			return false;
