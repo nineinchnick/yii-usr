@@ -59,7 +59,9 @@ class PasswordForm extends BasePasswordForm
 		if($this->hasErrors()) {
 			return;
 		}
-		$identity = $this->getIdentity();
+		if (($identity=$this->getIdentity()) === null) {
+			throw new CException('Current user has not been found in the database.');
+		}
 		$identity->password = $this->password;
 		if(!$identity->authenticate()) {
 			$this->addError('password',Yii::t('UsrModule.usr','Invalid password.'));

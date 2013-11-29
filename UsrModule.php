@@ -305,6 +305,9 @@ class UsrModule extends CWebModule
 	{
 		$form = new $class($scenario);
 		$form->userIdentityClass = $this->userIdentityClass;
+		if ($form instanceof BasePasswordForm) {
+			$form->passwordStrengthRules = $this->passwordStrengthRules;
+		}
 		switch($class) {
 			default:
 				break;

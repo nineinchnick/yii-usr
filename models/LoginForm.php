@@ -76,7 +76,7 @@ class LoginForm extends BaseUsrForm
 	 */
 	public function passwordHasNotExpired($attribute, $params)
 	{
-		if (($behavior=$this->asa('ExpiredPasswordBehavior')) !== null) {
+		if (($behavior=$this->asa('expiredPasswordBehavior')) !== null) {
 			return $behavior->passwordHasNotExpired($attribute, $params);
 		}
 		return true;

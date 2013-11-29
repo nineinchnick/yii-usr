@@ -50,7 +50,7 @@ class ProfileForm extends BaseUsrForm
 			} else {
 				$this->_identity = $userIdentityClass::find(array('id'=>Yii::app()->user->getId()));
 			}
-			if (!($this->_identity instanceof IEditableIdentity)) {
+			if ($this->_identity !== null && !($this->_identity instanceof IEditableIdentity)) {
 				throw new CException(Yii::t('UsrModule.usr','The {class} class must implement the {interface} interface.',array('{class}'=>get_class($this->_identity),'{interface}'=>'IEditableIdentity')));
 			}
 		}
@@ -64,7 +64,7 @@ class ProfileForm extends BaseUsrForm
 		}
 		$userIdentityClass = $this->userIdentityClass;
 		$existingIdentity = $userIdentityClass::find(array($attribute => $this->$attribute));
-		if ($existingIdentity !== null && ($this->scenario == 'register' || $existingIdentity->getId() != $this->getIdentity()->getId())) {
+		if ($existingIdentity !== null && ($this->scenario == 'register' || (($identity=$this->getIdentity()) !== null && $existingIdentity->getId() != $identity->getId()))) {
 			$this->addError($attribute,Yii::t('UsrModule.usr','{attribute} has already been used by another user.', array('{attribute}'=>$this->$attribute)));
 			return false;
 		}

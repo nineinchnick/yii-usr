@@ -9,6 +9,24 @@ abstract class BasePasswordForm extends BaseUsrForm
 	public $newPassword;
 	public $newVerify;
 
+	private $_passwordStrengthRules;
+
+	public function getPasswordStrengthRules()
+	{
+		if ($this->_passwordStrengthRules === null) {
+			$this->_passwordStrengthRules = array(
+				array('newPassword', 'length', 'min' => 8, 'message' => Yii::t('UsrModule.usr', 'New password must contain at least 8 characters.')),
+				array('newPassword', 'match', 'pattern' => '/^.*(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/', 'message'	=> Yii::t('UsrModule.usr', 'New password must contain at least one lower and upper case character and a digit.')),
+			);
+		}
+		return $this->_passwordStrengthRules;
+	}
+
+	public function setPasswordStrengthRules($value)
+	{
+		$this->_passwordStrengthRules = $value;
+	}
+
 	/**
 	 * Declares the validation rules.
 	 * The rules state that username and password are required,
@@ -16,20 +34,13 @@ abstract class BasePasswordForm extends BaseUsrForm
 	 */
 	public function rules()
 	{
-		$defaultStrengthRules = Yii::app()->controller->module->passwordStrengthRules;
-		if ($defaultStrengthRules === null) {
-			$defaultStrengthRules = array(
-				array('newPassword', 'length', 'min' => 8, 'message' => Yii::t('UsrModule.usr', 'New password must contain at least 8 characters.')),
-				array('newPassword', 'match', 'pattern' => '/^.*(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/', 'message'	=> Yii::t('UsrModule.usr', 'New password must contain at least one lower and upper case character and a digit.')),
-			);
-		}
 		$rules = array_merge(
 			array(
 				array('newPassword, newVerify', 'filter', 'filter'=>'trim'),
 				array('newPassword, newVerify', 'required'),
 				array('newPassword', 'unusedNewPassword'),
 			),
-			$defaultStrengthRules,
+			$this->passwordStrengthRules,
 			array(
 				array('newVerify', 'compare', 'compareAttribute'=>'newPassword', 'message' => Yii::t('UsrModule.usr', 'Please type the same new password twice to verify it.')),
 			)

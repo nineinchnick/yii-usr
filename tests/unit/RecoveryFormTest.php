@@ -3,9 +3,9 @@
 Yii::import('vendors.nineinchnick.yii-usr.tests.User');
 Yii::import('vendors.nineinchnick.yii-usr.tests.UserIdentity');
 Yii::import('vendors.nineinchnick.yii-usr.models.BaseUsrForm');
-Yii::import('vendors.nineinchnick.yii-usr.models.LoginForm');
+Yii::import('vendors.nineinchnick.yii-usr.models.RecoveryForm');
 
-class LoginFormTest extends CDbTestCase
+class RecoveryFormTest extends CDbTestCase
 {
 	public $fixtures=array(
 		'users'=>'User',
@@ -17,7 +17,7 @@ class LoginFormTest extends CDbTestCase
 				'scenario' => '',
 				'attributes' => array(
 					'username'=>'neo',
-					'password'=>'Test1233',
+					'email'=>'neo@matrix.com',
 				),
 			),
 		);
@@ -28,22 +28,11 @@ class LoginFormTest extends CDbTestCase
 			array(
 				'scenario' => '',
 				'attributes' => array(
-					'username'=>'',
-					'password'=>'',
+					'username'=>'trin',
+					'email'=>'trinity@matrix.com',
 				),
 				'errors ' => array(
-					'username'=>array('Username cannot be blank.'),
-					'password'=>array('Password cannot be blank.'),
-				),
-			),
-			array(
-				'scenario' => '',
-				'attributes' => array(
-					'username'=>'neo',
-					'password'=>'xx',
-				),
-				'errors' => array(
-					'password'=>array('Invalid username or password.'),
+					'username'=>array('No user found matching this username.'),
 				),
 			),
 		);
@@ -55,7 +44,7 @@ class LoginFormTest extends CDbTestCase
 
 	public function testWithBehavior()
 	{
-		$form = new LoginForm;
+		$form = new RecoveryForm;
 		$formAttributes = $form->attributeNames();
 		$formRules = $form->rules();
 		$formLabels = $form->attributeLabels();
@@ -64,7 +53,7 @@ class LoginFormTest extends CDbTestCase
 		$behaviorRules = $form->asa('captcha')->rules();
 		$behaviorLabels = $form->asa('captcha')->attributeLabels();
 		$this->assertEquals(array_merge($formAttributes, $behaviorAttributes), $form->attributeNames());
-		$this->assertEquals(array_merge($formRules, $behaviorRules), $form->rules());
+		$this->assertEquals(array_merge($behaviorRules, $formRules), $form->rules());
 		$this->assertEquals(array_merge($formLabels, $behaviorLabels), $form->attributeLabels());
 		$form->detachBehavior('captcha');
 		$this->assertEquals($formAttributes, $form->attributeNames());
@@ -76,7 +65,7 @@ class LoginFormTest extends CDbTestCase
 	 */
 	public function testValid($scenario, $attributes)
 	{
-		$form = new LoginForm($scenario);
+		$form = new RecoveryForm($scenario);
 		$form->userIdentityClass = 'UserIdentity';
 		$form->setAttributes($attributes);
 		$this->assertTrue($form->validate(), 'Failed with following validation errors: '.print_r($form->getErrors(),true));
@@ -89,7 +78,7 @@ class LoginFormTest extends CDbTestCase
 	 */
 	public function testInvalid($scenario, $attributes, $errors)
 	{
-		$form = new LoginForm($scenario);
+		$form = new RecoveryForm($scenario);
 		$form->userIdentityClass = 'UserIdentity';
 		$form->setAttributes($attributes);
 		$this->assertFalse($form->validate());

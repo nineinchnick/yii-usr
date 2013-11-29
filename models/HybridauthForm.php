@@ -5,7 +5,7 @@
  * HybridauthForm is the data structure for keeping
  * Hybridauth form data. It is used by the 'login' action of 'HybridauthController'.
  */
-class HybridauthForm extends CFormModel
+class HybridauthForm extends BaseUsrForm
 {
 	public $provider;
 	public $openid_identifier;
@@ -90,7 +90,7 @@ class HybridauthForm extends CFormModel
 
 	public function login()
 	{
-		$userIdentityClass = Yii::app()->controller->module->userIdentityClass;
+		$userIdentityClass = $this->userIdentityClass;
 		$fakeIdentity = new $userIdentityClass(null, null);
 		if (!($fakeIdentity instanceof IHybridauthIdentity))
 			throw new CException(Yii::t('UsrModule.usr','The {class} class must implement the {interface} interface.',array('{class}'=>get_class($identity),'{interface}'=>'IHybridauthIdentity')));
@@ -110,7 +110,7 @@ class HybridauthForm extends CFormModel
 
 	public function associate($user_id)
 	{
-		$userIdentityClass = Yii::app()->controller->module->userIdentityClass;
+		$userIdentityClass = $this->userIdentityClass;
 		$identity = new $userIdentityClass(null, null);
 		if (!($identity instanceof IHybridauthIdentity))
 			throw new CException(Yii::t('UsrModule.usr','The {class} class must implement the {interface} interface.',array('{class}'=>get_class($identity),'{interface}'=>'IHybridauthIdentity')));
