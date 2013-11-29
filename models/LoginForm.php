@@ -45,7 +45,8 @@ class LoginForm extends BaseUsrForm
 	public function getIdentity()
 	{
 		if($this->_identity===null) {
-			$this->_identity=new $this->userIdentityClass($this->username,$this->password);
+			$userIdentityClass = $this->userIdentityClass;
+			$this->_identity=new $userIdentityClass($this->username,$this->password);
 			$this->_identity->authenticate();
 		}
 		return $this->_identity;

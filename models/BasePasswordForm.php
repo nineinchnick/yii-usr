@@ -74,7 +74,8 @@ abstract class BasePasswordForm extends BaseUsrForm
 			return true;
 		// check if new password is not the same as current one
 		if (Yii::app()->user->getId() !== null) {
-			$newIdentity = $this->userIdentityClass::find(array('id'=>Yii::app()->user->getId()));
+			$userIdentityClass = $this->userIdentityClass;
+			$newIdentity = $userIdentityClass::find(array('id'=>Yii::app()->user->getId()));
 			$newIdentity->password = $this->newPassword;
 			if ($newIdentity->authenticate()) {
 				$this->addError('newPassword',Yii::t('UsrModule.usr','New password must be different than the old one.'));

@@ -39,7 +39,8 @@ class PasswordForm extends BasePasswordForm
 		if($this->_identity===null) {
 			if ($this->scenario === 'register')
 				return $this->_identity;
-			$this->_identity = $this->userIdentityClass::find(array('id'=>Yii::app()->user->getId()));
+			$userIdentityClass = $this->userIdentityClass;
+			$this->_identity = $userIdentityClass::find(array('id'=>Yii::app()->user->getId()));
 		}
 		return $this->_identity;
 	}

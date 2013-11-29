@@ -47,15 +47,16 @@ class RecoveryForm extends BasePasswordForm
 	public function getIdentity() {
 		if($this->_identity===null) {
 			// generate a fake object just to check if it implements a correct interface
-			$fakeIdentity = new $this->userIdentityClass(null, null);
+			$userIdentityClass = $this->userIdentityClass;
+			$fakeIdentity = new $userIdentityClass(null, null);
 			if (!($fakeIdentity instanceof IActivatedIdentity)) {
-				throw new CException(Yii::t('UsrModule.usr','The {class} class must implement the {interface} interface.',array('{class}'=>$this->userIdentityClass, '{interface}'=>'IActivatedIdentity')));
+				throw new CException(Yii::t('UsrModule.usr','The {class} class must implement the {interface} interface.',array('{class}'=>$userIdentityClass, '{interface}'=>'IActivatedIdentity')));
 			}
 			$attributes = array();
 			if ($this->username !== null) $attributes['username'] = $this->username;
 			if ($this->email !== null) $attributes['email'] = $this->email;
 			if (!empty($attributes))
-				$this->_identity=$this->userIdentityClass::find($attributes);
+				$this->_identity=$userIdentityClass::find($attributes);
 		}
 		return $this->_identity;
 	}
