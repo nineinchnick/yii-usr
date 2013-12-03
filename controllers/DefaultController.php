@@ -10,6 +10,7 @@ class DefaultController extends UsrController
 			$actions['captcha'] = array(
 				'class'=>'CCaptchaAction',
 				'backColor'=>0xFFFFFF,
+				'testLimit'=>0,
 			);
 		}
 		return $actions;
