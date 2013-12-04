@@ -25,7 +25,7 @@ class LoginForm extends BasePasswordForm
 			array('username, password', 'required'),
 			array('rememberMe', 'boolean'),
 			array('password', 'authenticate'),
-		), $this->getBehaviorRules(), $this->rulesAddScenario(parent::rules(), 'reset'));
+		), $this->rulesAddScenario(parent::rules(), 'reset'), $this->getBehaviorRules());
 
 		return $rules;
 	}
