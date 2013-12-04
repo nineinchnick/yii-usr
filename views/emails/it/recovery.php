@@ -10,4 +10,3 @@
 <p>
 Se il link non si apre correttamente provate a copiarlo e incollarlo direttamente nel navigatore.
 </p>
-
