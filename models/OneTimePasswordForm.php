@@ -82,7 +82,7 @@ class OneTimePasswordForm extends CFormModel
 
     public function getUrl($user, $hostname, $secret) {
         $url =  "otpauth://totp/$user@$hostname%3Fsecret%3D$secret";
-        $encoder = "https://www.google.com/chart?chs=200x200&chld=M|0&cht=qr&chl=";
+        $encoder = "https://chart.googleapis.com/chart?chs=200x200&chld=M|0&cht=qr&chl=";
         return $encoder.$url;
 	}
 
