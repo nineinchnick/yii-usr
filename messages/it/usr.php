@@ -56,7 +56,7 @@ return array (
   'Changes have been saved successfully.' => 'Le modifiche sono state salvate.',
   'Current password has been used too long and needs to be changed.' => 'La password corrente è scaduta e deve essere cambiata',
   'Don\'t have an account yet?' => 'Non siete ancora registrati?',
-  'Don\'t remember username or password?' => 'Non ricordate Utente e/o Passsword?',    
+  'Don\'t remember username or password?' => 'Non ricordate Utente e/o Passsword?',
   'Email' => 'Email',
   'Email address verification' => 'Verifica email',
   'Failed to change password or log in using new password.' => 'Errore nel cambio password o nel login con la nuova password..',
@@ -101,5 +101,5 @@ return array (
   'password recovery' => 'Recupero Password',
   'registration' => 'registrazione',
   'update' => 'aggiorna',
-  '{attribute} has already been used by another user.' => '{attribute} è stato già utilizzato da un\'altro utente.', 
+  '{attribute} has already been used by another user.' => '{attribute} è stato già utilizzato da un\'altro utente.',
 );
