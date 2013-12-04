@@ -5,7 +5,7 @@
  * LoginForm is the data structure for keeping
  * user login form data. It is used by the 'login' action of 'DefaultController'.
  */
-class LoginForm extends BaseUsrForm
+class LoginForm extends BasePasswordForm
 {
 	public $username;
 	public $password;
@@ -25,7 +25,7 @@ class LoginForm extends BaseUsrForm
 			array('username, password', 'required'),
 			array('rememberMe', 'boolean'),
 			array('password', 'authenticate'),
-		), $this->getBehaviorRules());
+		), $this->getBehaviorRules(), $this->rulesAddScenario(parent::rules(), 'reset'));
 
 		return $rules;
 	}
@@ -35,7 +35,7 @@ class LoginForm extends BaseUsrForm
 	 */
 	public function attributeLabels()
 	{
-		return array_merge($this->getBehaviorLabels(), array(
+		return array_merge($this->getBehaviorLabels(), parent::attributeLabels(), array(
 			'username'		=> Yii::t('UsrModule.usr','Username'),
 			'password'		=> Yii::t('UsrModule.usr','Password'),
 			'rememberMe'	=> Yii::t('UsrModule.usr','Remember me when logging in next time'),

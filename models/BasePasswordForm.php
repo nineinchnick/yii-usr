@@ -81,21 +81,19 @@ abstract class BasePasswordForm extends BaseUsrForm
 		}
 
 		$identity = $this->getIdentity();
-		if (!($identity instanceof IPasswordHistoryIdentity))
-			return true;
-		// check if new password is not the same as current one
-		if (Yii::app()->user->getId() !== null) {
-			$userIdentityClass = $this->userIdentityClass;
-			$newIdentity = $userIdentityClass::find(array('id'=>Yii::app()->user->getId()));
-			$newIdentity->password = $this->newPassword;
-			if ($newIdentity->authenticate()) {
-				$this->addError('newPassword',Yii::t('UsrModule.usr','New password must be different than the old one.'));
+		// check if new password hasn't been used before
+		if ($identity instanceof IPasswordHistoryIdentity) {
+			if (($lastUsed = $identity->getPasswordDate($this->newPassword)) !== null) {
+				$this->addError('newPassword',Yii::t('UsrModule.usr','New password has been used before, last set on {date}.', array('{date}'=>$lastUsed)));
 				return false;
 			}
+			return true;
 		}
-		// check if new password hasn't been used before
-		if (($lastUsed = $identity->getPasswordDate($this->newPassword)) !== null) {
-			$this->addError('newPassword',Yii::t('UsrModule.usr','New password has been used before, last set on {date}.', array('{date}'=>$lastUsed)));
+		// check if new password is not the same as current one
+		$newIdentity = clone $identity;
+		$newIdentity->password = $this->newPassword;
+		if ($newIdentity->authenticate()) {
+			$this->addError('newPassword',Yii::t('UsrModule.usr','New password must be different than the old one.'));
 			return false;
 		}
 		return true;
