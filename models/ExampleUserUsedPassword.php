@@ -16,17 +16,26 @@ require(Yii::getPathOfAlias('usr.extensions').DIRECTORY_SEPARATOR.'password.php'
  */
 abstract class ExampleUserUsedPassword extends CActiveRecord
 {
+	/**
+	 * @inheritdoc
+	 */
 	public function tableName()
 	{
 		return '{{user_used_passwords}}';
 	}
 
+	/**
+	 * @inheritdoc
+	 */
 	public function rules()
 	{
 		return array(
 		);
 	}
 
+	/**
+	 * @inheritdoc
+	 */
 	public function relations()
 	{
 		return array(
@@ -34,6 +43,9 @@ abstract class ExampleUserUsedPassword extends CActiveRecord
 		);
 	}
 
+	/**
+	 * @inheritdoc
+	 */
 	public function attributeLabels()
 	{
 		return array(

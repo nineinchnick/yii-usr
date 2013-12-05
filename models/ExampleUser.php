@@ -28,11 +28,17 @@
  */
 abstract class ExampleUser extends CActiveRecord
 {
+	/**
+	 * @inheritdoc
+	 */
 	public function tableName()
 	{
 		return '{{users}}';
 	}
 
+	/**
+	 * @inheritdoc
+	 */
 	public function rules()
 	{
 		// password is unsafe on purpose, assign it manually after hashing only if not empty
@@ -49,6 +55,9 @@ abstract class ExampleUser extends CActiveRecord
 		);
 	}
 
+	/**
+	 * @inheritdoc
+	 */
 	public function relations()
 	{
 		return array(
@@ -57,6 +66,9 @@ abstract class ExampleUser extends CActiveRecord
 		);
 	}
 
+	/**
+	 * @inheritdoc
+	 */
 	public function attributeLabels()
 	{
 		return array(
@@ -74,9 +86,9 @@ abstract class ExampleUser extends CActiveRecord
 			'email_verified' => Yii::t('models', 'Email Verified'),
 			'is_active' => Yii::t('models', 'Is Active'),
 			'is_disabled' => Yii::t('models', 'Is Disabled'),
-			'one_time_password_secret' => 'One Time Password Secret',
-			'one_time_password_code' => 'One Time Password Code',
-			'one_time_password_counter' => 'One Time Password Counter',
+			'one_time_password_secret' => Yii::t('models', 'One Time Password Secret'),
+			'one_time_password_code' => Yii::t('models', 'One Time Password Code'),
+			'one_time_password_counter' => Yii::t('models', 'One Time Password Counter'),
 		);
 	}
 
@@ -117,6 +129,9 @@ abstract class ExampleUser extends CActiveRecord
 		return parent::model($className);
 	}
 
+	/**
+	 * @inheritdoc
+	 */
 	protected function beforeSave()
 	{
 		if ($this->isNewRecord) {
