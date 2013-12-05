@@ -18,7 +18,10 @@ class DefaultController extends UsrController
 
 	public function actionIndex()
 	{
-		$this->render('index');
+		if (Yii::app()->user->isGuest)
+			$this->redirect(array('login'));
+		else
+			$this->redirect(array('profile'));
 	}
 
 	/**
@@ -156,9 +159,12 @@ class DefaultController extends UsrController
 			if(isset($_POST['PasswordForm']))
 				$passwordForm->setAttributes($_POST['PasswordForm']);
 			if ($model->validate() && $passwordForm->validate()) {
+				$trx = Yii::app()->db->beginTransaction();
 				if (!$model->save() || !$passwordForm->resetPassword($model->getIdentity())) {
+					$trx->rollback();
 					Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to register a new user.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
 				} else {
+					$trx->commit();
 					if ($this->module->requireVerifiedEmail) {
 						if ($this->sendEmail($model, 'verify')) {
 							Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'An email containing further instructions has been sent to provided email address.'));
@@ -327,7 +333,7 @@ class DefaultController extends UsrController
 
 	public function actionPassword()
 	{
-		$diceware = new Diceware;
+		$diceware = new Diceware(Yii::app()->language);
 		$password = $diceware->get_phrase($this->module->dicewareLength, $this->module->dicewareExtraDigit, $this->module->dicewareExtraChar);
 		echo json_encode($password);
 	}
