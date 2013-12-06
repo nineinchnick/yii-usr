@@ -1,5 +1,7 @@
 <?php
 
+Yii::import('usr.controllers.UsrController');
+
 class DefaultController extends UsrController
 {
 	public function actions()

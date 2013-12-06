@@ -1,5 +1,7 @@
 <?php
 
+Yii::import('usr.controllers.UsrController');
+
 class HybridauthController extends UsrController
 {
 	public function actionIndex()
