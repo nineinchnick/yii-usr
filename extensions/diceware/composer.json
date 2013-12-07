@@ -1,0 +1,20 @@
+{
+	"name": "nineinchnick/diceware",
+	"description": "Diceware passphrase generator",
+	"keywords": ["diceware", "passphrase", "password generator"],
+	"authors": [
+		{
+			"name": "Joe Martin",
+			"email": "jmartin@desertflood.com"
+		},
+		{
+            "name": "Jan Waś",
+            "email": "janek.jan@gmail.com",
+			"homepage": "http://niix.pl/"
+		}
+	],
+	"autoload": {
+		"psr-0": { "nineinchnick\\diceware\\": "" }
+	},
+	"target-dir": "nineinchnick/diceware"
+}
