@@ -19,16 +19,32 @@ abstract class FormModelBehavior extends CModelBehavior
 
 	private $_ruleOptions = array();
 
+	/**
+	 * Validation rules for attributes of this behavior, that should be merged with rules in the owner model.
+	 * @return array validation rules
+	 * @see CModel::rules()
+	 */
 	public function rules()
 	{
 		return array();
 	}
 
+	/**
+	 * Labels for attributes of this behavior, that should be merged with labels in the owner model.
+	 * @return array attribute labels (name => label)
+	 * @see CModel::attributeLabels()
+	 */
 	public function attributeLabels()
 	{
 		return array();
 	}
 
+	/**
+	 * Returns the list of attribute names.
+	 * By default, this method returns all public non-static properties of the class.
+	 * You may override this method to change the default behavior.
+	 * @return array list of attribute names.
+	 */
 	public function attributeNames()
 	{
 		$className=get_class($this);
@@ -48,6 +64,11 @@ abstract class FormModelBehavior extends CModelBehavior
 			return self::$_names[$className];
 	}
 
+	/**
+	 * Adds current rule options to the given set of rules.
+	 * @param array $rules
+	 * @return array
+	 */
 	public function applyRuleOptions($rules)
 	{
 		foreach($rules as $key=>$rule) {

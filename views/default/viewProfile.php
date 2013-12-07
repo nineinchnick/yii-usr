@@ -18,9 +18,8 @@ if ($this->module->oneTimePasswordMode === UsrModule::OTP_TIME || $this->module-
 		'name'=>'twoStepAuth',
 		'type'=>'raw',
 		'label'=>Yii::t('UsrModule.usr', 'Two step authentication'),
-		'value'=>$this->displayOneTimePasswordSecret(),
+		'value'=>$model->getIdentity()->getOneTimePasswordSecret() === null ? CHtml::link(Yii::t('UsrModule.usr', 'Enable'), array('toggleOneTimePassword')) : CHtml::link(Yii::t('UsrModule.usr', 'Disable'), array('toggleOneTimePassword')),
 	);
 }
 $this->widget($this->module->detailViewClass, array('data' => $model, 'attributes' => $attributes));
-?>
 

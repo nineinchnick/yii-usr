@@ -7,12 +7,24 @@
  */
 class HybridauthForm extends BaseUsrForm
 {
+	/**
+	 * @var string provider name selected from the list of available providers
+	 */
 	public $provider;
+	/**
+	 * @var string user identifier
+	 */
 	public $openid_identifier;
 
+	/**
+	 * @var array @see UsrModule::$hybridauthProviders
+	 */
 	protected $_validProviders = array();
 	protected $_hybridAuth;
 	protected $_hybridAuthAdapter;
+	/**
+	 * @var IUserIdentity cached object returned by @see getIdentity()
+	 */
 	protected $_identity;
 
 	/**

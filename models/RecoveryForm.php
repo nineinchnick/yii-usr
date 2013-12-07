@@ -11,6 +11,9 @@ class RecoveryForm extends BasePasswordForm
 	public $email;
 	public $activationKey;
 
+	/**
+	 * @var IdentityInterface cached object returned by @see getIdentity()
+	 */
 	private $_identity;
 
 	/**
@@ -44,6 +47,9 @@ class RecoveryForm extends BasePasswordForm
 		));
 	}
 
+	/**
+	 * @inheritdoc
+	 */
 	public function getIdentity() {
 		if($this->_identity===null) {
 			// generate a fake object just to check if it implements a correct interface
@@ -61,6 +67,12 @@ class RecoveryForm extends BasePasswordForm
 		return $this->_identity;
 	}
 
+	/**
+	 * Inline validator that checks if an identity exists matching provided username or password.
+	 * @param string $attribute
+	 * @param array $params
+	 * @return boolean
+	 */
 	public function existingIdentity($attribute,$params) {
 		if($this->hasErrors()) {
 			return;

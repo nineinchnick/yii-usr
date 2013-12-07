@@ -7,6 +7,9 @@
 abstract class BaseUsrForm extends CFormModel
 {
 	private static $_names=array();
+	/**
+	 * @inheritdoc
+	 */
 	private $_behaviors=array();
 	private $_userIdentityClass;
 
@@ -20,6 +23,12 @@ abstract class BaseUsrForm extends CFormModel
 		$this->_userIdentityClass = $value;
 	}
 
+
+	/**
+	 * @inheritdoc
+	 *
+	 * Additionally, tracks attached behaviors to allow iterating over them.
+	 */
 	public function attachBehavior($name, $behavior)
 	{
 		$this->_behaviors[$name] = $name;
@@ -27,6 +36,11 @@ abstract class BaseUsrForm extends CFormModel
 		return parent::attachBehavior($name, $behavior);
 	}
 
+	/**
+	 * @inheritdoc
+	 *
+	 * Additionally, tracks attached behaviors to allow iterating over them.
+	 */
 	public function detachBehavior($name)
 	{
 		if (isset($this->_behaviors[$name]))
@@ -35,6 +49,11 @@ abstract class BaseUsrForm extends CFormModel
 		return parent::detachBehavior($name);
 	}
 
+	/**
+	 * @inheritdoc
+	 *
+	 * Additionally, adds attributes defined in attached behaviors that extend FormModelBehavior.
+	 */
 	public function attributeNames()
 	{
 		$className=get_class($this);
@@ -58,6 +77,11 @@ abstract class BaseUsrForm extends CFormModel
 			return self::$_names[$className];
 	}
 
+	/**
+	 * Returns attribute labels defined in attached behaviors that extend FormModelBehavior.
+	 * @return array attribute labels (name => label)
+	 * @see CModel::attributeLabels()
+	 */
 	public function getBehaviorLabels()
 	{
 		$labels = array();
@@ -68,6 +92,11 @@ abstract class BaseUsrForm extends CFormModel
 		return $labels;
 	}
 
+	/**
+	 * Returns rules defined in attached behaviors that extend FormModelBehavior.
+	 * @return array validation rules
+	 * @see CModel::rules()
+	 */
 	public function getBehaviorRules()
 	{
 		$rules = array();

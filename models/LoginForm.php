@@ -11,6 +11,9 @@ class LoginForm extends BasePasswordForm
 	public $password;
 	public $rememberMe;
 
+	/**
+	 * @var IdentityInterface cached object returned by @see getIdentity()
+	 */
 	private $_identity;
 
 	/**
@@ -42,6 +45,9 @@ class LoginForm extends BasePasswordForm
 		));
 	}
 
+	/**
+	 * @inheritdoc
+	 */
 	public function getIdentity()
 	{
 		if($this->_identity===null) {
@@ -55,6 +61,9 @@ class LoginForm extends BasePasswordForm
 	/**
 	 * Authenticates the password.
 	 * This is the 'authenticate' validator as declared in rules().
+	 * @param string $attribute
+	 * @param array $params
+	 * @return boolean
 	 */
 	public function authenticate($attribute,$params)
 	{

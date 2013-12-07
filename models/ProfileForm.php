@@ -12,6 +12,9 @@ class ProfileForm extends BaseUsrForm
 	public $firstName;
 	public $lastName;
 
+	/**
+	 * @var IdentityInterface cached object returned by @see getIdentity()
+	 */
 	private $_identity;
 
 	/**
@@ -41,6 +44,9 @@ class ProfileForm extends BaseUsrForm
 		));
 	}
 
+	/**
+	 * @inheritdoc
+	 */
 	public function getIdentity()
 	{
 		if($this->_identity===null) {
@@ -84,6 +90,7 @@ class ProfileForm extends BaseUsrForm
 
 	/**
 	 * Updates the identity with this models attributes and saves it.
+	 * @return boolean whether saving is successful
 	 */
 	public function save()
 	{

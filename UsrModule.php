@@ -228,11 +228,17 @@ class UsrModule extends CWebModule
 	 */
 	protected $_hybridauth;
 
+	/**
+	 * @inheritdoc
+	 */
 	public function getVersion()
 	{
 		return '0.9.8';
 	}
 
+	/**
+	 * @inheritdoc
+	 */
 	public function init()
 	{
 		parent::init();
@@ -281,17 +287,29 @@ class UsrModule extends CWebModule
 		}
 	}
 
+	/**
+	 * Checks if any Hybridauth provider has been configured.
+	 * @return boolean
+	 */
 	public function hybridauthEnabled()
 	{
 		$providers = array_filter($this->hybridauthProviders, function($p){return !isset($p['enabled']) || $p['enabled'];});
 		return !empty($providers);
 	}
 
+	/**
+	 * Gets the Hybridauth object
+	 * @return Hybrid_Auth 
+	 */
 	public function getHybridAuth()
 	{
 		return $this->_hybridauth;
 	}
 
+	/**
+	 * Gets the GoogleAuthenticator object
+	 * @return GoogleAuthenticator
+	 */
 	public function getGoogleAuthenticator()
 	{
 		if ($this->_googleAuthenticator === null) {
@@ -301,6 +319,14 @@ class UsrModule extends CWebModule
 		return $this->_googleAuthenticator;
 	}
 
+	/**
+	 * A factory to create pre-configured form models. Only model class names from the nineinchnick\usr\models namespace are allowed.
+	 * Sets scenario, password strength rules for models extending BasePasswordForm and attaches behaviors.
+	 *
+	 * @param string $class without the namespace
+	 * @param string $scenario
+	 * @return Model
+	 */
 	public function createFormModel($class, $scenario='')
 	{
 		$form = new $class($scenario);

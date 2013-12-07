@@ -37,6 +37,13 @@ abstract class ExampleUserRemoteIdentity extends CActiveRecord
 		);
 	}
 
+	/**
+	 * An inline validator that checkes if there are no existing records
+	 * with same provider and identifier for specified user.
+	 * @param string $attribute
+	 * @param array $params
+	 * @return boolean
+	 */
 	public function isUnique($attribute, $params)
 	{
 		return 0 === $this->countByAttributes(array(
@@ -57,7 +64,7 @@ abstract class ExampleUserRemoteIdentity extends CActiveRecord
 	}
 
 	/**
-	 * @return array customized attribute labels (name=>label)
+	 * @inheritdoc
 	 */
 	public function attributeLabels()
 	{

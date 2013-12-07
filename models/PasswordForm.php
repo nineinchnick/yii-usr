@@ -8,6 +8,9 @@ class PasswordForm extends BasePasswordForm
 {
 	public $password;
 
+	/**
+	 * @var IdentityInterface cached object returned by @see getIdentity()
+	 */
 	private $_identity;
 
 	/**
@@ -34,6 +37,9 @@ class PasswordForm extends BasePasswordForm
 		));
 	}
 
+	/**
+	 * @inheritdoc
+	 */
 	public function getIdentity()
 	{
 		if($this->_identity===null) {

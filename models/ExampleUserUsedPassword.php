@@ -83,6 +83,10 @@ abstract class ExampleUserUsedPassword extends CActiveRecord
 		return parent::model($className);
 	}
 
+	/**
+	 * @param string $password password to validate
+	 * @return bool if password provided is valid for saved one
+	 */
 	public function verifyPassword($password)
 	{
 		return $this->password !== null && password_verify($password, $this->password);
