@@ -29,9 +29,9 @@ class DefaultController extends UsrController
 			];
 		}
 		if ($this->module->oneTimePasswordMode != UsrModule::OTP_NONE) {
-			// OneTimePaswordAction allows toggling two step auth in user profile
+			// OneTimePasswordAction allows toggling two step auth in user profile
 			$actions['toggleOneTimePassword'] = [
-				'class'=>'OneTimePaswordAction',
+				'class'=>'OneTimePasswordAction',
 			];
 		}
 		return $actions;
