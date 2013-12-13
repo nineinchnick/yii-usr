@@ -21,18 +21,18 @@ class DefaultController extends UsrController
 		}
 		if ($this->module->dicewareEnabled) {
 			// DicewareAction generates a random passphrase
-			$actions['password'] = [
+			$actions['password'] = array(
 				'class'=>'DicewareAction',
 				'length'=>$this->module->dicewareLength,
 				'extraDigit'=>$this->module->dicewareExtraDigit,
 				'extraChar'=>$this->module->dicewareExtraChar,
-			];
+			);
 		}
 		if ($this->module->oneTimePasswordMode != UsrModule::OTP_NONE) {
 			// OneTimePasswordAction allows toggling two step auth in user profile
-			$actions['toggleOneTimePassword'] = [
+			$actions['toggleOneTimePassword'] = array(
 				'class'=>'OneTimePasswordAction',
-			];
+			);
 		}
 		return $actions;
 	}
