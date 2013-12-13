@@ -88,6 +88,13 @@ class RecoveryForm extends BasePasswordForm
 			}
 			return false;
 		}
+		elseif ($identity->isDisabled()) {
+			/** 
+			 * Don't allow password recovery for disabled users 
+			*/
+			$this->addError('username',Yii::t('UsrModule.usr','User is disabled.'));
+			return false;
+		}
 		return true;
 	}
 
