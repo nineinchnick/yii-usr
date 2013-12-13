@@ -124,6 +124,7 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 		if ($this->_id === null) {
 			$record = new User;
 			$record->password = 'x';
+			$record->is_active = Yii::app()->controller->module->requireVerifiedEmail ? 0 : 1;
 		} else {
 			$record = User::model()->findByPk($this->_id);
 		}
@@ -133,7 +134,6 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 				'email' => $this->email,
 				'firstname' => $this->firstName,
 				'lastname' => $this->lastName,
-				'is_active' => 1,
 			));
 			if ($record->save()) {
 				$this->_id = $record->getPrimaryKey();
@@ -264,8 +264,20 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 		if ($this->_id===null)
 			return false;
 		if (($record=User::model()->findByPk($this->_id))!==null) {
-			if (!$record->saveAttributes(array('email_verified' => 1))) {
-				return false;
+			/** 
+			 * Only update $record if it's not already been updated, otherwise 
+			 * saveAttributes will return false, incorrectly suggesting 
+			 * failure.  
+			*/
+			if (!$record->email_verified) {
+				$updates = array('email_verified' => 1);
+
+				if (Yii::app()->controller->module->requireVerifiedEmail && !$record->is_active) {
+					$updates['is_active'] = 1;
+				}
+				if (!$record->saveAttributes($updates)) {
+					return false;
+				}
 			}
 			return true;
 		}
