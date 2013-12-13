@@ -72,7 +72,7 @@ class LoginForm extends BasePasswordForm
 		}
 		$identity = $this->getIdentity();
 		if(!$identity->getIsAuthenticated()) {
-			$this->addError('password',Yii::t('UsrModule.usr','Invalid username or password.'));
+			$this->addError('password',Yii::t('UsrModule.usr','Invalid / inactive username or password.'));
 			return false;
 		}
 		return true;

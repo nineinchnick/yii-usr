@@ -218,7 +218,7 @@ class DefaultController extends UsrController
 					$trx->commit();
 					if ($this->module->requireVerifiedEmail) {
 						if ($this->sendEmail($model, 'verify')) {
-							Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'An email containing further instructions has been sent to provided email address.'));
+							Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'An email containing further instructions has been sent to the provided email address.'));
 						} else {
 							Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to send an email.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
 						}
@@ -286,7 +286,7 @@ class DefaultController extends UsrController
 				if ($model->save()) {
 					if ($this->module->requireVerifiedEmail && $oldEmail != $model->email) {
 						if ($this->sendEmail($model, 'verify')) {
-							$flashes['success'][] = Yii::t('UsrModule.usr', 'An email containing further instructions has been sent to provided email address.');
+							$flashes['success'][] = Yii::t('UsrModule.usr', 'An email containing further instructions has been sent to the provided email address.');
 						} else {
 							$flashes['error'][] = Yii::t('UsrModule.usr', 'Failed to send an email.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.');
 						}
