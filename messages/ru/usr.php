@@ -71,7 +71,7 @@ return array (
   'First name' => 'Имя',
   'Generate a password' => 'Сгенерировать пароль',
   'Go to {link}.' => 'Перейти к {link}.',
-  'Invalid / inactive username or password.' => 'Неверная пара логин/пароль.',
+  'Invalid username or password.' => 'Неверная пара логин/пароль.',
   'Last name' => 'Фамилия',
   'Log in' => 'Войти',
   'New password' => 'Новый пароль',

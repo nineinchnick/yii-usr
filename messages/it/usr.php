@@ -69,7 +69,7 @@ return array (
   'First name' => 'Nome',
   'Generate a password' => 'Genera Password',
   'Go to {link}.' => 'Vai a {link}.',
-  'Invalid / inactive username or password.' => 'Utente o Password errati.',
+  'Invalid username or password.' => 'Utente o Password errati.',
   'Last name' => 'Cognome',
   'Log in' => 'Login',
   'New password' => 'Nuova Password',

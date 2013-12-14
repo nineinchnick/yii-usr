@@ -53,7 +53,7 @@ return array (
   'Generate a password' => 'Wygeneruj hasło',
   'Go to {link}.' => 'Przejdź do {link}.',
   'Invalid password.' => 'Nieprawidłowe hasło.',
-  'Invalid / inactive username or password.' => 'Nieprawidłowa nazwa użytkownika lub hasło.',
+  'Invalid username or password.' => 'Nieprawidłowa nazwa użytkownika lub hasło.',
   'Last name' => 'Nazwisko',
   'Letters are not case-sensitive.' => 'Wielkość liter nie ma znaczenia.',
   'Log in' => 'Zaloguj się',

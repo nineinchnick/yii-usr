@@ -43,7 +43,7 @@ class LoginFormTest extends CDbTestCase
 					'password'=>'xx',
 				),
 				'errors' => array(
-					'password'=>array('Invalid / inactive username or password.'),
+					'password'=>array('Invalid username or password.'),
 				),
 			),
 		);

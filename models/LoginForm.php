@@ -71,8 +71,16 @@ class LoginForm extends BasePasswordForm
 			return;
 		}
 		$identity = $this->getIdentity();
-		if(!$identity->getIsAuthenticated()) {
-			$this->addError('password',Yii::t('UsrModule.usr','Invalid / inactive username or password.'));
+		if (!$identity->getIsAuthenticated()) {
+		    if ($identity->errorCode == constant($this->userIdentityClass . '::ERROR_USER_DISABLED')) {
+                $this->addError('password',Yii::t('UsrModule.usr','User is disabled.'));
+            } 
+		    elseif ($identity->errorCode == constant($this->userIdentityClass . '::ERROR_USER_INACTIVE')) {
+                $this->addError('password',Yii::t('UsrModule.usr','User is not activated.'));
+            }
+            else {
+                $this->addError('password',Yii::t('UsrModule.usr','Invalid username or password.'));
+            }
 			return false;
 		}
 		return true;
