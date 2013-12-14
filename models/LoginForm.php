@@ -72,10 +72,10 @@ class LoginForm extends BasePasswordForm
 		}
 		$identity = $this->getIdentity();
 		if (!$identity->getIsAuthenticated()) {
-		    if ($identity->errorCode == constant($this->userIdentityClass . '::ERROR_USER_DISABLED')) {
+		    if (defined($this->userIdentityClass . '::ERROR_USER_DISABLED') && $identity->errorCode == constant($this->userIdentityClass . '::ERROR_USER_DISABLED')) {
                 $this->addError('password',Yii::t('UsrModule.usr','User is disabled.'));
             } 
-		    elseif ($identity->errorCode == constant($this->userIdentityClass . '::ERROR_USER_INACTIVE')) {
+		    elseif (defined($this->userIdentityClass . '::ERROR_USER_INACTIVE') && $identity->errorCode == constant($this->userIdentityClass . '::ERROR_USER_INACTIVE')) {
                 $this->addError('password',Yii::t('UsrModule.usr','User is not activated.'));
             }
             else {
