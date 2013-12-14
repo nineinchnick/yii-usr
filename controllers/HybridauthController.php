@@ -111,7 +111,7 @@ class HybridauthController extends UsrController
 			if ($localProfile->register()) {
 				if ($this->module->requireVerifiedEmail) {
 					if ($this->sendEmail($localProfile, 'verify')) {
-						Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'An email containing further instructions has been sent to provided email address.'));
+						Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'An email containing further instructions has been sent to the provided email address.'));
 					} else {
 						Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to send an email.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
 					}

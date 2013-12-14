@@ -1,5 +1,6 @@
 <p>
-	This message contains instructions to perform a password recovery. It was requested on the <?php echo CHtml::link(Yii::app()->name, $siteUrl); ?>. If you did not performed this request, please ignore this email or contact our administrator.
+	This message contains instructions to perform a password recovery. It was requested on the <?php echo CHtml::link(Yii::app()->name, $siteUrl); ?> website.
+    If you did not perform this request, please ignore this email or contact our administrator.
 </p>
 
 <p>To set a new password, open the following link:</p>

@@ -9,6 +9,9 @@ Yii::import('usr.components.*');
  */
 abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHistoryIdentity,IActivatedIdentity,IEditableIdentity,IHybridauthIdentity,IOneTimePasswordIdentity
 {
+	CONST ERROR_USER_DISABLED=1000;
+	CONST ERROR_USER_INACTIVE=1001;
+
 	public $email = null;
 	public $firstName = null;
 	public $lastName = null;
@@ -17,12 +20,17 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 	protected static function createFromUser(User $user)
 	{
 		$identity = new UserIdentity($user->username, null);
-		$identity->id = $user->id;
-		$identity->username = $user->username;
-		$identity->email = $user->email;
-		$identity->firstName = $user->firstname;
-		$identity->lastName = $user->lastname;
+		$identity->initFromUser($user);
 		return $identity;
+	}
+
+	protected function initFromUser(User $user)
+	{
+		$this->id = $user->id;
+		$this->username = $user->username;
+		$this->email = $user->email;
+		$this->firstName = $user->firstname;
+		$this->lastName = $user->lastname;
 	}
 
 	// {{{ IUserIdentity
@@ -33,11 +41,18 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 	public function authenticate()
 	{
 		$record=User::model()->findByAttributes(array('username'=>$this->username));
-		if ($record!==null && $record->is_active && !$record->is_disabled && $record->verifyPassword($this->password)) {
-			$this->_id = $record->id;
-			$this->email = $record->email;
-			$this->errorCode=self::ERROR_NONE;
-			$record->saveAttributes(array('last_visit_on'=>date('Y-m-d H:i:s')));
+		if ($record!==null && $record->verifyPassword($this->password)) {
+			if ($record->is_disabled) {
+				$this->errorCode=self::ERROR_USER_DISABLED;
+			}
+			else if (!$record->is_active) {
+				$this->errorCode=self::ERROR_USER_INACTIVE;
+			}
+			else {
+				$this->initFromUser($record);
+				$this->errorCode=self::ERROR_NONE;
+				$record->saveAttributes(array('last_visit_on'=>date('Y-m-d H:i:s')));
+			}
 		} else {
 			$this->errorCode=self::ERROR_USERNAME_INVALID;
 		}
@@ -124,6 +139,7 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 		if ($this->_id === null) {
 			$record = new User;
 			$record->password = 'x';
+			$record->is_active = Yii::app()->controller->module->requireVerifiedEmail ? 0 : 1;
 		} else {
 			$record = User::model()->findByPk($this->_id);
 		}
@@ -133,7 +149,6 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 				'email' => $this->email,
 				'firstname' => $this->firstName,
 				'lastname' => $this->lastName,
-				'is_active' => 1,
 			));
 			if ($record->save()) {
 				$this->_id = $record->getPrimaryKey();
@@ -264,8 +279,20 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 		if ($this->_id===null)
 			return false;
 		if (($record=User::model()->findByPk($this->_id))!==null) {
-			if (!$record->saveAttributes(array('email_verified' => 1))) {
-				return false;
+			/** 
+			 * Only update $record if it's not already been updated, otherwise 
+			 * saveAttributes will return false, incorrectly suggesting 
+			 * failure.  
+			*/
+			if (!$record->email_verified) {
+				$updates = array('email_verified' => 1);
+
+				if (Yii::app()->controller->module->requireVerifiedEmail && !$record->is_active) {
+					$updates['is_active'] = 1;
+				}
+				if (!$record->saveAttributes($updates)) {
+					return false;
+				}
 			}
 			return true;
 		}

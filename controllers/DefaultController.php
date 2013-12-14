@@ -21,18 +21,18 @@ class DefaultController extends UsrController
 		}
 		if ($this->module->dicewareEnabled) {
 			// DicewareAction generates a random passphrase
-			$actions['password'] = [
+			$actions['password'] = array(
 				'class'=>'DicewareAction',
 				'length'=>$this->module->dicewareLength,
 				'extraDigit'=>$this->module->dicewareExtraDigit,
 				'extraChar'=>$this->module->dicewareExtraChar,
-			];
+			);
 		}
 		if ($this->module->oneTimePasswordMode != UsrModule::OTP_NONE) {
 			// OneTimePasswordAction allows toggling two step auth in user profile
-			$actions['toggleOneTimePassword'] = [
+			$actions['toggleOneTimePassword'] = array(
 				'class'=>'OneTimePasswordAction',
-			];
+			);
 		}
 		return $actions;
 	}
@@ -139,8 +139,14 @@ class DefaultController extends UsrController
 				$model->scenario = 'reset';
 			if($model->validate()) {
 				if ($model->scenario !== 'reset') {
-					if ($this->sendEmail($model, 'recovery')) {
-						Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'An email containing further instructions has been sent to email associated with specified user account.'));
+					/** 
+					 * Send email appropriate to the activation status
+					 * (ie if verification is required, that must happen
+					 * before password recovery). Also allows re-sending of
+					 * verification emails)
+					 */
+					if ($this->sendEmail($model, ($model->identity->isActive()) ? 'recovery' : 'verify')) {
+						Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'An email containing further instructions has been sent to the email address associated with the specified user account.'));
 					} else {
 						Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to send an email.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
 					}
@@ -212,7 +218,7 @@ class DefaultController extends UsrController
 					$trx->commit();
 					if ($this->module->requireVerifiedEmail) {
 						if ($this->sendEmail($model, 'verify')) {
-							Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'An email containing further instructions has been sent to provided email address.'));
+							Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'An email containing further instructions has been sent to the provided email address.'));
 						} else {
 							Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to send an email.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
 						}
@@ -280,7 +286,7 @@ class DefaultController extends UsrController
 				if ($model->save()) {
 					if ($this->module->requireVerifiedEmail && $oldEmail != $model->email) {
 						if ($this->sendEmail($model, 'verify')) {
-							$flashes['success'][] = Yii::t('UsrModule.usr', 'An email containing further instructions has been sent to provided email address.');
+							$flashes['success'][] = Yii::t('UsrModule.usr', 'An email containing further instructions has been sent to the provided email address.');
 						} else {
 							$flashes['error'][] = Yii::t('UsrModule.usr', 'Failed to send an email.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.');
 						}

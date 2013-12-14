@@ -1,5 +1,6 @@
 <p>
-	This message contains instructions to verify this email address. It was requested on the <?php echo CHtml::link(Yii::app()->name, $siteUrl); ?>. If you did not performed this request, please ignore this email or contact our administrator.
+	This message contains instructions to verify this email address. It was requested on the <?php echo CHtml::link(Yii::app()->name, $siteUrl); ?> website.
+    If you did not perform this request, please ignore this email or contact our administrator.
 </p>
 
 <p>To verify this email address, open the following link:</p>
