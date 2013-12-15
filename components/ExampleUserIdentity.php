@@ -9,8 +9,8 @@ Yii::import('usr.components.*');
  */
 abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHistoryIdentity,IActivatedIdentity,IEditableIdentity,IHybridauthIdentity,IOneTimePasswordIdentity
 {
-	CONST ERROR_USER_DISABLED=1000;
-	CONST ERROR_USER_INACTIVE=1001;
+	const ERROR_USER_DISABLED=1000;
+	const ERROR_USER_INACTIVE=1001;
 
 	public $email = null;
 	public $firstName = null;
@@ -44,17 +44,19 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 		if ($record!==null && $record->verifyPassword($this->password)) {
 			if ($record->is_disabled) {
 				$this->errorCode=self::ERROR_USER_DISABLED;
-			}
-			else if (!$record->is_active) {
+				$this->errorMessage=Yii::t('UsrModule.usr','User is disabled.');
+			} else if (!$record->is_active) {
 				$this->errorCode=self::ERROR_USER_INACTIVE;
-			}
-			else {
+				$this->errorMessage=Yii::t('UsrModule.usr','User is not activated.');
+			} else {
 				$this->initFromUser($record);
 				$this->errorCode=self::ERROR_NONE;
+				$this->errorMessage='';
 				$record->saveAttributes(array('last_visit_on'=>date('Y-m-d H:i:s')));
 			}
 		} else {
 			$this->errorCode=self::ERROR_USERNAME_INVALID;
+			$this->errorMessage=Yii::t('UsrModule.usr','Invalid username or password.');
 		}
 		return $this->getIsAuthenticated();
 	}
@@ -132,14 +134,15 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 	 * Saves a new or existing identity. Does not set or change the password.
 	 * @see IPasswordHistoryIdentity::resetPassword()
 	 * Should detect if the email changed and mark it as not verified.
+	 * @param boolean $requireVerifiedEmail
 	 * @return boolean
 	 */
-	public function save()
+	public function save($requireVerifiedEmail=false)
 	{
 		if ($this->_id === null) {
 			$record = new User;
 			$record->password = 'x';
-			$record->is_active = Yii::app()->controller->module->requireVerifiedEmail ? 0 : 1;
+			$record->is_active = $requireVerifiedEmail ? 0 : 1;
 		} else {
 			$record = User::model()->findByPk($this->_id);
 		}
@@ -272,9 +275,10 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 	/**
 	 * Verify users email address, which could also activate his account and allow him to log in.
 	 * Call only after verifying the activation key.
+	 * @param boolean $requireVerifiedEmail
 	 * @return boolean
 	 */
-	public function verifyEmail()
+	public function verifyEmail($requireVerifiedEmail)
 	{
 		if ($this->_id===null)
 			return false;
@@ -283,14 +287,14 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 			 * Only update $record if it's not already been updated, otherwise 
 			 * saveAttributes will return false, incorrectly suggesting 
 			 * failure.  
-			*/
+			 */
 			if (!$record->email_verified) {
-				$updates = array('email_verified' => 1);
+				$attributes = array('email_verified' => 1);
 
-				if (Yii::app()->controller->module->requireVerifiedEmail && !$record->is_active) {
-					$updates['is_active'] = 1;
+				if ($requireVerifiedEmail && !$record->is_active) {
+					$attributes['is_active'] = 1;
 				}
-				if (!$record->saveAttributes($updates)) {
+				if (!$record->saveAttributes($attributes)) {
 					return false;
 				}
 			}

@@ -72,15 +72,7 @@ class LoginForm extends BasePasswordForm
 		}
 		$identity = $this->getIdentity();
 		if (!$identity->getIsAuthenticated()) {
-		    if (defined($this->userIdentityClass . '::ERROR_USER_DISABLED') && $identity->errorCode == constant($this->userIdentityClass . '::ERROR_USER_DISABLED')) {
-                $this->addError('password',Yii::t('UsrModule.usr','User is disabled.'));
-            } 
-		    elseif (defined($this->userIdentityClass . '::ERROR_USER_INACTIVE') && $identity->errorCode == constant($this->userIdentityClass . '::ERROR_USER_INACTIVE')) {
-                $this->addError('password',Yii::t('UsrModule.usr','User is not activated.'));
-            }
-            else {
-                $this->addError('password',Yii::t('UsrModule.usr','Invalid username or password.'));
-            }
+            $this->addError('password', !empty($identity->errorMessage) ? $identity->errorMessage : Yii::t('UsrModule.usr','Invalid username or password.'));
 			return false;
 		}
 		return true;

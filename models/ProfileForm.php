@@ -104,7 +104,7 @@ class ProfileForm extends BaseUsrForm
 			'firstName'	=> $this->firstName,
 			'lastName'	=> $this->lastName,
 		));
-		if ($identity->save()) {
+		if ($identity->save(Yii::app()->controller->module->requireVerifiedEmail)) {
 			$this->_identity = $identity;
 			return true;
 		}
