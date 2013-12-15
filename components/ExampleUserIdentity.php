@@ -278,7 +278,7 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 	 * @param boolean $requireVerifiedEmail
 	 * @return boolean
 	 */
-	public function verifyEmail($requireVerifiedEmail)
+	public function verifyEmail($requireVerifiedEmail=false)
 	{
 		if ($this->_id===null)
 			return false;

@@ -43,9 +43,10 @@ interface IActivatedIdentity
 	/**
 	 * Verify users email address, which could also activate his account and allow him to log in.
 	 * Call only after verifying the activation key.
+	 * @param boolean $requireVerifiedEmail
 	 * @return boolean
 	 */
-	public function verifyEmail();
+	public function verifyEmail($requireVerifiedEmail=false);
 	/**
 	 * Returns user email address.
 	 * @return string
