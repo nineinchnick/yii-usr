@@ -42,21 +42,6 @@ return array(
 
 Requirements for the UserIdentity class are described in next chapter.
 
-If your application is using path-format URLs with some customized URL rules, you may need to add
-the following URLs in your application configuration in order to access UsrModule:
-
-~~~php
-'components'=>array(
-    'urlManager'=>array(
-        'urlFormat'=>'path',
-        'rules'=>array(
-            'usr/<action:(login|logout|reset|recovery|register|profile)>'=>'usr/default/<action>',
-            ...other rules...
-        ),
-    )
-)
-~~~
-
 See UsrModule.php file for full options reference.
 
 # Identity interfaces 

@@ -8,6 +8,15 @@ Yii::import('usr.controllers.UsrController');
  */
 class DefaultController extends UsrController
 {
+	/**
+	 * @inheritdoc
+	 */
+	public function getId()
+	{
+		// use constant id to allow mapping fake controller names to this one, @see UsrModule::$controllerMap
+		return 'default';
+	}
+
 	public function actions()
 	{
 		$actions = array();
@@ -149,7 +158,10 @@ class DefaultController extends UsrController
 						Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to send an email.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
 					}
 				} else {
+					// a valid recovery form means the user confirmed his email address
 					$model->getIdentity()->verifyEmail($this->module->requireVerifiedEmail);
+					// regenerate the activation key to prevent reply attack
+					$model->getIdentity()->getActivationKey();
 					if ($model->resetPassword() && $model->login()) {
 						$this->afterLogin();
 					} else {
@@ -175,6 +187,8 @@ class DefaultController extends UsrController
 		}
 		$model->setAttributes($_GET);
 		if($model->validate() && $model->getIdentity()->verifyEmail($this->module->requireVerifiedEmail)) {
+			// regenerate the activation key to prevent reply attack
+			$model->getIdentity()->getActivationKey();
 			Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'Your email address has been successfully verified.'));
 		} else {
 			Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to verify your email address.'));

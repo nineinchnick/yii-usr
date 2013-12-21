@@ -33,20 +33,6 @@
  * )
  * ~~~
  *
- * If your application is using path-format URLs with some customized URL rules, you may need to add
- * the following URLs in your application configuration in order to access UsrModule:
- * ~~~
- * 'components'=>array(
- *     'urlManager'=>array(
- *         'urlFormat'=>'path',
- *         'rules'=>array(
- *             'usr/<action:(login|logout|reset|recovery|register|profile)>'=>'usr/default/<action>',
- *             ...other rules...
- *         ),
- *     )
- * )
- * ~~~
- *
  * # Usage scenarios
  *
  * Varios scenarios can be created by enabling or disabling following features:
@@ -227,6 +213,21 @@ class UsrModule extends CWebModule
 	 * @var Hybrid_Auth set if $hybridauthProviders are not empty
 	 */
 	protected $_hybridauth;
+
+	/**
+	 * @inheritdoc
+	 */
+	public $controllerMap = array(
+		'login' => 'usr.controllers.DefaultController',
+		'logout' => 'DefaultController',
+		'reset' => 'DefaultController',
+		'recovery' => 'DefaultController',
+		'register' => 'DefaultController',
+		'profile' => 'DefaultController',
+		'password' => 'DefaultController',
+	);
+
+	public $viewPath = 'usr.views';
 
 	/**
 	 * @inheritdoc

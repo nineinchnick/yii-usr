@@ -49,9 +49,9 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 				$this->errorCode=self::ERROR_USER_INACTIVE;
 				$this->errorMessage=Yii::t('UsrModule.usr','User is not activated.');
 			} else {
-				$this->initFromUser($record);
 				$this->errorCode=self::ERROR_NONE;
 				$this->errorMessage='';
+				$this->initFromUser($record);
 				$record->saveAttributes(array('last_visit_on'=>date('Y-m-d H:i:s')));
 			}
 		} else {
