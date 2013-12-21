@@ -227,8 +227,6 @@ class UsrModule extends CWebModule
 		'password' => 'DefaultController',
 	);
 
-	public $viewPath = 'usr.views';
-
 	/**
 	 * @inheritdoc
 	 */
@@ -330,6 +328,7 @@ class UsrModule extends CWebModule
 	 */
 	public function createFormModel($class, $scenario='')
 	{
+		/** @var CFormModel */
 		$form = new $class($scenario);
 		$form->userIdentityClass = $this->userIdentityClass;
 		if ($form instanceof BasePasswordForm) {

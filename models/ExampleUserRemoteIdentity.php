@@ -17,7 +17,7 @@
 abstract class ExampleUserRemoteIdentity extends CActiveRecord
 {
 	/**
-	 * @return string the associated database table name
+	 * @inheritdoc
 	 */
 	public function tableName()
 	{
@@ -69,12 +69,12 @@ abstract class ExampleUserRemoteIdentity extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'id' => 'ID',
-			'user_id' => 'User',
-			'provider' => 'Provider',
-			'identifier' => 'Identifier',
-			'created_on' => 'Created On',
-			'last_used_on' => 'Last Used On',
+			'id' => Yii::t('models', 'ID'),
+			'user_id' => Yii::t('models', 'User'),
+			'provider' => Yii::t('models', 'Provider'),
+			'identifier' => Yii::t('models', 'Identifier'),
+			'created_on' => Yii::t('models', 'Created On'),
+			'last_used_on' => Yii::t('models', 'Last Used On'),
 		);
 	}
 

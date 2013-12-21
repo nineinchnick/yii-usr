@@ -6,4 +6,4 @@ if (isset($this->breadcrumbs))
 ?>
 <h1><?php echo $this->uniqueId . '/' . $this->action->id; ?></h1>
 
-<?php $this->displayFlashes(); ?>
+<?php $this->widget('usr.components.UsrAlerts', array('cssClassPrefix'=>$this->module->alertCssClassPrefix)); ?>

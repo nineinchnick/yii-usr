@@ -9,7 +9,7 @@ $this->pageTitle = Yii::app()->name.' - '.$title;
 ?>
 <h1><?php echo $title; ?><small style="margin-left: 1em;"><?php echo CHtml::link(Yii::t('UsrModule.usr', 'update'), array('profile', 'update'=>true)); ?></small></h1>
 
-<?php $this->displayFlashes(); ?>
+<?php $this->widget('usr.components.UsrAlerts', array('cssClassPrefix'=>$this->module->alertCssClassPrefix)); ?>
 
 <?php
 $attributes = array('username', 'email', 'firstName', 'lastName');

@@ -28,6 +28,9 @@ class OneTimePasswordFormBehavior extends FormModelBehavior
 
 	private $_controller;
 
+	/**
+	 * @inheritdoc
+	 */
 	public function events() {
 		return array_merge(parent::events(), array(
 			'onAfterValidate'=>'afterValidate',

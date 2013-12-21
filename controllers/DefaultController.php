@@ -46,12 +46,58 @@ class DefaultController extends UsrController
 		return $actions;
 	}
 
+	/**
+	 * Redirect user depending on whether is he logged in or not.
+	 * Performs additional authorization checks.
+	 * @param CAction $action the action to be executed.
+	 * @return boolean whether the action should continue to be executed.
+	 */
+	public function beforeAction($action)
+	{
+		if (!parent::beforeAction($action))
+			return false;
+		switch($action->id) {
+		case 'index':
+		case 'profile':
+			if (Yii::app()->user->isGuest) {
+				$this->redirect(array('login'));
+				return false;
+			}
+			break;
+		case 'login':
+		case 'recovery':
+			if ($action->id === 'recovery' && !$this->module->recoveryEnabled) {
+				throw new CHttpException(403,Yii::t('UsrModule.usr', 'Password recovery has not been enabled.'));
+			}
+			if (!Yii::app()->user->isGuest) {
+				$this->redirect(Yii::app()->user->returnUrl);
+				return false;
+			}
+			break;
+		case 'register':
+			if (!$this->module->registrationEnabled) {
+				throw new CHttpException(403,Yii::t('UsrModule.usr', 'Registration has not been enabled.'));
+			}
+			if (!Yii::$app->user->isGuest) {
+				$this->redirect(array('profile'));
+				return false;
+			}
+			break;
+		case 'verify':
+			if (!isset($_GET['activationKey'])) {
+				throw new CHttpException(400,Yii::t('UsrModule.usr', 'Activation key is missing.'));
+			}
+			break;
+		}
+		return true;
+	}
+
+	/**
+	 * Users are redirected to their profile if logged in and to login page otherwise.
+	 */
 	public function actionIndex()
 	{
-		if (Yii::app()->user->isGuest)
-			$this->redirect(array('login'));
-		else
-			$this->redirect(array('profile'));
+		$this->redirect(array('profile'));
 	}
 
 	/**
@@ -75,9 +121,7 @@ class DefaultController extends UsrController
 	 */
 	public function actionLogin($scenario = null)
 	{
-		if (!Yii::app()->user->isGuest)
-			$this->redirect(Yii::app()->user->returnUrl);
-
+		/** @var LoginForm */
 		$model = $this->module->createFormModel('LoginForm');
 		if ($scenario !== null && in_array($scenario, array('reset', 'verifyOTP'))) {
 			$model->scenario = $scenario;
@@ -111,7 +155,8 @@ class DefaultController extends UsrController
 	 */
 	public function actionLogout()
 	{
-		Yii::app()->user->logout();
+		if (!Yii::app()->user->isGuest)
+			Yii::app()->user->logout();
 		$this->redirect(Yii::app()->homeUrl);
 	}
 
@@ -121,12 +166,6 @@ class DefaultController extends UsrController
 	 */
 	public function actionRecovery()
 	{
-		if (!$this->module->recoveryEnabled) {
-			throw new CHttpException(403,Yii::t('UsrModule.usr', 'Password recovery has not been enabled.'));
-		}
-		if (!Yii::app()->user->isGuest)
-			$this->redirect(Yii::app()->user->returnUrl);
-
 		/** @var RecoveryForm */
 		$model = $this->module->createFormModel('RecoveryForm');
 
@@ -182,9 +221,6 @@ class DefaultController extends UsrController
 	{
 		/** @var RecoveryForm */
 		$model = $this->module->createFormModel('RecoveryForm', 'verify');
-		if (!isset($_GET['activationKey'])) {
-			throw new CHttpException(400,Yii::t('UsrModule.usr', 'Activation key is missing.'));
-		}
 		$model->setAttributes($_GET);
 		if($model->validate() && $model->getIdentity()->verifyEmail($this->module->requireVerifiedEmail)) {
 			// regenerate the activation key to prevent reply attack
@@ -202,12 +238,6 @@ class DefaultController extends UsrController
 	 */
 	public function actionRegister()
 	{
-		if (!$this->module->registrationEnabled) {
-			throw new CHttpException(403,Yii::t('UsrModule.usr', 'Registration has not been enabled.'));
-		}
-		if (!Yii::app()->user->isGuest)
-			$this->redirect(array('profile'));
-
 		/** @var ProfileForm */
 		$model = $this->module->createFormModel('ProfileForm', 'register');
 		/** @var PasswordForm */
@@ -259,9 +289,6 @@ class DefaultController extends UsrController
 	 */
 	public function actionProfile($update=false)
 	{
-		if (Yii::app()->user->isGuest)
-			$this->redirect(array('login'));
-
 		/** @var ProfileForm */
 		$model = $this->module->createFormModel('ProfileForm');
 		$model->setAttributes($model->getIdentity()->getAttributes());

@@ -2,6 +2,10 @@
 
 Yii::import('usr.controllers.UsrController');
 
+/**
+ * The controller handling logging in using social sites.
+ * @author Jan Was <jwas@nets.com.pl>
+ */
 class HybridauthController extends UsrController
 {
 	public function actionIndex()
@@ -27,8 +31,11 @@ class HybridauthController extends UsrController
 	{
 		if ($provider!==null)
 			$_POST['HybridauthForm']['provider'] = $provider;
+		/** @var HybridauthForm */
 		$remoteLogin = $this->module->createFormModel('HybridauthForm');
+		/** @var LoginForm */
 		$localLogin = $this->module->createFormModel('LoginForm', 'hybridauth');
+		/** @var ProfileForm */
 		$localProfile = $this->module->createFormModel('ProfileForm', 'register');
 
 		if(isset($_POST['ajax'])) {

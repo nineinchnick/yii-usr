@@ -2,17 +2,6 @@
 
 abstract class UsrController extends CController
 {
-	protected function displayFlashes()
-	{
-		if (($flashMessages = Yii::app()->user->getFlashes())) {
-			echo '<ul class="flashes">';
-			foreach($flashMessages as $key => $message) {
-				echo '<li><div class="'.$this->module->alertCssClassPrefix.$key.'">'.$message.'</div></li>';
-			}
-			echo '</ul>';
-		}
-	}
-
 	/**
 	 * Sends out an email containing instructions and link to the email verification
 	 * or password recovery page, containing an activation key.
