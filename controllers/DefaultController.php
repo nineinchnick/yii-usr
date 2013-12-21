@@ -78,7 +78,7 @@ class DefaultController extends UsrController
 			if (!$this->module->registrationEnabled) {
 				throw new CHttpException(403,Yii::t('UsrModule.usr', 'Registration has not been enabled.'));
 			}
-			if (!Yii::$app->user->isGuest) {
+			if (!Yii::app()->user->isGuest) {
 				$this->redirect(array('profile'));
 				return false;
 			}
