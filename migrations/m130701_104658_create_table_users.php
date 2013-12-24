@@ -16,9 +16,9 @@ class m130701_104658_create_table_users extends CDbMigration
 			'updated_on'=>'timestamp',
 			'last_visit_on'=>'timestamp',
 			'password_set_on'=>'timestamp',
-			'email_verified'=>'boolean NOT NULL DEFAULT FALSE',
-			'is_active'=>'boolean NOT NULL DEFAULT FALSE',
-			'is_disabled'=>'boolean NOT NULL DEFAULT FALSE',
+			'email_verified'=>'boolean NOT NULL DEFAULT 0',
+			'is_active'=>'boolean NOT NULL DEFAULT 0',
+			'is_disabled'=>'boolean NOT NULL DEFAULT 0',
 		));
 		$this->createIndex('{{users}}_username_idx', '{{users}}', 'username', true);
 		$this->createIndex('{{users}}_email_idx', '{{users}}', 'email', true);
