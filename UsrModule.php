@@ -219,12 +219,12 @@ class UsrModule extends CWebModule
 	 */
 	public $controllerMap = array(
 		'login' => 'usr.controllers.DefaultController',
-		'logout' => 'DefaultController',
-		'reset' => 'DefaultController',
-		'recovery' => 'DefaultController',
-		'register' => 'DefaultController',
-		'profile' => 'DefaultController',
-		'password' => 'DefaultController',
+		'logout' => 'usr.controllers.DefaultController',
+		'reset' => 'usr.controllers.DefaultController',
+		'recovery' => 'usr.controllers.DefaultController',
+		'register' => 'usr.controllers.DefaultController',
+		'profile' => 'usr.controllers.DefaultController',
+		'password' => 'usr.controllers.DefaultController',
 	);
 
 	/**

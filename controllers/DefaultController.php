@@ -17,6 +17,14 @@ class DefaultController extends UsrController
 		return 'default';
 	}
 
+	/**
+	 * @inheritdoc
+	 */
+	public function run($actionID)
+	{
+		return parent::run(($id=parent::getId()) !== 'default' ? $id : $actionID);
+	}
+
 	public function actions()
 	{
 		$actions = array();
