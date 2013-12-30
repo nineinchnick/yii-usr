@@ -93,6 +93,8 @@ return array (
   'Use the Google Authenticator application to generate a one time password and enter it below.' => 'Użyj aplikacji Google Authenticator aby wygenerować hasło jednorazowe i wprowadź je poniżej.',
   'Use this password?\\nTo copy it to the clipboard press Ctrl+C.' => 'Użyć tego hasła?\\nAby skopiować do schowka wciśnij Ctrl+C.',
   'User profile' => 'Profil użytkownika',
+  'User account has been disabled.' => 'Konto użytkownika zostało zablokowane.',
+  'User account has not yet been activated.' => 'Konto użytkownika nie zostało jeszcze aktywowane.',
   'Username' => 'Nazwa użytkownika',
   'Username or password recovery' => 'Odzyskiwanie nazwy użytkownika lub hasła',
   'Verification code' => 'Kod weryfikacyjny',
