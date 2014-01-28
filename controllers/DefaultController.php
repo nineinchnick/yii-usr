@@ -20,6 +20,15 @@ class DefaultController extends UsrController
 	/**
 	 * @inheritdoc
 	 */
+	public function getUniqueId()
+	{
+		// use constant id to allow mapping fake controller names to this one, @see UsrModule::$controllerMap
+		return $this->getModule() ? $this->getModule()->getId().'/default' : 'default';
+	}
+
+	/**
+	 * @inheritdoc
+	 */
 	public function run($actionID)
 	{
 		return parent::run(($id=parent::getId()) !== 'default' ? $id : $actionID);
