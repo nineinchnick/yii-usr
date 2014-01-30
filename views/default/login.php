@@ -37,10 +37,12 @@ $this->pageTitle = Yii::app()->name.' - '.$title;
 		<?php echo $form->error($model,'password'); ?>
 	</div>
 
+<?php if ($this->module->rememberMeDuration > 0): ?>
 	<div class="rememberMe control-group">
 		<?php echo $form->label($model,'rememberMe', array('label'=>$form->checkBox($model,'rememberMe').$model->getAttributeLabel('rememberMe'), 'class'=>'checkbox')); ?>
 		<?php echo $form->error($model,'rememberMe'); ?>
 	</div>
+<?php endif; ?>
 
 	<div class="buttons">
 		<?php echo CHtml::submitButton(Yii::t('UsrModule.usr', 'Log in'), array('class'=>$this->module->submitButtonCssClass)); ?>

@@ -44,10 +44,10 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 		if ($record!==null && $record->verifyPassword($this->password)) {
 			if ($record->is_disabled) {
 				$this->errorCode=self::ERROR_USER_DISABLED;
-				$this->errorMessage=Yii::t('UsrModule.usr','User is disabled.');
+				$this->errorMessage=Yii::t('UsrModule.usr','User account has been disabled.');
 			} else if (!$record->is_active) {
 				$this->errorCode=self::ERROR_USER_INACTIVE;
-				$this->errorMessage=Yii::t('UsrModule.usr','User is not activated.');
+				$this->errorMessage=Yii::t('UsrModule.usr','User account has not yet been activated.');
 			} else {
 				$this->errorCode=self::ERROR_NONE;
 				$this->errorMessage='';
