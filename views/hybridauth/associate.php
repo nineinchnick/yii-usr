@@ -57,7 +57,7 @@ $this->pageTitle = Yii::app()->name.' - '.$title;
 			<?php echo $form->error($localProfile,'lastName'); ?>
 		</div>
 
-<?php if($model->asa('captcha') !== null): ?>
+<?php if($localProfile->asa('captcha') !== null): ?>
 <?php $this->renderPartial('/default/_captcha', array('form'=>$form, 'model'=>$localProfile)); ?>
 <?php endif; ?>
 
