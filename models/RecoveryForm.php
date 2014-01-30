@@ -88,7 +88,7 @@ class RecoveryForm extends BasePasswordForm
 			}
 			return false;
 		} elseif ($identity->isDisabled()) {
-			$this->addError('username',Yii::t('UsrModule.usr','User is disabled.'));
+			$this->addError('username',Yii::t('UsrModule.usr','User account has been disabled.'));
 			return false;
 		}
 		return true;
