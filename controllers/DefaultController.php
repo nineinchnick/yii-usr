@@ -382,8 +382,10 @@ class DefaultController extends UsrController
 	 */
 	public function actionProfilePicture($id)
 	{
-		$picture = Yii::app()->user->getPicture($id);
+		/** @var ProfileForm */
+		$model = $this->module->createFormModel('ProfileForm');
+		$picture = $model->getIdentity()->getPicture($id);
 		header('Content-Type:'.$picture['mimetype']);
-		echo $picture->picture;
+		echo $picture['picture'];
 	}
 }

@@ -542,7 +542,7 @@ abstract class ExampleUserIdentity extends CUserIdentity
 	/**
 	 * @inheritdoc
 	 */
-	public function getPicture($ip, $currentIdentity=true)
+	public function getPicture($id, $currentIdentity=true)
 	{
 		$criteria = new CDbCriteria;
 		$criteria->addColumnCondition(array('id'=>$id));

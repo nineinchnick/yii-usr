@@ -235,6 +235,7 @@ class UsrModule extends CWebModule
 		'recovery' => 'usr.controllers.DefaultController',
 		'register' => 'usr.controllers.DefaultController',
 		'profile' => 'usr.controllers.DefaultController',
+		'profilePicture' => 'usr.controllers.DefaultController',
 		'password' => 'usr.controllers.DefaultController',
 	);
 
