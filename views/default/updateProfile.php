@@ -23,6 +23,7 @@ $this->pageTitle = Yii::app()->name.' - '.$title;
 	'clientOptions'=>array(
 		'validateOnSubmit'=>true,
 	),
+	'htmlOptions' => array('enctype' => 'multipart/form-data'),
 	'focus'=>array($model,'username'),
 )); ?>
 
@@ -62,6 +63,15 @@ $this->pageTitle = Yii::app()->name.' - '.$title;
 		<?php echo $form->textField($model,'lastName'); ?>
 		<?php echo $form->error($model,'lastName'); ?>
 	</div>
+
+<?php if ($model->getIdentity() instanceof IPictureIdentity && !empty($model->pictureUploadRules)): ?>
+	<div class="control-group">
+		<?php echo $form->labelEx($model,'picture'); ?>
+		<?php echo CHtml::image($model->getIdentity()->getPictureUrl(80,80), Yii::t('UsrModule.usr', 'Profile picture'), array('width'=>'80', 'height'=>'80')); ?><br/>
+		<?php echo $form->fileField($model,'picture'); ?>
+		<?php echo $form->error($model,'picture'); ?>
+	</div>
+<?php endif; ?>
 
 <?php if($model->asa('captcha') !== null): ?>
 <?php $this->renderPartial('_captcha', array('form'=>$form, 'model'=>$model)); ?>

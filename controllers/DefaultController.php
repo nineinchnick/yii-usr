@@ -257,6 +257,9 @@ class DefaultController extends UsrController
 		}
 		if(isset($_POST['ProfileForm'])) {
 			$model->setAttributes($_POST['ProfileForm']);
+			if($model->getIdentity() instanceof IPictureIdentity && !empty($model->pictureUploadRules)) {
+				$model->picture = CUploadedFile::getInstance($model, 'picture');
+			}
 			if(isset($_POST['PasswordForm']))
 				$passwordForm->setAttributes($_POST['PasswordForm']);
 			if ($model->validate() && $passwordForm->validate()) {
@@ -328,6 +331,9 @@ class DefaultController extends UsrController
 		}
 		if(isset($_POST['ProfileForm']) && empty($flashes['error'])) {
 			$model->setAttributes($_POST['ProfileForm']);
+			if($model->getIdentity() instanceof IPictureIdentity && !empty($model->pictureUploadRules)) {
+				$model->picture = CUploadedFile::getInstance($model, 'picture');
+			}
 			if($model->validate()) {
 				$oldEmail = $model->getIdentity()->getEmail();
 				if ($model->save()) {
@@ -358,5 +364,17 @@ class DefaultController extends UsrController
 		} else {
 			$this->render('viewProfile',array('model'=>$model));
 		}
+	}
+
+	/**
+	 * Allows users to view their profile picture.
+	 * @param boolean $update
+	 * @return string
+	 */
+	public function actionProfilePicture($id)
+	{
+		$picture = Yii::app()->user->getPicture($id);
+		header('Content-Type:'.$picture['mimetype']);
+		echo $picture->picture;
 	}
 }

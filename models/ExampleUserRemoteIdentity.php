@@ -79,28 +79,6 @@ abstract class ExampleUserRemoteIdentity extends CActiveRecord
 	}
 
 	/**
-	 * @return CActiveDataProvider the data provider that can return the models
-	 * based on the search/filter conditions.
-	 */
-	public function search()
-	{
-		// @todo Please modify the following code to remove attributes that should not be searched.
-
-		$criteria=new CDbCriteria;
-
-		$criteria->compare('id',$this->id);
-		$criteria->compare('user_id',$this->user_id);
-		$criteria->compare('provider',$this->provider,true);
-		$criteria->compare('identifier',$this->identifier,true);
-		//$criteria->compare('created_on',$this->created_on,true);
-		//$criteria->compare('last_used_on',$this->last_used_on,true);
-
-		return new CActiveDataProvider($this, array(
-			'criteria'=>$criteria,
-		));
-	}
-
-	/**
 	 * @param string $className active record class name.
 	 * @return UserRemoteIdentity the static model class
 	 */

@@ -25,6 +25,7 @@
  * The followings are the available model relations:
  * @property UserRemoteIdentity[] $userRemoteIdentities
  * @property UserUsedPassword[] $userUsedPassword
+ * @property UserProfilePicture[] $userProfilePictures
  */
 abstract class ExampleUser extends CActiveRecord
 {
@@ -63,6 +64,7 @@ abstract class ExampleUser extends CActiveRecord
 		return array(
 			'userRemoteIdentities' => array(self::HAS_MANY, 'UserRemoteIdentity', 'user_id'),
 			'userUsedPasswords' => array(self::HAS_MANY, 'UserUsedPassword', 'user_id', 'order'=>'set_on DESC'),
+			'userProfilePictures' => array(self::HAS_MANY, 'UserProfilePicture', 'user_id'),
 		);
 	}
 

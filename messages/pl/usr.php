@@ -79,6 +79,7 @@ return array (
   'Please type the same new password twice to verify it.' => 'Proszę wpisać nowe hasło dwukrotnie.',
   'Please wait for the account to be activated. A notification will be send to provided email address.' => 'Proszę zaczekać, aż konto zostanie aktywowane. Powiadomienie zostanie wysłane na podany adres email.',
   'Please wait until next code will be generated.' => 'Proszę zaczekać aż następny kod zostanie wygenerowany.',
+  'Profile picture' => 'Zdjęcie profilowe',
   'Provider' => 'Dostawca',
   'Registration' => 'Rejestracja',
   'Registration has not been enabled.' => 'Rejestracja nie została włączona.',

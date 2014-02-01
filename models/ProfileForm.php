@@ -11,11 +11,39 @@ class ProfileForm extends BaseUsrForm
 	public $email;
 	public $firstName;
 	public $lastName;
+	public $picture;
 
 	/**
 	 * @var IdentityInterface cached object returned by @see getIdentity()
 	 */
 	private $_identity;
+	/**
+	 * @var array Picture upload validation rules.
+	 */
+	private $_pictureUploadRules;
+
+	/**
+	 * Returns rules for picture upload or an empty array if they are not set.
+	 * @return array
+	 */
+	public function getPictureUploadRules()
+	{
+		return $this->_pictureUploadRules === null ? null : $this->_pictureUploadRules;
+	}
+
+	/**
+	 * Sets rules to validate uploaded picture. Rules should NOT contain attribute name as this method adds it.
+	 * @param array $rules
+	 */
+	public function setPictureUploadRules($rules)
+	{
+		$this->_pictureUploadRules = array();
+		if (!is_array($rules))
+			return;
+		foreach($rules as $rule) {
+			$this->_pictureUploadRules[] = array_merge(array('picture'), $rule);
+		}
+	}
 
 	/**
 	 * Declares the validation rules.
@@ -28,7 +56,7 @@ class ProfileForm extends BaseUsrForm
 
 			array('username, email', 'required'),
 			array('username, email', 'uniqueIdentity'),
-		));
+		), $this->pictureUploadRules);
 	}
 
 	/**
@@ -41,6 +69,7 @@ class ProfileForm extends BaseUsrForm
 			'email'			=> Yii::t('UsrModule.usr','Email'),
 			'firstName'		=> Yii::t('UsrModule.usr','First name'),
 			'lastName'		=> Yii::t('UsrModule.usr','Last name'),
+			'picture'		=> Yii::t('UsrModule.usr','Profile picture'),
 		));
 	}
 
@@ -104,7 +133,7 @@ class ProfileForm extends BaseUsrForm
 			'firstName'	=> $this->firstName,
 			'lastName'	=> $this->lastName,
 		));
-		if ($identity->save(Yii::app()->controller->module->requireVerifiedEmail)) {
+		if ($identity->save(Yii::app()->controller->module->requireVerifiedEmail) && (!($this->picture instanceof CUploadedFile) || !$identity->savePicture($this->picture))) {
 			$this->_identity = $identity;
 			return true;
 		}

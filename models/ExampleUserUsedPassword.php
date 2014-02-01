@@ -57,24 +57,6 @@ abstract class ExampleUserUsedPassword extends CActiveRecord
 	}
 
 	/**
-	 * @return CActiveDataProvider the data provider that can return the models
-	 * based on the search/filter conditions.
-	 */
-	public function search()
-	{
-		$criteria=new CDbCriteria;
-
-		$criteria->compare('id',$this->id);
-		$criteria->compare('user_id',$this->user_id);
-		//$criteria->compare('password',$this->password,true);
-		$criteria->compare('set_on',$this->set_on,true);
-
-		return new CActiveDataProvider($this, array(
-			'criteria'=>$criteria,
-		));
-	}
-
-	/**
 	 * @param string $className active record class name.
 	 * @return UserUsedPassword the static model class
 	 */

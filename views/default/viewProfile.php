@@ -21,5 +21,13 @@ if ($this->module->oneTimePasswordMode === UsrModule::OTP_TIME || $this->module-
 		'value'=>$model->getIdentity()->getOneTimePasswordSecret() === null ? CHtml::link(Yii::t('UsrModule.usr', 'Enable'), array('toggleOneTimePassword')) : CHtml::link(Yii::t('UsrModule.usr', 'Disable'), array('toggleOneTimePassword')),
 	);
 }
+if ($model->getIdentity() instanceof IPictureIdentity) {
+	array_unshift($attributes, array(
+		'name'=>'picture',
+		'type'=>'raw',
+		'label'=>Yii::t('UsrModule.usr', 'Profile picture'),
+		'value'=>CHtml::image($model->getIdentity()->getPictureUrl(80,80), Yii::t('UsrModule.usr', 'Profile picture'), array('width'=>'80', 'height'=>'80')),
+	));
+}
 $this->widget($this->module->detailViewClass, array('data' => $model, 'attributes' => $attributes));
 

@@ -7,7 +7,13 @@ Yii::import('usr.components.*');
  * It contains the authentication method that checks if the provided
  * data can identity the user.
  */
-abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHistoryIdentity,IActivatedIdentity,IEditableIdentity,IHybridauthIdentity,IOneTimePasswordIdentity
+abstract class ExampleUserIdentity extends CUserIdentity
+	implements IPasswordHistoryIdentity,
+	IActivatedIdentity,
+	IEditableIdentity,
+	IHybridauthIdentity,
+	IOneTimePasswordIdentity,
+	IPictureIdentity
 {
 	const ERROR_USER_DISABLED=1000;
 	const ERROR_USER_INACTIVE=1001;
@@ -416,6 +422,142 @@ abstract class ExampleUserIdentity extends CUserIdentity implements IPasswordHis
 			'identifier' => $identifier,
 		), false);
 		return $model->save();
+	}
+
+	// }}}
+
+	// {{{ IPictureIdentity
+
+	/**
+	 * @inheritdoc
+	 */
+	public function savePicture($picture)
+	{
+		if ($this->_id===null)
+			return null;
+		if (($record=User::model()->findByPk($this->_id))===null) {
+			return null;
+		}
+		$pictureRecord = $record->userProfilePictures(array('on'=>'original_picture_id IS NULL'));
+		if (!empty($picutureRecord)) {
+			$pictureRecord = $pictureRecord[0];
+		} else {
+			$pictureRecord = new UserProfilePicture;
+			$pictureRecord->user_id = $this->_id;
+		}
+		$picturePath = $picture->getTempName();
+		$pictureRecord->filename = $picture;
+		$pictureRecord->mimetype = CFileHelper::getMimeType($picturePath);
+		$pictureRecord->contents = base64_encode(file_get_contents($picturePath));
+
+		if (($size = @getimagesize($picturePath)) !== false) {
+			list($width, $height, $type, $attr) = $size;
+			$pictureRecord->width = $width;
+			$pictureRecord->height = $height;
+		}
+		if (!$pictureRecord->save() || !$this->saveThumbnail($picture, $pictureRecord)) {
+			return false;
+		}
+	}
+
+	protected function saveThumbnail($picture, $pictureRecord)
+	{
+		// calculate thumbnail dimensions with max width and height at 80
+		$max_width = 80;
+		$max_height = 80;
+
+		$width = $pictureRecord->width;
+		$height = $pictureRecord->height;
+		if ($width > $max_width || $height > $max_height ) {
+			if ($width > $height) {
+				$height = floor($height / ($width / $max_width));
+				$width = $max_width;
+			} else {
+				$width = floor($width / ($height / $max_height));
+				$height = $max_height;
+			}
+		}
+
+		// create the thumbnail image (always a jpeg)
+		$thumbImage = imagecreatetruecolor($width, $height);
+		$sourceImage = imagecreatefromstring(base64_decode($pictureRecord->contents));
+		imagecopyresized($thumbImage, $sourceImage, 0, 0, 0, 0, $width, $height, $pictureRecord->width, $pictureRecord->height);
+		ob_start();
+		imagejpeg($thumbImage);
+		$contents = ob_get_clean();
+
+		// update existing thumbnail or create a new one
+		$thumbnail = $pictureRecord->thumbnails;
+		if (!empty($thumbnail)) {
+			$thumbnail = $thumbnail[0];
+		} else {
+			$thumbnail = new UserProfilePicture;
+			$thumbnail->original_picture_id = $pictureRecord->id;
+			$thumbnail->user_id = $pictureRecord->user_id;
+			$thumbnail->filename = $pictureRecord->filename;
+			$thumbnail->mimetype = 'image/jpeg';
+		}
+		$thumbnail->width = $width;
+		$thumbnail->height = $height;
+		$thumbnail->contents = base64_encode($contents);
+		return $thumbnail->save();
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function getPictureUrl($width=80, $height=80)
+	{
+		if ($this->_id===null)
+			return null;
+		if (($record=User::model()->findByPk($this->_id))===null) {
+			return null;
+		}
+		// try to locate biggest picture smaller than specified dimensions
+		$criteria = array(
+			'select'=>'id',
+			'condition'=>'width <= :max_width AND height <= :max_height',
+			'params'=>array(':max_width'=>$width, ':max_height'=>$height),
+			'order'=>'width DESC',
+			'limit'=>1,
+		);
+		$pictures = $record->userProfilePictures($criteria);
+		if (!empty($pictures)) {
+			return Yii::app()->createAbsoluteUrl('/usr/profilePicture', array('id'=>$pictures[0]->id));
+		}
+
+		// if no picture has been found, use a Gravatar
+		$hash = md5(strtolower(trim($record->email)));
+		// more at http://gravatar.com/site/implement/images/
+		$options = array(
+			//'forcedefault' => 'y',
+			'rating' => 'g',
+			'd' => 'retro',
+			's' => '80',
+		);
+		$host = Yii::app()->request->isSecureConnection ? 'https://secure.gravatar.com' : 'http://gravatar.com';
+		return $host.'/avatar/'.$hash.'?'.http_build_query($options);
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function getPicture($ip, $currentIdentity=true)
+	{
+		$criteria = new CDbCriteria;
+		$criteria->addColumnCondition(array('id'=>$id));
+		if ($currentIdentity) {
+			$criteria->addColumnCondition(array('user_id'=>$this->_id));
+		}
+		if (($picture=UserProfilePicture::model()->find($criteria)) === null) {
+			return null;
+		}
+		return array(
+			'mimetype'=>$picture->mimetype,
+			'width'=>$picture->width,
+			'height'=>$picture->height,
+			'picture'=>base64_decode($picture->contents),
+		);
 	}
 
 	// }}}
