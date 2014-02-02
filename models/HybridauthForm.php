@@ -128,6 +128,17 @@ class HybridauthForm extends BaseUsrForm
 			throw new CException(Yii::t('UsrModule.usr','The {class} class must implement the {interface} interface.',array('{class}'=>get_class($identity),'{interface}'=>'IHybridauthIdentity')));
 		$identity->setId($user_id);
 		$profile = $this->_hybridAuthAdapter->getUserProfile();
+		if ($identity instanceof IPictureIdentity && !empty($profile->photoURL)) {
+			$picture = $identity->getPictureUrl();
+			if ($picture['url'] != $profile->photoURL) {
+				$path = tempnam(sys_get_temp_dir(), 'external_profile_picture_');
+				if (copy($profile->photoURL, $path)) {
+					$uploadedFile = new CUploadedFile(basename($path), $path, CFileHelper::getMimeType($path), filesize($path), UPLOAD_ERR_OK);
+					$identity->removePicture();
+					$identity->savePicture($uploadedFile);
+				}
+			}
+		}
 		return $identity->addRemoteIdentity(strtolower($this->provider), $profile->identifier);
 	}
 }
