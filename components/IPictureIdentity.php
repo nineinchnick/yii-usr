@@ -11,11 +11,12 @@ interface IPictureIdentity
 	public function savePicture($picture);
 
 	/**
-	 * Returns an URL to the profile picture. It may be an url to the profilePicture action in the default controller
-	 * or some external service like Gravatar. @see DefaultController::actionProfilePicture()
+	 * Returns an URL to the profile picture and the actual width and height of the picture it points to.
+	 * It may be an url to the profilePicture action in the default controller or some external service like Gravatar.
+	 * @see DefaultController::actionProfilePicture()
 	 * @param integer $width
 	 * @param integer $height
-	 * @return string
+	 * @return array with keys: url, width, height
 	 */
 	public function getPictureUrl($width=80, $height=80);
 

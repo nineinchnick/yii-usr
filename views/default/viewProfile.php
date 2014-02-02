@@ -22,11 +22,14 @@ if ($this->module->oneTimePasswordMode === UsrModule::OTP_TIME || $this->module-
 	);
 }
 if ($model->getIdentity() instanceof IPictureIdentity) {
+	$picture = $model->getIdentity()->getPictureUrl(80,80);
+	$url = $picture['url'];
+	unset($picture['url']);
 	array_unshift($attributes, array(
 		'name'=>'picture',
 		'type'=>'raw',
 		'label'=>Yii::t('UsrModule.usr', 'Profile picture'),
-		'value'=>CHtml::image($model->getIdentity()->getPictureUrl(80,80), Yii::t('UsrModule.usr', 'Profile picture'), array('width'=>'80', 'height'=>'80')),
+		'value'=>CHtml::image($url, Yii::t('UsrModule.usr', 'Profile picture'), $picture),
 	));
 }
 $this->widget($this->module->detailViewClass, array('data' => $model, 'attributes' => $attributes));

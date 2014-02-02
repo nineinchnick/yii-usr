@@ -438,8 +438,8 @@ abstract class ExampleUserIdentity extends CUserIdentity
 		if (($record=User::model()->findByPk($this->_id))===null) {
 			return null;
 		}
-		$pictureRecord = $record->userProfilePictures(array('on'=>'original_picture_id IS NULL'));
-		if (!empty($picutureRecord)) {
+		$pictureRecord = $record->userProfilePictures(array('condition'=>'original_picture_id IS NULL'));
+		if (!empty($pictureRecord)) {
 			$pictureRecord = $pictureRecord[0];
 		} else {
 			$pictureRecord = new UserProfilePicture;
@@ -454,14 +454,19 @@ abstract class ExampleUserIdentity extends CUserIdentity
 			list($width, $height, $type, $attr) = $size;
 			$pictureRecord->width = $width;
 			$pictureRecord->height = $height;
+		} else {
+			$pictureRecord->width = 0;
+			$pictureRecord->height = 0;
 		}
-		if (!$pictureRecord->save() || !$this->saveThumbnail($picture, $pictureRecord)) {
-			return false;
-		}
+		return $pictureRecord->save() && $this->saveThumbnail($picture, $pictureRecord);
 	}
 
 	protected function saveThumbnail($picture, $pictureRecord)
 	{
+		// skip thumbnail if couldn't read size of original picture
+		if ($pictureRecord->width == 0 || $pictureRecord->height == 0) {
+			return true;
+		}
 		// calculate thumbnail dimensions with max width and height at 80
 		$max_width = 80;
 		$max_height = 80;
@@ -515,15 +520,19 @@ abstract class ExampleUserIdentity extends CUserIdentity
 		}
 		// try to locate biggest picture smaller than specified dimensions
 		$criteria = array(
-			'select'=>'id',
-			'condition'=>'width <= :max_width AND height <= :max_height',
-			'params'=>array(':max_width'=>$width, ':max_height'=>$height),
-			'order'=>'width DESC',
-			'limit'=>1,
+			'select'	=> 'id',
+			'condition'	=> 'width <= :max_width AND height <= :max_height',
+			'params'	=> array(':max_width'=>$width, ':max_height'=>$height),
+			'order'		=> 'width DESC',
+			'limit'		=> 1,
 		);
 		$pictures = $record->userProfilePictures($criteria);
 		if (!empty($pictures)) {
-			return Yii::app()->createAbsoluteUrl('/usr/profilePicture', array('id'=>$pictures[0]->id));
+			return array(
+				'url'	=> Yii::app()->createAbsoluteUrl('/usr/profilePicture', array('id'=>$pictures[0]->id)),
+				'width'	=> $pictures[0]->width,
+				'height'=> $pictures[0]->height,
+			);
 		}
 
 		// if no picture has been found, use a Gravatar
@@ -531,12 +540,16 @@ abstract class ExampleUserIdentity extends CUserIdentity
 		// more at http://gravatar.com/site/implement/images/
 		$options = array(
 			//'forcedefault' => 'y',
-			'rating' => 'g',
-			'd' => 'retro',
-			's' => '80',
+			'rating'=> 'g',
+			'd'		=> 'retro',
+			's'		=> $width,
 		);
 		$host = Yii::app()->request->isSecureConnection ? 'https://secure.gravatar.com' : 'http://gravatar.com';
-		return $host.'/avatar/'.$hash.'?'.http_build_query($options);
+		return array(
+			'url'	=> $host.'/avatar/'.$hash.'?'.http_build_query($options),
+			'width'	=> $width,
+			'height'=> $height,
+		);
 	}
 
 	/**
@@ -558,6 +571,21 @@ abstract class ExampleUserIdentity extends CUserIdentity
 			'height'=>$picture->height,
 			'picture'=>base64_decode($picture->contents),
 		);
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function removePicture($id=null)
+	{
+		if ($this->_id===null) {
+			return 0;
+		}
+		$attributes = array('user_id'=>$this->_id);
+		if ($id !== null) {
+			$attributes['id'] = $id;
+		}
+		return UserProfilePicture::model()->deleteAllByAttributes($attributes);
 	}
 
 	// }}}
