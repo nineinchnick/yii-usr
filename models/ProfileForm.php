@@ -12,6 +12,7 @@ class ProfileForm extends BaseUsrForm
 	public $firstName;
 	public $lastName;
 	public $picture;
+	public $removePicture;
 
 	/**
 	 * @var IdentityInterface cached object returned by @see getIdentity()
@@ -51,11 +52,12 @@ class ProfileForm extends BaseUsrForm
 	public function rules()
 	{
 		return array_merge($this->getBehaviorRules(), array(
-			array('username, email, firstName, lastName', 'filter', 'filter'=>'trim'),
-			array('username, email, firstName, lastName', 'default', 'setOnEmpty'=>true, 'value' => null),
+			array('username, email, firstName, lastName, removePicture', 'filter', 'filter'=>'trim'),
+			array('username, email, firstName, lastName, removePicture', 'default', 'setOnEmpty'=>true, 'value' => null),
 
 			array('username, email', 'required'),
 			array('username, email', 'uniqueIdentity'),
+			array('removePicture', 'boolean'),
 		), $this->pictureUploadRules);
 	}
 
@@ -70,6 +72,7 @@ class ProfileForm extends BaseUsrForm
 			'firstName'		=> Yii::t('UsrModule.usr','First name'),
 			'lastName'		=> Yii::t('UsrModule.usr','Last name'),
 			'picture'		=> Yii::t('UsrModule.usr','Profile picture'),
+			'removePicture'	=> Yii::t('UsrModule.usr','Remove picture'),
 		));
 	}
 
@@ -133,9 +136,11 @@ class ProfileForm extends BaseUsrForm
 			'firstName'	=> $this->firstName,
 			'lastName'	=> $this->lastName,
 		));
-		if ($identity->save(Yii::app()->controller->module->requireVerifiedEmail) && (!($this->picture instanceof CUploadedFile) || !$identity->savePicture($this->picture))) {
-			$this->_identity = $identity;
-			return true;
+		if ($identity->save(Yii::app()->controller->module->requireVerifiedEmail)) {
+			if ((!($this->picture instanceof CUploadedFile) || $identity->savePicture($this->picture)) && (!$this->removePicture || $identity->removePicture())) {
+				$this->_identity = $identity;
+				return true;
+			}
 		}
 		return false;
 	}

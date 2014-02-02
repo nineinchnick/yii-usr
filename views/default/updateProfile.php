@@ -71,6 +71,10 @@ $this->pageTitle = Yii::app()->name.' - '.$title;
 		<?php echo $form->fileField($model,'picture'); ?>
 		<?php echo $form->error($model,'picture'); ?>
 	</div>
+	<div class="control-group">
+		<?php echo $form->label($model,'removePicture', array('label'=>$form->checkBox($model,'removePicture').$model->getAttributeLabel('removePicture'), 'class'=>'checkbox')); ?>
+		<?php echo $form->error($model,'removePicture'); ?>
+	</div>
 <?php endif; ?>
 
 <?php if($model->asa('captcha') !== null): ?>

@@ -123,11 +123,7 @@ class DefaultController extends UsrController
 	protected function afterLogin()
 	{
 		$returnUrlParts = explode('/',Yii::app()->user->returnUrl);
-		if(end($returnUrlParts)=='index.php'){
-			$url = '/';
-		}else{
-			$url = Yii::app()->user->returnUrl;
-		}
+		$url = end($returnUrlParts)=='index.php' ? '/' : Yii::app()->user->returnUrl;
 		$this->redirect($url);
 	}
 
@@ -144,14 +140,14 @@ class DefaultController extends UsrController
 			$model->scenario = $scenario;
 		}
 
-		if(isset($_POST['ajax']) && $_POST['ajax']==='login-form') {
+		if (isset($_POST['ajax']) && $_POST['ajax']==='login-form') {
 			echo CActiveForm::validate($model);
 			Yii::app()->end();
 		}
 
-		if(isset($_POST['LoginForm'])) {
+		if (isset($_POST['LoginForm'])) {
 			$model->setAttributes($_POST['LoginForm']);
-			if($model->validate()) {
+			if ($model->validate()) {
 				if (($model->scenario !== 'reset' || $model->resetPassword()) && $model->login($this->module->rememberMeDuration)) {
 					$this->afterLogin();
 				} else {
@@ -186,7 +182,7 @@ class DefaultController extends UsrController
 		/** @var RecoveryForm */
 		$model = $this->module->createFormModel('RecoveryForm');
 
-		if(isset($_POST['ajax']) && $_POST['ajax']==='recovery-form') {
+		if (isset($_POST['ajax']) && $_POST['ajax']==='recovery-form') {
 			echo CActiveForm::validate($model);
 			Yii::app()->end();
 		}
@@ -195,14 +191,14 @@ class DefaultController extends UsrController
 			$model->scenario = 'reset';
 			$model->setAttributes($_GET);
 		}
-		if(isset($_POST['RecoveryForm'])) {
+		if (isset($_POST['RecoveryForm'])) {
 			$model->setAttributes($_POST['RecoveryForm']);
 			/**
 			 * If the activation key is missing that means the user is requesting a recovery email.
 			 */
 			if ($model->activationKey !== null)
 				$model->scenario = 'reset';
-			if($model->validate()) {
+			if ($model->validate()) {
 				if ($model->scenario !== 'reset') {
 					/** 
 					 * Send email appropriate to the activation status. If verification is required, that must happen
@@ -239,7 +235,7 @@ class DefaultController extends UsrController
 		/** @var RecoveryForm */
 		$model = $this->module->createFormModel('RecoveryForm', 'verify');
 		$model->setAttributes($_GET);
-		if($model->validate() && $model->getIdentity()->verifyEmail($this->module->requireVerifiedEmail)) {
+		if ($model->validate() && $model->getIdentity()->verifyEmail($this->module->requireVerifiedEmail)) {
 			// regenerate the activation key to prevent reply attack
 			$model->getIdentity()->getActivationKey();
 			Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'Your email address has been successfully verified.'));
@@ -260,16 +256,16 @@ class DefaultController extends UsrController
 		/** @var PasswordForm */
 		$passwordForm = $this->module->createFormModel('PasswordForm', 'register');
 
-		if(isset($_POST['ajax']) && $_POST['ajax']==='profile-form') {
+		if (isset($_POST['ajax']) && $_POST['ajax']==='profile-form') {
 			echo CActiveForm::validate(array($model, $passwordForm));
 			Yii::app()->end();
 		}
-		if(isset($_POST['ProfileForm'])) {
+		if (isset($_POST['ProfileForm'])) {
 			$model->setAttributes($_POST['ProfileForm']);
-			if($model->getIdentity() instanceof IPictureIdentity && !empty($model->pictureUploadRules)) {
+			if ($model->getIdentity() instanceof IPictureIdentity && !empty($model->pictureUploadRules)) {
 				$model->picture = CUploadedFile::getInstance($model, 'picture');
 			}
-			if(isset($_POST['PasswordForm']))
+			if (isset($_POST['PasswordForm']))
 				$passwordForm->setAttributes($_POST['PasswordForm']);
 			if ($model->validate() && $passwordForm->validate()) {
 				$trx = Yii::app()->db->beginTransaction();
@@ -315,9 +311,9 @@ class DefaultController extends UsrController
 		/** @var PasswordForm */
 		$passwordForm = $this->module->createFormModel('PasswordForm');
 
-		if(isset($_POST['ajax']) && $_POST['ajax']==='profile-form') {
+		if (isset($_POST['ajax']) && $_POST['ajax']==='profile-form') {
 			$models = array($model);
-			if(isset($_POST['PasswordForm']) && trim($_POST['PasswordForm']['newPassword']) !== '') {
+			if (isset($_POST['PasswordForm']) && trim($_POST['PasswordForm']['newPassword']) !== '') {
 				$models[] = $passwordForm;
 			}
 			echo CActiveForm::validate($models);
@@ -328,7 +324,7 @@ class DefaultController extends UsrController
 		 * Only try to set new password if it has been specified in the form.
 		 * The current password could have been used to authorize other changes.
 		 */
-		if(isset($_POST['PasswordForm']) && trim($_POST['PasswordForm']['newPassword']) !== '') {
+		if (isset($_POST['PasswordForm']) && trim($_POST['PasswordForm']['newPassword']) !== '') {
 			$passwordForm->setAttributes($_POST['PasswordForm']);
 			if ($passwordForm->validate()) {
 				if ($passwordForm->resetPassword($model->getIdentity())) {
@@ -338,12 +334,12 @@ class DefaultController extends UsrController
 				}
 			}
 		}
-		if(isset($_POST['ProfileForm']) && empty($flashes['error'])) {
+		if (isset($_POST['ProfileForm']) && empty($flashes['error'])) {
 			$model->setAttributes($_POST['ProfileForm']);
-			if($model->getIdentity() instanceof IPictureIdentity && !empty($model->pictureUploadRules)) {
+			if ($model->getIdentity() instanceof IPictureIdentity && !empty($model->pictureUploadRules)) {
 				$model->picture = CUploadedFile::getInstance($model, 'picture');
 			}
-			if($model->validate()) {
+			if ($model->validate()) {
 				$oldEmail = $model->getIdentity()->getEmail();
 				if ($model->save()) {
 					if ($this->module->requireVerifiedEmail && $oldEmail != $model->email) {
@@ -384,7 +380,13 @@ class DefaultController extends UsrController
 	{
 		/** @var ProfileForm */
 		$model = $this->module->createFormModel('ProfileForm');
-		$picture = $model->getIdentity()->getPicture($id);
+		if (!(($identity=$model->getIdentity()) instanceof IPictureIdentity)) {
+			throw new CException(Yii::t('UsrModule.usr','The {class} class must implement the {interface} interface.',array('{class}'=>get_class($identity),'{interface}'=>'IPictureIdentity')));
+		}
+		$picture = $identity->getPicture($id);
+		if ($picture === null) {
+			throw new CHttpException(404, Yii::t('UsrModule.usr', 'Picture with id {id} is not found.', array('{id}'=>$id)));
+		}
 		header('Content-Type:'.$picture['mimetype']);
 		echo $picture['picture'];
 	}
