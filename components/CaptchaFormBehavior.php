@@ -23,7 +23,7 @@ class CaptchaFormBehavior extends FormModelBehavior
 	public function rules()
 	{
 		$rules = array(
-			array('verifyCode', 'captcha'),
+			array('verifyCode', 'captcha', 'captchaAction'=>'default/captcha'),
 		);
 		return $this->applyRuleOptions($rules);
 	}

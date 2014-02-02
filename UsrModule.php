@@ -213,6 +213,7 @@ class UsrModule extends CWebModule
 
 	/**
 	 * @var array If not null, CAPTCHA will be enabled on the registration and recovery form and this will be passed as arguments to the CCaptcha widget.
+	 * Remember to include the 'captchaAction'=>'default/captcha' property.
 	 */
 	public $captcha;
 
