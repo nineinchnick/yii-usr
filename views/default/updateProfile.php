@@ -43,11 +43,11 @@ $this->pageTitle = Yii::app()->name.' - '.$title;
 		<?php echo $form->error($model,'email'); ?>
 	</div>
 
-<?php if ($passwordForm->scenario !== 'register'): ?>
+<?php if ($model->scenario !== 'register'): ?>
 	<div class="control-group">
-		<?php echo $form->labelEx($passwordForm,'password'); ?>
-		<?php echo $form->passwordField($passwordForm,'password', array('autocomplete'=>'off')); ?>
-		<?php echo $form->error($passwordForm,'password'); ?>
+		<?php echo $form->labelEx($model,'password'); ?>
+		<?php echo $form->passwordField($model,'password', array('autocomplete'=>'off')); ?>
+		<?php echo $form->error($model,'password'); ?>
 	</div>
 <?php endif; ?>
 <?php $this->renderPartial('_newpassword', array('form'=>$form, 'model'=>$passwordForm)); ?>

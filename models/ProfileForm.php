@@ -13,6 +13,7 @@ class ProfileForm extends BaseUsrForm
 	public $lastName;
 	public $picture;
 	public $removePicture;
+	public $password;
 
 	/**
 	 * @var IdentityInterface cached object returned by @see getIdentity()
@@ -58,6 +59,7 @@ class ProfileForm extends BaseUsrForm
 			array('username, email', 'required'),
 			array('username, email', 'uniqueIdentity'),
 			array('removePicture', 'boolean'),
+			array('password', 'validCurrentPassword', 'except'=>'register'),
 		), $this->pictureUploadRules);
 	}
 
@@ -73,6 +75,7 @@ class ProfileForm extends BaseUsrForm
 			'lastName'		=> Yii::t('UsrModule.usr','Last name'),
 			'picture'		=> Yii::t('UsrModule.usr','Profile picture'),
 			'removePicture'	=> Yii::t('UsrModule.usr','Remove picture'),
+			'password'		=> Yii::t('UsrModule.usr','Current password'),
 		));
 	}
 
@@ -104,6 +107,28 @@ class ProfileForm extends BaseUsrForm
 		$existingIdentity = $userIdentityClass::find(array($attribute => $this->$attribute));
 		if ($existingIdentity !== null && ($this->scenario == 'register' || (($identity=$this->getIdentity()) !== null && $existingIdentity->getId() != $identity->getId()))) {
 			$this->addError($attribute,Yii::t('UsrModule.usr','{attribute} has already been used by another user.', array('{attribute}'=>$this->$attribute)));
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * A valid current password is required only when changing email.
+	 */
+	public function validCurrentPassword($attribute,$params)
+	{
+		if($this->hasErrors()) {
+			return;
+		}
+		if (($identity=$this->getIdentity()) === null) {
+			throw new CException('Current user has not been found in the database.');
+		}
+		if ($identity->getEmail() === $this->email) {
+			return true;
+		}
+		$identity->password = $this->$attribute;
+		if(!$identity->authenticate()) {
+			$this->addError($attribute, Yii::t('UsrModule.usr', 'Changing email address requires providing the current password.'));
 			return false;
 		}
 		return true;

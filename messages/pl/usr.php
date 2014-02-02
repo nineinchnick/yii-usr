@@ -28,6 +28,7 @@ return array (
   'Changes have been saved successfully.' => 'Zmiany zostały pomyślnie zapisane.',
   'Create a new account' => 'Utwórz nowe konto',
   'Current password' => 'Bieżące hasło',
+  'Changing email address requires providing the current password.' => 'Przy zmianie adresu email wymagane jest podanie bieżącego hasła.',
   'Current password has been used too long and needs to be changed.' => 'Bieżące hasło jest używane zbyt długo i musi zostać zmienione.',
   'Disable' => 'Wyłącz',
   'Don\'t have an account yet?' => 'Nie masz jeszcze konta?',

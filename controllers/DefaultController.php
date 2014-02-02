@@ -311,6 +311,8 @@ class DefaultController extends UsrController
 		/** @var PasswordForm */
 		$passwordForm = $this->module->createFormModel('PasswordForm');
 
+		if (isset($_POST['ProfileForm']) && isset($_POST['ProfileForm']['password']))
+			$passwordForm->password = $_POST['ProfileForm']['password'];
 		if (isset($_POST['ajax']) && $_POST['ajax']==='profile-form') {
 			$models = array($model);
 			if (isset($_POST['PasswordForm']) && trim($_POST['PasswordForm']['newPassword']) !== '') {
