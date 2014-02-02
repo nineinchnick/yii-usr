@@ -29,7 +29,7 @@ class ProfileForm extends BaseUsrForm
 	 */
 	public function getPictureUploadRules()
 	{
-		return $this->_pictureUploadRules === null ? null : $this->_pictureUploadRules;
+		return $this->_pictureUploadRules === null ? array() : $this->_pictureUploadRules;
 	}
 
 	/**

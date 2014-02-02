@@ -96,7 +96,7 @@ class BehaviorsTest extends CTestCase
 
 		$this->assertEquals(array('verifyCode'), $captcha->attributeNames());
 		$this->assertEquals(array('verifyCode' => Yii::t('UsrModule.usr','Verification code')), $captcha->attributeLabels());
-		$this->assertEquals(array(array('verifyCode', 'captcha')), $captcha->rules());
+		$this->assertEquals(array(array('verifyCode', 'captcha', 'captchaAction' => '/usr/default/captcha')), $captcha->rules());
 	}
 
 	public function testExpiredPassword()

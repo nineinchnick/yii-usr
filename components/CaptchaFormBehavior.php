@@ -22,8 +22,9 @@ class CaptchaFormBehavior extends FormModelBehavior
 	 */
 	public function rules()
 	{
+		$module = Yii::app()->controller !== null ? Yii::app()->controller->module : null;
 		$rules = array(
-			array('verifyCode', 'captcha', 'captchaAction'=>'/'.Yii::app()->controller->module->getId().'/default/captcha'),
+			array('verifyCode', 'captcha', 'captchaAction'=>'/'.($module !== null ? $module->getId() : 'usr').'/default/captcha'),
 		);
 		return $this->applyRuleOptions($rules);
 	}
