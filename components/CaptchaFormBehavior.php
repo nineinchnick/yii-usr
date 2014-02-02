@@ -23,7 +23,7 @@ class CaptchaFormBehavior extends FormModelBehavior
 	public function rules()
 	{
 		$rules = array(
-			array('verifyCode', 'captcha', 'captchaAction'=>'default/captcha'),
+			array('verifyCode', 'captcha', 'captchaAction'=>'/'.Yii::app()->controller->module->getId().'/default/captcha'),
 		);
 		return $this->applyRuleOptions($rules);
 	}
