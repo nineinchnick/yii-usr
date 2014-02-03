@@ -519,13 +519,11 @@ abstract class ExampleUserIdentity extends CUserIdentity
 			return null;
 		}
 		// try to locate biggest picture smaller than specified dimensions
-		$criteria = array(
-			'select'	=> 'id',
-			'condition'	=> 'width <= :max_width AND height <= :max_height',
-			'params'	=> array(':max_width'=>$width, ':max_height'=>$height),
-			'order'		=> 'width DESC',
-			'limit'		=> 1,
-		);
+		$criteria = array('select' => 'id', 'order' => 'width DESC', 'limit' => 1,);
+		if ($width !== null && $height !== null) {
+			$criteria['condition'] = 'width <= :width AND height <= :height';
+			$criteria['params'] = array(':width'=>$width, ':height'=>$height);
+		}
 		$pictures = $record->userProfilePictures($criteria);
 		if (!empty($pictures)) {
 			return array(
