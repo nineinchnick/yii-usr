@@ -26,6 +26,7 @@ class RecoveryForm extends BasePasswordForm
 			array('username, email', 'filter', 'filter'=>'trim'),
 			array('username, email', 'default', 'setOnEmpty'=>true, 'value' => null),
 			array('username, email', 'existingIdentity'),
+			array('email', 'email'),
 
 			array('activationKey', 'filter', 'filter'=>'trim', 'on'=>'reset,verify'),
 			array('activationKey', 'default', 'setOnEmpty'=>true, 'value' => null, 'on'=>'reset,verify'),

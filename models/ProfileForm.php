@@ -58,6 +58,7 @@ class ProfileForm extends BaseUsrForm
 
 			array('username, email', 'required'),
 			array('username, email', 'uniqueIdentity'),
+			array('email', 'email'),
 			array('removePicture', 'boolean'),
 			array('password', 'validCurrentPassword', 'except'=>'register'),
 		), $this->pictureUploadRules);
