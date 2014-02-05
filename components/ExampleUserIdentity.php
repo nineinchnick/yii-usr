@@ -511,7 +511,7 @@ abstract class ExampleUserIdentity extends CUserIdentity
 	/**
 	 * @inheritdoc
 	 */
-	public function getPictureUrl($width=80, $height=80)
+	public function getPictureUrl($width=null, $height=null)
 	{
 		if ($this->_id===null)
 			return null;

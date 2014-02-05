@@ -375,7 +375,7 @@ class DefaultController extends UsrController
 
 	/**
 	 * Allows users to view their profile picture.
-	 * @param boolean $update
+	 * @param integer $id
 	 * @return string
 	 */
 	public function actionProfilePicture($id)
