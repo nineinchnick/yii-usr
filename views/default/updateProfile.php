@@ -66,12 +66,14 @@ $this->pageTitle = Yii::app()->name.' - '.$title;
 
 <?php if ($model->getIdentity() instanceof IPictureIdentity && !empty($model->pictureUploadRules)):
 	$picture = $model->getIdentity()->getPictureUrl(80,80);
-	$url = $picture['url'];
-	unset($picture['url']);
+	if ($picture !== null) {
+		$url = $picture['url'];
+		unset($picture['url']);
+	}
 ?>
 	<div class="control-group">
 		<?php echo $form->labelEx($model,'picture'); ?>
-		<?php echo CHtml::image($url, Yii::t('UsrModule.usr', 'Profile picture'), $picture); ?><br/>
+		<?php echo $picture === null ? '' : CHtml::image($url, Yii::t('UsrModule.usr', 'Profile picture'), $picture); ?><br/>
 		<?php echo $form->fileField($model,'picture'); ?>
 		<?php echo $form->error($model,'picture'); ?>
 	</div>
