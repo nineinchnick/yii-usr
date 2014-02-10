@@ -69,7 +69,7 @@ class SearchForm extends CFormModel
 	{
 		if($this->_identity===null) {
 			$userIdentityClass = $this->userIdentityClass;
-			$this->_identity = $userIdentityClass::find(array('id'=>Yii::app()->user->getId()));
+			$this->_identity = $userIdentityClass::find(array('id'=>$this->id !== null ? $this->id : Yii::app()->user->getId()));
 			if ($this->_identity !== null && !($this->_identity instanceof IManagedIdentity)) {
 				throw new CException(Yii::t('UsrModule.usr','The {class} class must implement the {interface} interface.',array('{class}'=>get_class($this->_identity),'{interface}'=>'IManagedIdentity')));
 			}

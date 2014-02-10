@@ -27,28 +27,18 @@ class ManagerController extends Controller
 	public function accessRules()
 	{
 		return array(
-			array('allow', 'actions'=>array('index','view'), 'roles'=>array('usr.read')),
+			array('allow', 'actions'=>array('index'), 'roles'=>array('usr.read')),
 			array('allow', 'actions'=>array('create'), 'roles'=>array('usr.create')),
 			array('allow', 'actions'=>array('update'), 'roles'=>array('usr.update')),
 			array('allow', 'actions'=>array('delete'), 'roles'=>array('usr.delete')),
+			array('allow', 'actions'=>array('verify', 'activate', 'disable'), 'roles'=>array('usr.update.status')),
 			array('deny', 'users'=>array('*')),
 		);
 	}
 
 	/**
-	 * Displays a particular model.
-	 * @param integer $id the ID of the model to be displayed
-	 */
-	public function actionView($id)
-	{
-		$this->render('view',array(
-			'model'=>$this->loadModel($id),
-		));
-	}
-
-	/**
 	 * Creates a new model.
-	 * If creation is successful, the browser will be redirected to the 'view' page.
+	 * If creation is successful, the browser will be redirected to the 'index' page.
 	 */
 	public function actionCreate()
 	{
@@ -61,7 +51,7 @@ class ManagerController extends Controller
 		{
 			$model->attributes=$_POST['User'];
 			if($model->save())
-				$this->redirect(array('view','id'=>$model->id));
+				$this->redirect(array('index'));
 		}
 
 		$this->render('create',array(
@@ -71,7 +61,7 @@ class ManagerController extends Controller
 
 	/**
 	 * Updates a particular model.
-	 * If update is successful, the browser will be redirected to the 'view' page.
+	 * If update is successful, the browser will be redirected to the 'index' page.
 	 * @param integer $id the ID of the model to be updated
 	 */
 	public function actionUpdate($id)
@@ -85,7 +75,7 @@ class ManagerController extends Controller
 		{
 			$model->attributes=$_POST['User'];
 			if($model->save())
-				$this->redirect(array('view','id'=>$model->id));
+				$this->redirect(array('index'));
 		}
 
 		$this->render('update',array(
@@ -95,16 +85,67 @@ class ManagerController extends Controller
 
 	/**
 	 * Deletes a particular model.
-	 * If deletion is successful, the browser will be redirected to the 'admin' page.
+	 * If deletion is successful, the browser will be redirected to the 'index' page.
 	 * @param integer $id the ID of the model to be deleted
 	 */
 	public function actionDelete($id)
 	{
 		$this->loadModel($id)->delete();
 
-		// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
+		// if AJAX request (triggered by deletion via index grid view), we should not redirect the browser
 		if(!isset($_GET['ajax']))
-			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
+			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
+	}
+
+	/**
+	 * Toggles email verification status for a particular user.
+	 * @param integer $id the ID of the user which email verification status is to be toggled
+	 */
+	public function actionVerify($id)
+	{
+		$identity = $this->loadModel($id);
+		if ($identity->isVerified()) {
+			throw new CHttpException(500, 'Cannot unverify email.');
+		} else {
+			$identity->verifyEmail($this->module->requireVerifiedEmail);
+		}
+
+		if(!isset($_GET['ajax']))
+			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
+	}
+
+	/**
+	 * Toggles active status for a particular user.
+	 * @param integer $id the ID of the user which active status is to be toggled
+	 */
+	public function actionActivate($id)
+	{
+		$identity = $this->loadModel($id);
+		if ($identity->isActive()) {
+			throw new CHttpException(500, 'Cannot deactivate.');
+		} else {
+			throw new CHttpException(500, 'Cannot activate.');
+		}
+
+		if(!isset($_GET['ajax']))
+			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
+	}
+
+	/**
+	 * Toggles disabled status for a particular user.
+	 * @param integer $id the ID of the user which disabled status is to be toggled
+	 */
+	public function actionDisable($id)
+	{
+		$identity = $this->loadModel($id);
+		if ($identity->isDisabled()) {
+			throw new CHttpException(500, 'Cannot enable.');
+		} else {
+			throw new CHttpException(500, 'Cannot disable.');
+		}
+
+		if(!isset($_GET['ajax']))
+			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
 	}
 
 	/**
@@ -132,8 +173,9 @@ class ManagerController extends Controller
 	 */
 	public function loadModel($id)
 	{
-		$model=User::model()->findByPk($id);
-		if($model===null)
+		$searchForm = $this->module->createFormModel('SearchForm');
+		$searchForm->id = $id;
+		if(($model = $searchForm->getIdentity())===null)
 			throw new CHttpException(404,'The requested page does not exist.');
 		return $model;
 	}

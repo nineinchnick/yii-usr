@@ -25,6 +25,11 @@ interface IActivatedIdentity
 	 */
 	public function isDisabled();
 	/**
+	 * Checkes if user email address is verified.
+	 * @return boolean
+	 */
+	public function isVerified();
+	/**
 	 * Generates and saves a new activation key used for verifying email and restoring lost password.
 	 * The activation key is then sent by email to the user.
 	 *

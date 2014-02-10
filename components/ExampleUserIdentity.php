@@ -247,6 +247,18 @@ abstract class ExampleUserIdentity extends CUserIdentity
 	}
 
 	/**
+	 * Checkes if user email address is verified.
+	 * @return boolean
+	 */
+	public function isVerified()
+	{
+		if (($record=$this->getActiveRecord())===null) {
+			return false;
+		}
+		return (bool)$record->email_verified;
+	}
+
+	/**
 	 * Generates and saves a new activation key used for verifying email and restoring lost password.
 	 * The activation key is then sent by email to the user.
 	 *
