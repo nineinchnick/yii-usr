@@ -1,6 +1,6 @@
 <?php
 /* @var $this ManagerController */
-/* @var $model User */
+/* @var $model SearchForm */
 
 $this->pageTitle = Yii::t('UsrModule.manager', 'List users');
 
@@ -14,18 +14,19 @@ $this->menu=array(
 	array('label'=>Yii::t('UsrModule.manager', 'Create user'), 'url'=>array('create')),
 );
 
-Yii::app()->clientScript->registerScript('search', "
+$booleanFilter = array('0'=>Yii::t('UsrModule.manager', 'No'), '1'=>Yii::t('UsrModule.manager', 'Yes'));
+
+$script = <<<JavaScript
 $('.search-button').click(function(){
 	$('.search-form').toggle();
 	return false;
 });
 $('.search-form form').submit(function(){
-	$('#user-grid').yiiGridView('update', {
-		data: $(this).serialize()
-	});
+	$('#identity-grid').yiiGridView('update', {data: $(this).serialize()});
 	return false;
 });
-");
+JavaScript;
+Yii::app()->clientScript->registerScript('search', $script);
 ?>
 
 <h1><?php echo $this->pageTitle; ?></h1>
@@ -36,40 +37,43 @@ $('.search-form form').submit(function(){
 
 <?php echo CHtml::link(Yii::t('UsrModule.manager', 'Advanced Search'),'#',array('class'=>'search-button')); ?>
 <div class="search-form" style="display:none">
-<?php $this->renderPartial('_search',array(
-	'model'=>$model,
-)); ?>
+<?php $this->renderPartial('_search',array('model'=>$model)); ?>
 </div><!-- search-form -->
 
 <?php $this->widget('zii.widgets.grid.CGridView', array(
-	'id'=>'user-grid',
-	'dataProvider'=>$model->search(),
+	'id'=>'identity-grid',
+	'dataProvider'=>$model->getIdentity()->getDataProvider($model),
 	'filter'=>$model,
 	'columns'=>array(
 		'id',
 		'username',
 		'email',
-		'firstname',
-		'lastname',
-		'created_on',
-		'last_visit_on',
-		'email_verified:boolean',
-		'is_active:boolean',
-		'is_disabled:boolean',
-		/*
-		'activation_key',
-		'created_on',
-		'updated_on',
-		'password_set_on',
-		'email_verified',
-		'is_active',
-		'is_disabled',
-		'one_time_password_secret',
-		'one_time_password_code',
-		'one_time_password_counter',
-		*/
+		'firstName',
+		'lastName',
+		'createdOn',
+		'lastVisitOn',
+		array(
+			'name'=>'emailVerified',
+			'type'=>'boolean',
+			'filter'=>$booleanFilter,
+		),
+		array(
+			'name'=>'isActive',
+			'type'=>'boolean',
+			'filter'=>$booleanFilter,
+			'value'=>'$data->isActive()',
+		),
+		array(
+			'name'=>'isDisabled',
+			'type'=>'boolean',
+			'filter'=>$booleanFilter,
+			'value'=>'$data->isDisabled()',
+		),
 		array(
 			'class'=>'CButtonColumn',
+			'viewButtonUrl'=>'Yii::app()->controller->createUrl("view",array("id"=>$data->id))',
+			'updateButtonUrl'=>'Yii::app()->controller->createUrl("update",array("id"=>$data->id))',
+			'deleteButtonUrl'=>'Yii::app()->controller->createUrl("delete",array("id"=>$data->id))',
 		),
 	),
 )); ?>

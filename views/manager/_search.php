@@ -1,9 +1,9 @@
 <?php
 /* @var $this ManagerController */
-/* @var $model User */
+/* @var $model SearchForm */
 /* @var $form CActiveForm */
 
-$booleanData = array(1=>Yii::t('UsrModule.manager', 'Yes'), 0=>Yii::t('UsrModule.manager', 'No'));
+$booleanData = array(Yii::t('UsrModule.manager', 'No'), Yii::t('UsrModule.manager', 'Yes'));
 $booleanOptions = array('empty'=>Yii::t('UsrModule.manager', 'Any'), 'separator' => '', 'labelOptions' => array('style'=>'display: inline; float: none;'));
 ?>
 
@@ -30,47 +30,47 @@ $booleanOptions = array('empty'=>Yii::t('UsrModule.manager', 'Any'), 'separator'
 	</div>
 
 	<div class="row">
-		<?php echo $form->label($model,'firstname'); ?>
-		<?php echo $form->textField($model,'firstname',array('size'=>60,'maxlength'=>255)); ?>
+		<?php echo $form->label($model,'firstName'); ?>
+		<?php echo $form->textField($model,'firstName',array('size'=>60,'maxlength'=>255)); ?>
 	</div>
 
 	<div class="row">
-		<?php echo $form->label($model,'lastname'); ?>
-		<?php echo $form->textField($model,'lastname',array('size'=>60,'maxlength'=>255)); ?>
+		<?php echo $form->label($model,'lastName'); ?>
+		<?php echo $form->textField($model,'lastName',array('size'=>60,'maxlength'=>255)); ?>
 	</div>
 
 	<div class="row">
-		<?php echo $form->label($model,'created_on'); ?>
-		<?php echo $form->textField($model,'created_on'); ?>
+		<?php echo $form->label($model,'createdOn'); ?>
+		<?php echo $form->textField($model,'createdOn'); ?>
 	</div>
 
 	<div class="row">
-		<?php echo $form->label($model,'updated_on'); ?>
-		<?php echo $form->textField($model,'updated_on'); ?>
+		<?php echo $form->label($model,'updatedOn'); ?>
+		<?php echo $form->textField($model,'updatedOn'); ?>
 	</div>
 
 	<div class="row">
-		<?php echo $form->label($model,'last_visit_on'); ?>
-		<?php echo $form->textField($model,'last_visit_on'); ?>
+		<?php echo $form->label($model,'lastVisitOn'); ?>
+		<?php echo $form->textField($model,'lastVisitOn'); ?>
 	</div>
 
 	<div class="row">
-		<?php echo $form->label($model,'email_verified'); ?>
-		<?php echo $form->radioButtonList($model,'email_verified', $booleanData, $booleanOptions); ?>
+		<?php echo $form->label($model,'emailVerified'); ?>
+		<?php echo $form->radioButtonList($model,'emailVerified', $booleanData, $booleanOptions); ?>
 	</div>
 
 	<div class="row">
-		<?php echo $form->label($model,'is_active'); ?>
-		<?php echo $form->radioButtonList($model,'is_active', $booleanData, $booleanOptions); ?>
+		<?php echo $form->label($model,'isActive'); ?>
+		<?php echo $form->radioButtonList($model,'isActive', $booleanData, $booleanOptions); ?>
 	</div>
 
 	<div class="row">
-		<?php echo $form->label($model,'is_disabled'); ?>
-		<?php echo $form->radioButtonList($model,'is_disabled', $booleanData, $booleanOptions); ?>
+		<?php echo $form->label($model,'isDisabled'); ?>
+		<?php echo $form->radioButtonList($model,'isDisabled', $booleanData, $booleanOptions); ?>
 	</div>
 
 	<div class="row buttons">
-		<?php echo CHtml::submitButton('Search'); ?>
+		<?php echo CHtml::submitButton(Yii::t('UsrModule.manager', 'Search')); ?>
 	</div>
 
 <?php $this->endWidget(); ?>

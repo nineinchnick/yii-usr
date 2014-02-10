@@ -44,7 +44,7 @@ class UsrCommand extends CConsoleCommand
     public function getTemplateAuthItemDescriptions()
     {
         return array(
-            'usr'                   => Yii::t('UsrModule.auth', 'Manage users'),
+            'usr.manage'            => Yii::t('UsrModule.auth', 'Manage users'),
             'usr.create'            => Yii::t('UsrModule.auth', 'Create users'),
             'usr.read'              => Yii::t('UsrModule.auth', 'Read any user'),
             'usr.update'            => Yii::t('UsrModule.auth', 'Update any user'),

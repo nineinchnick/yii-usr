@@ -578,7 +578,36 @@ abstract class ExampleUserIdentity extends CUserIdentity
 
 	// {{{ IManagedIdentity
 
+	/**
+	 * @inheritdoc
+	 */
+	public function getDataProvider(SearchForm $searchForm)
+	{
+		$criteria=new CDbCriteria;
 
+		$criteria->compare('id', $searchForm->id);
+		$criteria->compare('username', $searchForm->username,true);
+		$criteria->compare('email', $searchForm->email,true);
+		$criteria->compare('firstname', $searchForm->firstName,true);
+		$criteria->compare('lastname', $searchForm->lastName,true);
+		$criteria->compare('created_on', $searchForm->createdOn);
+		$criteria->compare('updated_on', $searchForm->updatedOn);
+		$criteria->compare('last_visit_on', $searchForm->lastVisitOn);
+		$criteria->compare('email_verified', $searchForm->emailVerified);
+		$criteria->compare('is_active', $searchForm->isActive);
+		$criteria->compare('is_disabled', $searchForm->isDisabled);
+		$dataProvider = new CActiveDataProvider('User', array('criteria'=>$criteria));
+		$identities = array();
+		foreach($dataProvider->getData() as $row) {
+			$identities[] = self::createFromUser($row);
+		}
+
+		return new CArrayDataProvider($identities, array(
+			'keyField'=>'id',
+			//'itemCount' => $dataProvider->itemCount,
+			'totalItemCount' => $dataProvider->totalItemCount,
+		));
+	}
 
 	// }}}
 }

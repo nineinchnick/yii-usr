@@ -112,14 +112,15 @@ class ManagerController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$model=new User('search');
-		$model->unsetAttributes();  // clear any default values
-		if(isset($_GET['User']))
-			$model->attributes=$_GET['User'];
+		$model = $this->module->createFormModel('SearchForm');
+		if (isset($_GET['SearchForm'])) {
+			$model->attributes = $_GET['SearchForm'];
+			$model->validate();
+			$errors = $model->getErrors();
+			$model->unsetAttributes(array_keys($errors));
+		}
 
-		$this->render('index',array(
-			'model'=>$model,
-		));
+		$this->render('index', array('model'=>$model));
 	}
 
 	/**
