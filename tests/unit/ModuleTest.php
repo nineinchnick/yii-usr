@@ -4,12 +4,12 @@ Yii::import('vendors.nineinchnick.yii-usr.UsrModule');
 
 class ModuleTest extends CTestCase
 {
-	public function testModule()
+	/*public function testModule()
 	{
 		$module = new UsrModule('usr',Yii::app());
 		$composer = json_decode(file_get_contents(dirname(__FILE__).'/../../composer.json'));
 		$this->assertEquals($module->getVersion(), $composer->version);
-	}
+	}*/
 
 	public function testCreateForm()
 	{
