@@ -39,6 +39,7 @@ class SearchForm extends CFormModel
 	{
 		return array(
 			array('id, username, email, firstName, lastName, createdOn, updatedOn, lastVisitOn, emailVerified, isActive, isDisabled', 'filter', 'filter'=>'trim'),
+			array('id, username, email, firstName, lastName, createdOn, updatedOn, lastVisitOn, emailVerified, isActive, isDisabled', 'default'),
 			array('id', 'numerical', 'integerOnly'=>true, 'max'=>0x7FFFFFFF, 'min'=>-0x8000000), // 32-bit integers
 			array('createdOn, updatedOn, lastVisitOn', 'date', 'format'=>array('yyyy-MM-dd', 'yyyy-MM-dd hh:mm', '?yyyy-MM-dd', '?yyyy-MM-dd hh:mm', '??yyyy-MM-dd', '??yyyy-MM-dd hh:mm')),
 			array('emailVerified, isActive, isDisabled', 'boolean'),
@@ -65,11 +66,11 @@ class SearchForm extends CFormModel
 		);
 	}
 
-	public function getIdentity()
+	public function getIdentity($id=null)
 	{
 		if($this->_identity===null) {
 			$userIdentityClass = $this->userIdentityClass;
-			$this->_identity = $userIdentityClass::find(array('id'=>$this->id !== null ? $this->id : Yii::app()->user->getId()));
+			$this->_identity = $userIdentityClass::find(array('id'=>$id !== null ? $id : Yii::app()->user->getId()));
 			if ($this->_identity !== null && !($this->_identity instanceof IManagedIdentity)) {
 				throw new CException(Yii::t('UsrModule.usr','The {class} class must implement the {interface} interface.',array('{class}'=>get_class($this->_identity),'{interface}'=>'IManagedIdentity')));
 			}

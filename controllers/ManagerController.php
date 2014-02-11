@@ -14,8 +14,8 @@ class ManagerController extends Controller
 	public function filters()
 	{
 		return array(
-			'accessControl', // perform access control for CRUD operations
-			'postOnly + delete', // we only allow deletion via POST request
+			'accessControl',
+			'postOnly + delete,verify,activate,disable',
 		);
 	}
 
@@ -28,8 +28,7 @@ class ManagerController extends Controller
 	{
 		return array(
 			array('allow', 'actions'=>array('index'), 'roles'=>array('usr.read')),
-			array('allow', 'actions'=>array('create'), 'roles'=>array('usr.create')),
-			array('allow', 'actions'=>array('update'), 'roles'=>array('usr.update')),
+			array('allow', 'actions'=>array('update'), 'users'=>array('@')),
 			array('allow', 'actions'=>array('delete'), 'roles'=>array('usr.delete')),
 			array('allow', 'actions'=>array('verify', 'activate', 'disable'), 'roles'=>array('usr.update.status')),
 			array('deny', 'users'=>array('*')),
@@ -37,39 +36,25 @@ class ManagerController extends Controller
 	}
 
 	/**
-	 * Creates a new model.
-	 * If creation is successful, the browser will be redirected to the 'index' page.
-	 */
-	public function actionCreate()
-	{
-		$model=new User;
-
-		// Uncomment the following line if AJAX validation is needed
-		// $this->performAjaxValidation($model);
-
-		if(isset($_POST['User']))
-		{
-			$model->attributes=$_POST['User'];
-			if($model->save())
-				$this->redirect(array('index'));
-		}
-
-		$this->render('create',array(
-			'model'=>$model,
-		));
-	}
-
-	/**
 	 * Updates a particular model.
 	 * If update is successful, the browser will be redirected to the 'index' page.
 	 * @param integer $id the ID of the model to be updated
 	 */
-	public function actionUpdate($id)
+	public function actionUpdate($id=null)
 	{
-		$model=$this->loadModel($id);
+		if (!Yii::app()->user->checkAccess($id === null ? 'usr.create' : 'usr.update')) {
+			throw new CHttpException(403, Yii::t('yii','You are not authorized to perform this action.'));
+		}
+		$model = $id===null ? new User : $this->loadModel($id);
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
+		/**
+		 * 1. Prepare separate forms for attributes, password and auth item assignment
+		 * 2. Check for detailed auth items
+		 * 3. Add a detail view with uneditable properties like timestamps
+		 * 4. Add other actions in side menu like activate, verify
+		 */
 
 		if(isset($_POST['User']))
 		{
@@ -78,9 +63,7 @@ class ManagerController extends Controller
 				$this->redirect(array('index'));
 		}
 
-		$this->render('update',array(
-			'model'=>$model,
-		));
+		$this->render('update',array('model'=>$model));
 	}
 
 	/**
@@ -104,11 +87,7 @@ class ManagerController extends Controller
 	public function actionVerify($id)
 	{
 		$identity = $this->loadModel($id);
-		if ($identity->isVerified()) {
-			throw new CHttpException(500, 'Cannot unverify email.');
-		} else {
-			$identity->verifyEmail($this->module->requireVerifiedEmail);
-		}
+		$identity->toggleStatus(IManagedIdentity::STATUS_EMAIL_VERIFIED);
 
 		if(!isset($_GET['ajax']))
 			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
@@ -121,11 +100,7 @@ class ManagerController extends Controller
 	public function actionActivate($id)
 	{
 		$identity = $this->loadModel($id);
-		if ($identity->isActive()) {
-			throw new CHttpException(500, 'Cannot deactivate.');
-		} else {
-			throw new CHttpException(500, 'Cannot activate.');
-		}
+		$identity->toggleStatus(IManagedIdentity::STATUS_IS_ACTIVE);
 
 		if(!isset($_GET['ajax']))
 			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
@@ -138,11 +113,7 @@ class ManagerController extends Controller
 	public function actionDisable($id)
 	{
 		$identity = $this->loadModel($id);
-		if ($identity->isDisabled()) {
-			throw new CHttpException(500, 'Cannot enable.');
-		} else {
-			throw new CHttpException(500, 'Cannot disable.');
-		}
+		$identity->toggleStatus(IManagedIdentity::STATUS_IS_DISABLED);
 
 		if(!isset($_GET['ajax']))
 			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
@@ -174,8 +145,7 @@ class ManagerController extends Controller
 	public function loadModel($id)
 	{
 		$searchForm = $this->module->createFormModel('SearchForm');
-		$searchForm->id = $id;
-		if(($model = $searchForm->getIdentity())===null)
+		if(($model = $searchForm->getIdentity($id))===null)
 			throw new CHttpException(404,'The requested page does not exist.');
 		return $model;
 	}

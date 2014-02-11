@@ -608,17 +608,29 @@ abstract class ExampleUserIdentity extends CUserIdentity
 		$criteria->compare('email_verified', $searchForm->emailVerified);
 		$criteria->compare('is_active', $searchForm->isActive);
 		$criteria->compare('is_disabled', $searchForm->isDisabled);
-		$dataProvider = new CActiveDataProvider('User', array('criteria'=>$criteria));
+		$dataProvider = new CActiveDataProvider('User', array('criteria'=>$criteria, 'keyAttribute'=>'id'));
 		$identities = array();
 		foreach($dataProvider->getData() as $row) {
 			$identities[] = self::createFromUser($row);
 		}
+		$dataProvider->setData($identities);
+		return $dataProvider;
+	}
 
-		return new CArrayDataProvider($identities, array(
-			'keyField'=>'id',
-			//'itemCount' => $dataProvider->itemCount,
-			'totalItemCount' => $dataProvider->totalItemCount,
-		));
+	/**
+	 * @inheritdoc
+	 */
+	public function toggleStatus($status)
+	{
+		if (($record=$this->getActiveRecord())===null) {
+			return false;
+		}
+		switch($status) {
+		case self::STATUS_EMAIL_VERIFIED: $attributes['email_verified'] = !$record->email_verified; break;
+		case self::STATUS_IS_ACTIVE: $attributes['is_active'] = !$record->is_active; break;
+		case self::STATUS_IS_DISABLED: $attributes['is_disable'] = !$record->is_disabled; break;
+		}
+		return $record->saveAttributes($attributes);
 	}
 
 	// }}}

@@ -11,7 +11,7 @@ $this->breadcrumbs=array(
 
 $this->menu=array(
 	array('label'=>Yii::t('UsrModule.manager', 'List users'), 'url'=>array('index')),
-	array('label'=>Yii::t('UsrModule.manager', 'Create user'), 'url'=>array('create')),
+	array('label'=>Yii::t('UsrModule.manager', 'Create user'), 'url'=>array('update')),
 );
 
 $booleanFilter = array('0'=>Yii::t('UsrModule.manager', 'No'), '1'=>Yii::t('UsrModule.manager', 'Yes'));
