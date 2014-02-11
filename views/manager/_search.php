@@ -14,62 +14,62 @@ $booleanOptions = array('empty'=>Yii::t('UsrModule.manager', 'Any'), 'separator'
 	'method'=>'get',
 )); ?>
 
-	<div class="row">
+	<div class="control-group">
 		<?php echo $form->label($model,'id'); ?>
 		<?php echo $form->textField($model,'id'); ?>
 	</div>
 
-	<div class="row">
+	<div class="control-group">
 		<?php echo $form->label($model,'username'); ?>
 		<?php echo $form->textField($model,'username',array('size'=>60,'maxlength'=>255)); ?>
 	</div>
 
-	<div class="row">
+	<div class="control-group">
 		<?php echo $form->label($model,'email'); ?>
 		<?php echo $form->textField($model,'email',array('size'=>60,'maxlength'=>255)); ?>
 	</div>
 
-	<div class="row">
+	<div class="control-group">
 		<?php echo $form->label($model,'firstName'); ?>
 		<?php echo $form->textField($model,'firstName',array('size'=>60,'maxlength'=>255)); ?>
 	</div>
 
-	<div class="row">
+	<div class="control-group">
 		<?php echo $form->label($model,'lastName'); ?>
 		<?php echo $form->textField($model,'lastName',array('size'=>60,'maxlength'=>255)); ?>
 	</div>
 
-	<div class="row">
+	<div class="control-group">
 		<?php echo $form->label($model,'createdOn'); ?>
 		<?php echo $form->textField($model,'createdOn'); ?>
 	</div>
 
-	<div class="row">
+	<div class="control-group">
 		<?php echo $form->label($model,'updatedOn'); ?>
 		<?php echo $form->textField($model,'updatedOn'); ?>
 	</div>
 
-	<div class="row">
+	<div class="control-group">
 		<?php echo $form->label($model,'lastVisitOn'); ?>
 		<?php echo $form->textField($model,'lastVisitOn'); ?>
 	</div>
 
-	<div class="row">
+	<div class="control-group">
 		<?php echo $form->label($model,'emailVerified'); ?>
 		<?php echo $form->radioButtonList($model,'emailVerified', $booleanData, $booleanOptions); ?>
 	</div>
 
-	<div class="row">
+	<div class="control-group">
 		<?php echo $form->label($model,'isActive'); ?>
 		<?php echo $form->radioButtonList($model,'isActive', $booleanData, $booleanOptions); ?>
 	</div>
 
-	<div class="row">
+	<div class="control-group">
 		<?php echo $form->label($model,'isDisabled'); ?>
 		<?php echo $form->radioButtonList($model,'isDisabled', $booleanData, $booleanOptions); ?>
 	</div>
 
-	<div class="row buttons">
+	<div class="buttons">
 		<?php echo CHtml::submitButton(Yii::t('UsrModule.manager', 'Search')); ?>
 	</div>
 

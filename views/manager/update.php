@@ -100,7 +100,7 @@ if ($id !== null) {
 	</div>
 <?php endif; ?>
 
-	<div class="row buttons">
+	<div class="buttons">
 		<?php echo CHtml::submitButton($id === null ? Yii::t('UsrModule.manager', 'Create') : Yii::t('UsrModule.manager', 'Save'), array('class'=>$this->module->submitButtonCssClass)); ?>
 	</div>
 
