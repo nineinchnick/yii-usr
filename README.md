@@ -7,6 +7,7 @@ Usr module is inspired by the popular Yii-user module but written from scratch. 
 * password recovery and reset if expired
 * registration with optional email verification,
 * viewing and updating a minimal user profile along with changing password
+* user managment
 
 It's goal is to be easier to integrate into current projects by not requiring to modify existing user database table and model.
 Only the UserIdentity class is used to provide all business logic by implementing few provided interfaces.
@@ -19,9 +20,6 @@ Key differences from yii-user:
 * bundled mailer class
 * built-in Hybridauth for logging using social site identities
 * built-in Google Authenticator for two step authentication using one time passwords
-
-Currently, there is no admin user managment provided and it is not planned. The reason for this is that the CRUDs vary much in every project and it should not be time-expensive to create another one for users utilizing interfaces implemented in UserIdentity for this module.
-Actions provided by this module does not require any more authorization than checking if a user is logged in. An admin interface on the other hand requires to define auth items to check for access.
 
 # Installation
 
@@ -43,6 +41,8 @@ return array(
 Requirements for the UserIdentity class are described in next chapter.
 
 See UsrModule.php file for full options reference.
+
+To be able to use user managment, create auth items using the `createAuthItems` command and assign them to a role or users.
 
 # Identity interfaces 
 
@@ -72,6 +72,20 @@ This interface allows finding local identity associated with a remote one (from 
 ## One Time Password
 
 This interface allow saving and retrieving a secret used to generate one time passwords. Also, last used password and counter used to generate last password are saved and retrieve to protect against reply attacks.
+
+## Profile Pictures
+
+Allows users to upload a profile picture. The example identity uses [Gravatar](http://gravatar.com/) to provide a default picture.
+
+## Managable
+
+Allows to manage users:
+
+* update their profiles (and pictures)
+* change passwords
+* assign authorization roles
+* activate/disable and mark email as verified
+* see details as timestamps of account creation, last profile update and last visit
 
 # User model example
 
@@ -143,13 +157,20 @@ If using the [bootstrap extension](http://www.yiiframework.com/extension/bootstr
 	),
 ~~~
 
+Besides that, all views could be overriden in a theme. A following skin can be used for user managment grid:
+
+~~~
+<?php
+return array(
+	'default' => array(
+		'itemsCssClass' => 'table table-striped table-bordered table-condensed',
+		'pagerCssClass' => 'paging_bootstrap pagination',
+	),
+);
+~~~
+
 # License
 
 MIT or BSD
 
 
-# Todo
-
-* finish profile view/update
-* finish docs, especially about implementing interfaces, using example User model and customizing templates
-* write unit tests
