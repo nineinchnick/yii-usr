@@ -633,5 +633,34 @@ abstract class ExampleUserIdentity extends CUserIdentity
 		return $record->saveAttributes($attributes);
 	}
 
+	/**
+	 * @inheritdoc
+	 */
+	public function delete()
+	{
+		if (($record=$this->getActiveRecord())===null) {
+			return false;
+		}
+		return $record->delete();
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function getTimestamps($key=null)
+	{
+		if (($record=$this->getActiveRecord())===null) {
+			return false;
+		}
+		$timestamps = array(
+			'createdOn' => $record->created_on,
+			'updatedOn' => $record->updated_on,
+			'lastVisitOn' => $record->last_visit_on,
+			'passwordSetOn' => $record->password_set_on,
+		);
+		// can't use isset, since it returns false for null values
+		return $key === null || !array_key_exists($key, $timestamps) ? $timestamps : $timestamps[$key];
+	}
+
 	// }}}
 }

@@ -4,11 +4,6 @@
 
 $this->pageTitle = Yii::t('UsrModule.manager', 'List users');
 
-$this->breadcrumbs=array(
-	Yii::t('UsrModule.manager', 'Users manager')=>array('index'),
-	$this->pageTitle,
-);
-
 $this->menu=array(
 	array('label'=>Yii::t('UsrModule.manager', 'List users'), 'url'=>array('index')),
 	array('label'=>Yii::t('UsrModule.manager', 'Create user'), 'url'=>array('update')),
@@ -45,6 +40,8 @@ Yii::app()->clientScript->registerScript('actions', $script);
 
 <h1><?php echo $this->pageTitle; ?></h1>
 
+<?php $this->widget('usr.components.UsrAlerts', array('cssClassPrefix'=>$this->module->alertCssClassPrefix)); ?>
+
 <p>
 <?php echo Yii::t('UsrModule.manager', 'You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b> or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.'); ?>
 </p>
@@ -64,28 +61,44 @@ Yii::app()->clientScript->registerScript('actions', $script);
 		'email:text:'.Yii::t('UsrModule.manager','Email'),
 		'firstName:text:'.Yii::t('UsrModule.manager','Firstname'),
 		'lastName:text:'.Yii::t('UsrModule.manager','Lastname'),
-		'createdOn:text:'.Yii::t('UsrModule.manager','Created On'),
-		'lastVisitOn:text:'.Yii::t('UsrModule.manager','Last Visit On'),
+		/*array(
+			'name' => 'createdOn',
+			'type' => 'datetime',
+			'header' => Yii::t('UsrModule.manager','Created On'),
+			'value' => '$data->getTimestamps("createdOn")',
+		),*/
+		array(
+			'name' => 'updatedOn',
+			'type' => 'datetime',
+			'header' => Yii::t('UsrModule.manager','Updated On'),
+			'value' => '$data->getTimestamps("updatedOn")',
+		),
+		array(
+			'name' => 'lastVisitOn',
+			'type' => 'datetime',
+			'header' => Yii::t('UsrModule.manager','Last Visit On'),
+			'value' => '$data->getTimestamps("lastVisitOn")',
+		),
 		array(
 			'name'=>'emailVerified',
 			'type'=>'raw',
 			'header'=>Yii::t('UsrModule.manager', 'Email Verified'),
 			'filter'=>$booleanFilter,
-			'value'=>'CHtml::link($data->isVerified() ? Yii::t("UsrModule.manager", "Verified") : Yii::t("UsrModule.manager", "Unverified"), Yii::app()->controller->createUrl("verify", array("id"=>$data->id)), array("class"=>"actionButton", "title"=>Yii::t("UsrModule.manager", "Toggle")))',
+			'value'=>'CHtml::link($data->isVerified() ? Yii::t("UsrModule.manager", "Verified") : Yii::t("UsrModule.manager", "Unverified"), array("verify", "id"=>$data->id), array("class"=>"actionButton", "title"=>Yii::t("UsrModule.manager", "Toggle")))',
 		),
 		array(
 			'name'=>'isActive',
 			'type'=>'raw',
 			'header'=>Yii::t('UsrModule.manager', 'Is Active'),
 			'filter'=>$booleanFilter,
-			'value'=>'CHtml::link($data->isActive() ? Yii::t("UsrModule.manager", "Active") : Yii::t("UsrModule.manager", "Not active"), Yii::app()->controller->createUrl("activate", array("id"=>$data->id)), array("class"=>"actionButton", "title"=>Yii::t("UsrModule.manager", "Toggle")))',
+			'value'=>'CHtml::link($data->isActive() ? Yii::t("UsrModule.manager", "Active") : Yii::t("UsrModule.manager", "Not active"), array("activate", "id"=>$data->id), array("class"=>"actionButton", "title"=>Yii::t("UsrModule.manager", "Toggle")))',
 		),
 		array(
 			'name'=>'isDisabled',
 			'type'=>'raw',
 			'header'=>Yii::t('UsrModule.manager', 'Is Disabled'),
 			'filter'=>$booleanFilter,
-			'value'=>'CHtml::link($data->isDisabled() ? Yii::t("UsrModule.manager", "Disabled") : Yii::t("UsrModule.manager", "Enabled"), Yii::app()->controller->createUrl("disable", array("id"=>$data->id)), array("class"=>"actionButton", "title"=>Yii::t("UsrModule.manager", "Toggle")))',
+			'value'=>'CHtml::link($data->isDisabled() ? Yii::t("UsrModule.manager", "Disabled") : Yii::t("UsrModule.manager", "Enabled"), array("disable", "id"=>$data->id), array("class"=>"actionButton", "title"=>Yii::t("UsrModule.manager", "Toggle")))',
 		),
 		array(
 			'class'=>'CButtonColumn',

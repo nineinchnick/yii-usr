@@ -3,7 +3,7 @@
 		<?php echo $form->passwordField($model,'newPassword', array('autocomplete'=>'off')); ?>
 		<?php echo $form->error($model,'newPassword'); ?>
 <?php if ($this->module->dicewareEnabled): ?>
-		<p><a id="Users_generatePassword" href="#"><?php echo Yii::t('UsrModule.usr', 'Generate a password'); ?></a></p>
+		<span><a id="Users_generatePassword" href="#"><?php echo Yii::t('UsrModule.usr', 'Generate a password'); ?></a></span>
 <?php
 $diceUrl = $this->createUrl('password');
 $diceLabel = Yii::t('UsrModule.usr', 'Use this password?\nTo copy it to the clipboard press Ctrl+C.');

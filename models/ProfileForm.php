@@ -99,6 +99,11 @@ class ProfileForm extends BaseUsrForm
 		return $this->_identity;
 	}
 
+	public function setIdentity($identity)
+	{
+		$this->_identity = $identity;
+	}
+
 	public function uniqueIdentity($attribute,$params)
 	{
 		if($this->hasErrors()) {
@@ -106,7 +111,7 @@ class ProfileForm extends BaseUsrForm
 		}
 		$userIdentityClass = $this->userIdentityClass;
 		$existingIdentity = $userIdentityClass::find(array($attribute => $this->$attribute));
-		if ($existingIdentity !== null && ($this->scenario == 'register' || (($identity=$this->getIdentity()) !== null && $existingIdentity->getId() != $identity->getId()))) {
+		if ($existingIdentity !== null && (($identity=$this->getIdentity()) !== null && $existingIdentity->getId() != $identity->getId())) {
 			$this->addError($attribute,Yii::t('UsrModule.usr','{attribute} has already been used by another user.', array('{attribute}'=>$this->$attribute)));
 			return false;
 		}
@@ -148,12 +153,12 @@ class ProfileForm extends BaseUsrForm
 
 	/**
 	 * Updates the identity with this models attributes and saves it.
+	 * @param CUserIdentity $identity
 	 * @return boolean whether saving is successful
 	 */
 	public function save()
 	{
-		$identity = $this->getIdentity();
-		if ($identity === null)
+		if (($identity=$this->getIdentity()) === null)
 			return false;
 
 		$identity->setAttributes(array(

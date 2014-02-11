@@ -17,4 +17,16 @@ interface IManagedIdentity
 	 * @return boolean
 	 */
 	public function toggleStatus($status);
+	/**
+	 * Removes a user account. Note this could fail if there are constraints set up in the db that prevent
+	 * removing a user that still has some relations pointing to it.
+	 * @return boolean
+	 */
+	public function delete();
+	/**
+	 * Retrieves various timestamps, like time of creation, last update, last login.
+	 * @param string $key if not null, returns a single value if one of: createdOn, updatedOn, lastVisitOn
+	 * @return array|string single date or array with keys: createdOn, updatedOn, lastVisitOn
+	 */
+	public function getTimestamps($key=null);
 }
