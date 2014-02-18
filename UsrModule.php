@@ -195,12 +195,17 @@ class UsrModule extends CWebModule
 	 * @see http://hybridauth.sourceforge.net/userguide.html
 	 */
 	public $hybridauthProviders = array();
-	/**
+        /**
+         * @var booleand Enables Hybridauth debug log. 
+         * Logfile 'hybridauth.log' will be placed in Yii runtime directory
+         */
+        public $hybridauthDebug = false;
+        /**
 	 * @var string If set to UsrModule::OTP_TIME or UsrModule::OTP_COUNTER, two step authentication is enabled using one time passwords.
 	 * Time mode uses codes generated using current time and requires the user to use an external application, like Google Authenticator on Android.
 	 * Counter mode uses codes generated using a sequence and sends them to user's email.
 	 */
-	public $oneTimePasswordMode = self::OTP_NONE;
+    	public $oneTimePasswordMode = self::OTP_NONE;
 	/**
 	 * @var integer Number of seconds for how long is the last verified code valid.
 	 */
@@ -274,8 +279,10 @@ class UsrModule extends CWebModule
 		if ($this->hybridauthEnabled()) {
 			$hybridauthConfig = array(
 				'base_url' => Yii::app()->createAbsoluteUrl('/'.$this->id.'/hybridauth/callback'),
-				'providers' => $this->hybridauthProviders,
-			);
+				'providers' => $this->hybridauthProviders,);
+                        if ( $this->hybridauthDebug ) {
+                            $hybridauthConfig += array ('debug_mode' => true, 'debug_file' => Yii::app()->runtimePath . '/hybridauth.log');
+                        };
 			require dirname(__FILE__) . '/extensions/Hybrid/Auth.php';
 			$this->_hybridauth = new Hybrid_Auth($hybridauthConfig);
 		}
