@@ -105,7 +105,7 @@ class HybridauthForm extends BaseUsrForm
 		$userIdentityClass = $this->userIdentityClass;
 		$fakeIdentity = new $userIdentityClass(null, null);
 		if (!($fakeIdentity instanceof IHybridauthIdentity))
-			throw new CException(Yii::t('UsrModule.usr','The {class} class must implement the {interface} interface.',array('{class}'=>get_class($identity),'{interface}'=>'IHybridauthIdentity')));
+			throw new CException(Yii::t('UsrModule.usr','The {class} class must implement the {interface} interface.',array('{class}'=>get_class($fakeIdentity),'{interface}'=>'IHybridauthIdentity')));
 
 		$params = $this->getAttributes();
 		unset($params['provider']);
