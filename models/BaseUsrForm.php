@@ -106,4 +106,22 @@ abstract class BaseUsrForm extends CFormModel
 		}
 		return $rules;
 	}
+
+	/**
+	 * A wrapper for inline validators from behaviors extending FormModelBehavior.
+     * Set the behavior name in 'behavior' param and validator name in 'validator' param.
+	 * @param $attribute string
+	 * @param $params array
+	 */
+	public function behaviorValidator($attribute, $params)
+	{
+        $behavior = $params['behavior'];
+        $validator = $params['validator'];
+        unset($params['behavior']);
+        unset($params['validator']);
+		if (($behavior=$this->asa($behavior)) !== null) {
+			return $behavior->{$validator}($attribute, $params);
+		}
+		return true;
+	}
 }

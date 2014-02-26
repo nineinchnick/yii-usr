@@ -216,6 +216,11 @@ class UsrModule extends CWebModule
 	 * Remember to include the 'captchaAction'=>'/usr/default/captcha' property. Adjust the module id.
 	 */
 	public $captcha;
+    /**
+     * @var array Extra behaviors to attach to the profile form. If the view/update views are overriden in a theme
+     * this can be used to display/update extra profile fields. @see FormModelBehavior
+     */
+    public $profileFormBehaviors;
 
 	/**
 	 * @var GoogleAuthenticator set if $oneTimePasswordMode is not UsrModule::OTP_NONE
@@ -352,6 +357,11 @@ class UsrModule extends CWebModule
 				break;
 			case 'ProfileForm':
 				$form->pictureUploadRules = $this->pictureUploadRules;
+                if (!empty($this->profileFormBehaviors)) {
+                    foreach($this->profileFormBehaviors as $name=>$config) {
+                        $form->attachBehavior($name, $config);
+                    }
+                }
 			case 'RecoveryForm':
 				if ($this->captcha !== null && CCaptcha::checkRequirements()) {
 					$form->attachBehavior('captcha', array(
