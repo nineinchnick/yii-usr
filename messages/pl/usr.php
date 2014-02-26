@@ -83,6 +83,7 @@ return array (
   'Please wait until next code will be generated.' => 'Proszę zaczekać aż następny kod zostanie wygenerowany.',
   'Profile picture' => 'Zdjęcie profilowe',
   'Provider' => 'Dostawca',
+  'Redirecting, please wait...' => 'Trwa przekierowanie, proszę czekać...',
   'Registration' => 'Rejestracja',
   'Registration has not been enabled.' => 'Rejestracja nie została włączona.',
   'Remember me when logging in next time' => 'Pamiętaj mnie przy następnym logowaniu',

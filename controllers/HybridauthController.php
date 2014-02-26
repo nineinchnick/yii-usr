@@ -27,6 +27,27 @@ class HybridauthController extends UsrController
 		$this->redirect($url);
 	}
 
+    public function actionPopup($provider=null)
+    {
+		/** @var HybridauthForm */
+		$remoteLogin = $this->module->createFormModel('HybridauthForm');
+
+		if ($provider!==null) {
+			$remoteLogin->provider = $provider;
+			$remoteLogin->scenario = strtolower($remoteLogin->provider);
+
+			if($remoteLogin->validate()) {
+				$remoteLogin->login();
+            }
+        }
+        // if we got here that means Hybridauth did not perform a redirect,
+        // either there was an error or the user is already authenticated
+        $url = $this->createUrl('login', array('provider'=>$provider));
+        $message = Yii::t('UsrModule.usr', 'Redirecting, please wait...');
+        echo "<html><body onload=\"window.opener.location.href='$url';window.close();\">$message</body></html>";
+        Yii::app()->end();
+    }
+
 	public function actionLogin($provider=null)
 	{
 		if ($provider!==null)
@@ -51,8 +72,6 @@ class HybridauthController extends UsrController
 		if (isset($_POST['HybridauthForm'])) {
 			$remoteLogin->setAttributes($_POST['HybridauthForm']);
 			$remoteLogin->scenario = strtolower($remoteLogin->provider);
-			$remoteLogin->setValidProviders($this->module->hybridauthProviders);
-			$remoteLogin->setHybridAuth($this->module->getHybridAuth());
 
 			if($remoteLogin->validate()) {
 				if ($remoteLogin->login()) {

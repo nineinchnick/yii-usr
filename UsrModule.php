@@ -380,6 +380,10 @@ class UsrModule extends CWebModule
 					));
 				}
 				break;
+            case 'HybridauthForm':
+                $form->setValidProviders($this->hybridauthProviders);
+                $form->setHybridAuth($this->getHybridAuth());
+                break;
 		}
 		return $form;
 	}

@@ -109,6 +109,8 @@ class HybridauthForm extends BaseUsrForm
 
 		$params = $this->getAttributes();
 		unset($params['provider']);
+        if (empty($params['openid_identifier']))
+            unset($params['openid_identifier']);
 		$this->_hybridAuthAdapter = $this->_hybridAuth->authenticate(strtolower($this->provider), $params);
 
 		if ($this->_hybridAuthAdapter->isUserConnected()) {
