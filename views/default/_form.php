@@ -24,7 +24,10 @@
 		<?php echo $form->error($model,'password'); ?>
 	</div>
 <?php endif; ?>
+
+<?php if (isset($passwordForm) && $passwordForm !== null): ?>
 <?php $this->renderPartial('/default/_newpassword', array('form'=>$form, 'model'=>$passwordForm)); ?>
+<?php endif; ?>
 
 	<div class="control-group">
 		<?php echo $form->labelEx($model,'firstName'); ?>

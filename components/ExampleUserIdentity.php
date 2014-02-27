@@ -82,7 +82,7 @@ abstract class ExampleUserIdentity extends CUserIdentity
 	{
 		$this->_id = $id;
 	}
-	
+
 	/**
 	 * @return int|string current user ID
 	 */
@@ -214,10 +214,17 @@ abstract class ExampleUserIdentity extends CUserIdentity
 
 	// {{{ ActivatedIdentityInterface
 
+    /**
+     * @inheritdoc
+     */
 	public static function find(array $attributes)
 	{
-		$record = User::model()->findByAttributes($attributes);
-		return $record === null ? null : self::createFromUser($record);
+		$records = User::model()->findAllByAttributes($attributes);
+        if (count($records)!==1) {
+            return null;
+        }
+        $record = reset($records);
+		return self::createFromUser($record);
 	}
 
 	/**
@@ -419,6 +426,7 @@ abstract class ExampleUserIdentity extends CUserIdentity
 	{
 		if ($this->_id===null)
 			return false;
+        self::removeRemoteIdentity($provider, $identifier);
 		$model = new UserRemoteIdentity;
 		$model->setAttributes(array(
 			'user_id' => $this->_id,
@@ -427,6 +435,36 @@ abstract class ExampleUserIdentity extends CUserIdentity
 		), false);
 		return $model->save();
 	}
+
+    /**
+     * @inheritdoc
+     */
+    public static function removeRemoteIdentity($provider, $identifier)
+    {
+		if ($this->_id===null)
+			return false;
+		$criteria = new CDbCriteria;
+		$criteria->compare('provider',$provider);
+		$criteria->compare('identifier',$identifier);
+		UserRemoteIdentity::model()->deleteAll($criteria);
+        return true;
+    }
+
+    /**
+     * Similar to @see getAttributes() but reads the remote profile instead of current identity.
+     * @param mixed $remoteProfie
+     * @return array
+     */
+    public static function getRemoteAttributes($remoteProfile)
+    {
+		$email = (isset($remoteProfile->emailVerifier) && $remoteProfile->emailVerifier !== null) ? $remoteProfile->emailVerifier : $remoteProfile->email;
+        return array(
+            'username' => $email,
+            'email' => $email,
+            'firstName' => $remoteProfile->firstName,
+            'lastName' => $remoteProfile->lastName,
+        );
+    }
 
 	// }}}
 

@@ -6,7 +6,7 @@ Usr module is inspired by the popular Yii-user module but written from scratch. 
 * logging in and out,
 * password recovery and reset if expired
 * registration with optional email verification,
-* viewing and updating a minimal user profile along with changing password
+* viewing and updating a minimal user profile along with changing password, profile pictures are supported
 * user managment
 
 It's goal is to be easier to integrate into current projects by not requiring to modify existing user database table and model.
@@ -14,7 +14,7 @@ Only the UserIdentity class is used to provide all business logic by implementin
 
 Key differences from yii-user:
 
-* smaller codebase, easier to read/review
+* clean codebase, easier to read/review
 * use good password hashing
 * no need to modify current tables and models
 * bundled mailer class
@@ -23,7 +23,14 @@ Key differences from yii-user:
 
 # Installation
 
-Download and unpack in protected/modules.
+Using composer:
+
+~~~bash
+curl -sS https://getcomposer.org/installer | php
+./composer.phar require nineinchnick/yii-usr:dev-master
+~~~
+
+Download and unpack in _protected/modules_.
 
 Enable the module in the config/main.php file:
 
@@ -38,15 +45,29 @@ return array(
 )
 ~~~
 
-Requirements for the UserIdentity class are described in next chapter.
-
 See UsrModule.php file for full options reference.
 
 To be able to use user managment, create auth items using the `createAuthItems` command and assign them to a role or users.
 
-# Identity interfaces 
+## Fast setup and/or new projects
+
+This assumes there are no user tables in the database and all features can be enabled.
+
+* Copy migrations files from the module to your project and adjust their filenames and class names. Apply them.
+* Copy the ExampleUserIdentity to your _components_ directory changing it's name to UserIdentity, remove the _abstract_ keyword from the class definition.
+* Copy each file starting with _Example_ from the models directory to your projects and remove that prefix. Remove the _abstract_ keyword from the class definition.
+
+## Custom setup and/or existing projects
+
+If the module will be used with existing database tables and/or not all features will be used the identity class should be copied and adjusted or reimplemented from scratch.
+
+Requirements for the UserIdentity class are described in next chapter.
+
+# Identity interfaces
 
 To be able to use all features of the Usr module, the UserIdentity class must implement some or all of the following interfaces.
+
+For details, please read comments in each identity file or see the provided _ExampleUserIdentity_ file.
 
 ## Editable
 
@@ -103,15 +124,25 @@ Read more at [the Diceware Passphrase homepage](http://world.std.com/~reinhold/d
 
 # Customize
 
+## Custom profile fields
+
+It is possible to add more profile fields:
+
+* Override view files in a theme.
+* Create a behavior class extending _FormModelBehavior_.
+* Add that behvaior in the _UsrModule::profileFormBehaviors_ property.
+* Remember to update _setAttributes_ and _getAttributes_ methods of your UserIdentity class to include new profile fields.
+
+The behavior will include properties, rules and labels. Rules can contain inline validators defined in that behavior, just call them using the _behaviorValidator_ helper method:
+~~~php
+   // BEHAVIOR_NAME is the key used in UsrModule::profileFormBehaviors
+   // INLINE_VALIDATOR is the name of the inline validator method defined in the behavior
+   array('attribute', 'behaviorValidator', 'behavior'=>'BEHAVIOR_NAME', 'validator'=>'INLINE_VALIDATOR', /* other params */),
+~~~
+
 ## Email templates
 
 Set the _setPathViews_ and _setPathLayouts_ keys under the _mailerConfig_ module option.
-
-## Registration/profile form
-
-Altering the form is not currently possible. Ideas are welcome.
-
-The whole module layout can be changed by setting the _layout_ module option.
 
 ## Translations
 

@@ -161,12 +161,7 @@ class ProfileForm extends BaseUsrForm
 		if (($identity=$this->getIdentity()) === null)
 			return false;
 
-		$identity->setAttributes(array(
-			'username'	=> $this->username,
-			'email'		=> $this->email,
-			'firstName'	=> $this->firstName,
-			'lastName'	=> $this->lastName,
-		));
+		$identity->setAttributes($this->getAttributes());
 		if ($identity->save(Yii::app()->controller->module->requireVerifiedEmail)) {
 			if ((!($this->picture instanceof CUploadedFile) || $identity->savePicture($this->picture)) && (!$this->removePicture || $identity->removePicture())) {
 				$this->_identity = $identity;

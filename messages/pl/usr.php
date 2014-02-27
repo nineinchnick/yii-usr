@@ -17,6 +17,7 @@
  * NOTE, this file must be saved in UTF-8 encoding.
  */
 return array (
+  'A matching local account has been found. Please type in your password to associate it.' => 'Znaleziono pasujące lokalne konto użytkownika. Podaj hasło, aby je powiązać.',
   'A one time password has been sent to your email. Enter it below.' => 'Hasło jednorazowe zostało wysłane na Twój email. Wprowadź je poniżej.',
   'Activation Key' => 'Klucz aktywacyjny',
   'Activation key is invalid.' => 'Klucz aktywacyjny jest nieprawidłowy.',
@@ -26,6 +27,7 @@ return array (
   'An email containing further instructions has been sent to the provided email address.' => 'Email zawierający dalsze instrukcje został wysłany na podany adres.',
   'Change password' => 'Zmień hasło',
   'Changes have been saved successfully.' => 'Zmiany zostały pomyślnie zapisane.',
+  'Continue' => 'Kontynuuj',
   'Create a new account' => 'Utwórz nowe konto',
   'Current password' => 'Bieżące hasło',
   'Changing email address requires providing the current password.' => 'Przy zmianie adresu email wymagane jest podanie bieżącego hasła.',

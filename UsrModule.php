@@ -195,6 +195,12 @@ class UsrModule extends CWebModule
 	 * @see http://hybridauth.sourceforge.net/userguide.html
 	 */
 	public $hybridauthProviders = array();
+    /**
+     * @var array list of identity attribute names that should be passed to UserIdentity::find() to find a local identity matching a remote one.
+     * If one is found, user must authorize to associate it. If none has been found, a new local identity is automatically registered.
+     * If the attribute list is empty a full pre-filled registration and login forms are displayed.
+     */
+    public $associateByAttributes = array('email');
 	/**
 	 * @var string If set to UsrModule::OTP_TIME or UsrModule::OTP_COUNTER, two step authentication is enabled using one time passwords.
 	 * Time mode uses codes generated using current time and requires the user to use an external application, like Google Authenticator on Android.
@@ -276,14 +282,16 @@ class UsrModule extends CWebModule
 			}
 		}
 		$this->setupMailer();
-		if ($this->hybridauthEnabled()) {
-			$hybridauthConfig = array(
-				'base_url' => Yii::app()->createAbsoluteUrl('/'.$this->id.'/hybridauth/callback'),
-				'providers' => $this->hybridauthProviders,
-			);
-			require dirname(__FILE__) . '/extensions/Hybrid/Auth.php';
-			$this->_hybridauth = new Hybrid_Auth($hybridauthConfig);
-		}
+        if ($this->hybridauthEnabled()) {
+            $hybridauthConfig = array(
+                'base_url' => Yii::app()->createAbsoluteUrl('/'.$this->id.'/hybridauth/callback'),
+                'providers' => $this->hybridauthProviders,
+                //'debug_mode' => YII_DEBUG,
+                //'debug_file' => Yii::app()->runtimePath . '/hybridauth.log',
+            );
+            require dirname(__FILE__) . '/extensions/Hybrid/Auth.php';
+            $this->_hybridauth = new Hybrid_Auth($hybridauthConfig);
+        }
 	}
 
 	public function setupMailer()

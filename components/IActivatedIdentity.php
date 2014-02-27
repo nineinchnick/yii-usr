@@ -8,6 +8,7 @@ interface IActivatedIdentity
 
 	/**
 	 * Loads a specific user identity using one of supplied attributes, such as username or email.
+     * Note: should only return a result if exactly one match has been found.
 	 * @param array $attributes contains at least one of keys: 'username', 'email'
 	 * @return object a user identity object or null if not found.
 	 */
