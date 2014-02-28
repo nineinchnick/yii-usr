@@ -10,7 +10,7 @@ class HybridauthController extends UsrController
 {
     public function actionIndex()
     {
-        $this->redirect('login');
+        $this->redirect('default/login');
     }
 
     /**
@@ -79,13 +79,13 @@ class HybridauthController extends UsrController
                     $this->afterLogin();
                 } elseif (($adapter=$remoteLogin->getHybridAuthAdapter()) === null || !$adapter->isUserConnected()) {
                     Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to log in using {provider}.', array('{provider}'=>$remoteLogin->provider)));
-                    $this->redirect('login');
+                    $this->redirect(array('login', 'provider'=>$remoteLogin->provider));
                 }
                 if (!Yii::app()->user->isGuest) {
                     // user is already logged in and needs to be associated with remote identity
                     if (!$remoteLogin->associate(Yii::app()->user->getId())) {
                         Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to associate current user with {provider}.', array('{provider}'=>$remoteLogin->provider)));
-                        $this->redirect('login');
+                        $this->redirect(array('login', 'provider'=>$remoteLogin->provider));
                     }
                 }
                 if (!empty($this->module->associateByAttributes)) {
@@ -147,7 +147,7 @@ class HybridauthController extends UsrController
             // don't forget to associate the new profile with remote provider
             if (!$remoteLogin->associate($localLogin->getIdentity()->getId())) {
                 Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to associate current user with {provider}.', array('{provider}'=>$remoteLogin->provider)));
-                $this->redirect('login');
+                $this->redirect(array('login', 'provider'=>$remoteLogin->provider));
             }
 
             $this->afterLogin();
@@ -170,7 +170,9 @@ class HybridauthController extends UsrController
             $remoteProfile = $remoteLogin->getHybridAuthAdapter()->getUserProfile();
             $localProfile->setAttributes($userIdentityClass::getRemoteAttributes($remoteProfile));
         }
-        $localProfile->setAttributes($_POST['ProfileForm']);
+        if (isset($_POST['ProfileForm']) && is_array($_POST['ProfileForm'])) {
+            $localProfile->setAttributes($_POST['ProfileForm']);
+        }
 
         if (!$localProfile->validate()) {
             return $localProfile;
@@ -195,7 +197,7 @@ class HybridauthController extends UsrController
         // don't forget to associate the new profile with remote provider
         if (!$remoteLogin->associate($localProfile->getIdentity()->getId())) {
             Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to associate current user with {provider}.', array('{provider}'=>$remoteLogin->provider)));
-            $this->redirect('login');
+            $this->redirect(array('login', 'provider'=>$remoteLogin->provider));
         }
 
         if ($localProfile->getIdentity()->isActive()) {
@@ -208,7 +210,7 @@ class HybridauthController extends UsrController
         } else {
             if (!Yii::app()->user->hasFlash('success'))
                 Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'Please wait for the account to be activated. A notification will be send to provided email address.'));
-            $this->redirect(array('login'));
+            $this->redirect(array('login', 'provider'=>$remoteLogin->provider));
         }
         return $localProfile;
     }
