@@ -145,6 +145,10 @@ class DefaultController extends UsrController
 			Yii::app()->end();
 		}
 
+        // compatibility with user module
+		if (isset($_POST['UserLogin'])) {
+            $_POST['LoginForm'] = $_POST['UserLogin'];
+        }
 		if (isset($_POST['LoginForm'])) {
 			$model->setAttributes($_POST['LoginForm']);
 			if ($model->validate()) {
