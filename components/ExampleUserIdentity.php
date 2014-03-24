@@ -52,32 +52,42 @@ abstract class ExampleUserIdentity extends CUserIdentity
 
 	// {{{ IUserIdentity
 
-	/**
-	 * @inheritdoc
-	 */
-	public function authenticate()
-	{
-		$record=User::model()->findByAttributes(array('username'=>$this->username));
-		if ($record!==null && $record->verifyPassword($this->password)) {
-			if ($record->is_disabled) {
-				$this->errorCode=self::ERROR_USER_DISABLED;
-				$this->errorMessage=Yii::t('UsrModule.usr','User account has been disabled.');
-			} else if (!$record->is_active) {
-				$this->errorCode=self::ERROR_USER_INACTIVE;
-				$this->errorMessage=Yii::t('UsrModule.usr','User account has not yet been activated.');
-			} else {
-				$this->errorCode=self::ERROR_NONE;
-				$this->errorMessage='';
-				$this->initFromUser($record);
-				$record->saveAttributes(array('last_visit_on'=>date('Y-m-d H:i:s')));
-			}
-		} else {
-			$this->errorCode=self::ERROR_USERNAME_INVALID;
-			$this->errorMessage=Yii::t('UsrModule.usr','Invalid username or password.');
-		}
-		return $this->getIsAuthenticated();
-	}
-	
+    /**
+     * @inheritdoc
+     */
+    public function authenticate()
+    {
+        $record=User::model()->findByAttributes(array('username'=>$this->username));
+        if ($record===null) {
+            $this->errorCode=self::ERROR_USERNAME_INVALID;
+            $this->errorMessage=Yii::t('UsrModule.usr','Invalid username or password.');
+            return false;
+        }
+        $authenticated = $record->verifyPassword($this->password);
+        $attempt = new UserLoginAttempt;
+        $attempt->user_id = $record->id;
+        $attempt->is_successful = $authenticated;
+        $attempt->save();
+        if (!$authenticated) {
+            $this->errorCode=self::ERROR_USERNAME_INVALID;
+            $this->errorMessage=Yii::t('UsrModule.usr','Invalid username or password.');
+            return false;
+        }
+        if ($record->is_disabled) {
+            $this->errorCode=self::ERROR_USER_DISABLED;
+            $this->errorMessage=Yii::t('UsrModule.usr','User account has been disabled.');
+        } else if (!$record->is_active) {
+            $this->errorCode=self::ERROR_USER_INACTIVE;
+            $this->errorMessage=Yii::t('UsrModule.usr','User account has not yet been activated.');
+        } else {
+            $this->errorCode=self::ERROR_NONE;
+            $this->errorMessage='';
+            $this->initFromUser($record);
+            $record->saveAttributes(array('last_visit_on'=>date('Y-m-d H:i:s')));
+        }
+        return $this->getIsAuthenticated();
+    }
+
 	public function setId($id)
 	{
 		$this->_id = $id;
@@ -310,10 +320,10 @@ abstract class ExampleUserIdentity extends CUserIdentity
 		if (($record=$this->getActiveRecord())===null) {
 			return false;
 		}
-		/** 
-		 * Only update $record if it's not already been updated, otherwise 
-		 * saveAttributes will return false, incorrectly suggesting 
-		 * failure.  
+		/**
+		 * Only update $record if it's not already been updated, otherwise
+		 * saveAttributes will return false, incorrectly suggesting
+		 * failure.
 		 */
 		if (!$record->email_verified) {
 			$attributes = array('email_verified' => 1);
@@ -327,7 +337,7 @@ abstract class ExampleUserIdentity extends CUserIdentity
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Returns user email address.
 	 * @return string
@@ -368,7 +378,7 @@ abstract class ExampleUserIdentity extends CUserIdentity
 
 	/**
 	 * Returns previously used one time password and value of counter used to generate current one time password, used in counter mode.
-	 * @return array array(string, integer) 
+	 * @return array array(string, integer)
 	 */
 	public function getOneTimePassword()
 	{
