@@ -18,6 +18,10 @@ abstract class ExampleUserIdentity extends CUserIdentity
 {
 	const ERROR_USER_DISABLED=1000;
 	const ERROR_USER_INACTIVE=1001;
+	const ERROR_USER_LOCKED=1002;
+
+    const MAX_FAILED_LOGIN_ATTEMPTS = 5;
+    const LOGIN_ATTEMPTS_COUNT_SECONDS = 1800;
 
 	public $email = null;
 	public $firstName = null;
@@ -57,28 +61,28 @@ abstract class ExampleUserIdentity extends CUserIdentity
      */
     public function authenticate()
     {
-        $record=User::model()->findByAttributes(array('username'=>$this->username));
-        if ($record===null) {
-            $this->errorCode=self::ERROR_USERNAME_INVALID;
-            $this->errorMessage=Yii::t('UsrModule.usr','Invalid username or password.');
-            return false;
-        }
-        $authenticated = $record->verifyPassword($this->password);
+        $record = User::model()->findByAttributes(array('username'=>$this->username));
+        $authenticated = $record !== null && $record->verifyPassword($this->password);
+
         $attempt = new UserLoginAttempt;
+        $attempt->username = $this->username;
         $attempt->user_id = $record->id;
         $attempt->is_successful = $authenticated;
         $attempt->save();
-        if (!$authenticated) {
+
+        if (UserLoginAttempt::hasTooManyFailedAttempts($this->username, self::MAX_FAILED_LOGIN_ATTEMPTS, self::LOGIN_ATTEMPTS_COUNT_SECONDS)) {
+            // this is the first check not to reveal if the specified user account exists or not
+            $this->errorCode=self::ERROR_USER_LOCKED;
+            $this->errorMessage=Yii::t('UsrModule.usr','User account has been locked due to too many failed login attempts. Try again later.');
+        } elseif (!$authenticated) {
             $this->errorCode=self::ERROR_USERNAME_INVALID;
             $this->errorMessage=Yii::t('UsrModule.usr','Invalid username or password.');
-            return false;
-        }
-        if ($record->is_disabled) {
+        } elseif ($record->is_disabled) {
             $this->errorCode=self::ERROR_USER_DISABLED;
             $this->errorMessage=Yii::t('UsrModule.usr','User account has been disabled.');
         } else if (!$record->is_active) {
             $this->errorCode=self::ERROR_USER_INACTIVE;
-            $this->errorMessage=Yii::t('UsrModule.usr','User account has not yet been activated.');
+            $this->errorMessage=Yii::t('UsrModule.usr','User account has not been activated yet.');
         } else {
             $this->errorCode=self::ERROR_NONE;
             $this->errorMessage='';

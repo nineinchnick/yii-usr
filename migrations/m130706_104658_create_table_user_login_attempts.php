@@ -6,7 +6,8 @@ class m130706_104658_create_table_user_login_attempts extends CDbMigration
     {
         $this->createTable('{{user_login_attempts}}', array(
             'id' => 'pk',
-            'user_id' => 'integer DEFAULT NULL REFERENCES {{users}} (id) ON UPDATE CASCADE ON DELETE CASCADE',
+            'username' => 'string NOT NULL',
+            'user_id' => 'integer REFERENCES {{users}} (id) ON UPDATE CASCADE ON DELETE CASCADE',
             'performed_on' => 'timestamp NOT NULL',
             'is_successful' => 'boolean NOT NULL DEFAULT false',
             'session_id' => 'string',

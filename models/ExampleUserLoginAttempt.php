@@ -5,6 +5,7 @@
  *
  * The followings are the available columns in table '{{user_login_attempts}}':
  * @property integer $id
+ * @property string $username
  * @property integer $user_id
  * @property string $performed_on
  * @property boolean $is_successful
@@ -51,6 +52,7 @@ abstract class ExampleUserLoginAttempt extends CActiveRecord
 	{
 		return array(
 			'id' => Yii::t('models', 'ID'),
+			'username' => Yii::t('models', 'Username'),
 			'user_id' => Yii::t('models', 'User'),
 			'performed_on' => Yii::t('models', 'Performed On'),
 			'is_successful' => Yii::t('models', 'Is Successful'),
@@ -76,9 +78,29 @@ abstract class ExampleUserLoginAttempt extends CActiveRecord
             $request = Yii::app()->request;
             $this->performed_on = date('Y-m-d H:i:s');
             $this->session_id = Yii::app()->session->sessionID;
-            $this->ipv4 = $request->userHostAddress;
+            $this->ipv4 = ip2long($request->userHostAddress);
             $this->user_agent = $request->userAgent;
         }
         return parent::beforeSave();
+    }
+
+    /**
+     * Checks if there are not too many login attempts using specified username in the specified number of seconds until now.
+     * @param string $username
+     * @param integer $count_limit number of login attempts
+     * @param integer $time_limit number of seconds
+     * @return boolean
+     */
+    public static function hasTooManyFailedAttempts($username, $count_limit = 5, $time_limit = 1800)
+    {
+        $since = new DateTime;
+        $since->sub(new DateInterval("PT{$time_limit}S"));
+        return $count_limit >= (int)self::model()->dbConnection->createCommand()
+            ->select('COUNT(!is_successful OR NULL)')
+            ->from($this->tableName())
+            ->where('username = :username AND performed_on > :since', array(':username'=>$username, ':since' => $since->format('Y-m-d H:i:s')))
+            ->order('performed_on DESC')
+            ->limit($count_limit)
+            ->queryScalar();
     }
 }
