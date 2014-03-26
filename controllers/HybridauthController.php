@@ -135,7 +135,6 @@ class HybridauthController extends UsrController
         if(!isset($_POST['LoginForm'])) {
             return $localLogin;
         }
-        $localLogin->setAttributes($_POST['LoginForm']);
         if (is_object($localIdentity)) {
             // force to authorize against the $localIdentity
             $attributes = $localIdentity->getAttributes();
@@ -143,6 +142,7 @@ class HybridauthController extends UsrController
                 $_POST['LoginForm']['username'] = $attributes['username'];
             }
         }
+        $localLogin->setAttributes($_POST['LoginForm']);
         if($localLogin->validate() && $localLogin->login()) {
             // don't forget to associate the new profile with remote provider
             if (!$remoteLogin->associate($localLogin->getIdentity()->getId())) {
