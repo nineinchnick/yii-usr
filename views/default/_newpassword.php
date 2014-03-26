@@ -13,9 +13,10 @@ $script = <<<JavaScript
 $('#Users_generatePassword').on('click',function(){
 	$.getJSON('{$diceUrl}', function(data){
 		var text = window.prompt("{$diceLabel}", data);
-		if (text != null)
+		if (text != null) {
 			$('#{$passwordId}').val(text);
 			$('#{$verifyId}').val(text);
+        }
 	});
 	return false;
 });
