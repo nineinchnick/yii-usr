@@ -64,6 +64,7 @@ class HybridauthController extends UsrController
         $localLogin = $this->module->createFormModel('LoginForm', 'hybridauth');
         /** @var ProfileForm */
         $localProfile = $this->module->createFormModel('ProfileForm', 'register');
+		$localProfile->detachBehavior('captcha');
 
         if(isset($_POST['ajax'])) {
             if ($_POST['ajax']==='remoteLogin-form')

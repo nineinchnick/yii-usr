@@ -34,16 +34,16 @@ $this->pageTitle = Yii::app()->name.' - '.$title;
     <div>
         <h3><?php echo Yii::t('UsrModule.usr', 'Create a new account'); ?></h3>
 
-<?php if ($localIdentity !== false && !$localProfile->hasErrors()): ?>
+<?php if (is_object($localIdentity) || $localProfile->hasErrors()): // if there is a local identity the email will be probably already taken ?>
         <p class="note"><?php echo Yii::t('UsrModule.usr', 'Fields marked with <span class="required">*</span> are required.'); ?></p>
 
         <?php echo $form->errorSummary($localProfile); ?>
 
 <?php $this->renderPartial('/default/_form', array('form'=>$form, 'model'=>$localProfile)); ?>
 
-<?php if($localProfile->asa('captcha') !== null): ?>
-<?php $this->renderPartial('/default/_captcha', array('form'=>$form, 'model'=>$localProfile)); ?>
-<?php endif; ?>
+<?php //if($localProfile->asa('captcha') !== null): ?>
+<?php //$this->renderPartial('/default/_captcha', array('form'=>$form, 'model'=>$localProfile)); ?>
+<?php //endif; ?>
 
         <div class="buttons">
             <?php echo CHtml::submitButton(Yii::t('UsrModule.usr', 'Submit'), array('class'=>$this->module->submitButtonCssClass)); ?>
