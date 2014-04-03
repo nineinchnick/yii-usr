@@ -33,7 +33,7 @@ Yii::app()->clientScript->registerScript(__CLASS__.'#popup', $popupScript, CClie
                     onclick="return PopupCenter($(this).attr('href'), 'Hybridauth', 400, 550);">
                     <?php echo Yii::t('UsrModule.usr', 'Log in using {provider}', array('{provider}'=>$provider)); ?>
                 </a>
-                <?php elseif (isset($model) && $model->getIdentity()->hasRemoteIdentity($provider)): ?>
+                <?php elseif (isset($model) && $model->getIdentity()->hasRemoteIdentity(strtolower($provider))): ?>
                 <a class="zocial <?php echo strtolower($provider); ?>" href="<?php echo $this->createUrl('hybridauth/logout', array('provider'=>$provider)); ?>">
                     <?php echo Yii::t('UsrModule.usr', 'Disconnect with {provider}', array('{provider}'=>$provider)); ?>
                 </a>
