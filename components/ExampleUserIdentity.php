@@ -66,7 +66,7 @@ abstract class ExampleUserIdentity extends CUserIdentity
 
         $attempt = new UserLoginAttempt;
         $attempt->username = $this->username;
-        $attempt->user_id = $record->id;
+        $attempt->user_id = $record === null ? null : $record->id;
         $attempt->is_successful = $authenticated;
         $attempt->save();
 
