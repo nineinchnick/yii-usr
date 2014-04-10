@@ -97,7 +97,7 @@ abstract class ExampleUserLoginAttempt extends CActiveRecord
         $since->sub(new DateInterval("PT{$time_limit}S"));
         return $count_limit >= (int)self::model()->dbConnection->createCommand()
             ->select('COUNT(!is_successful OR NULL)')
-            ->from($this->tableName())
+            ->from(self::model()->tableName())
             ->where('username = :username AND performed_on > :since', array(':username'=>$username, ':since' => $since->format('Y-m-d H:i:s')))
             ->order('performed_on DESC')
             ->limit($count_limit)
