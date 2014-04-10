@@ -34,3 +34,8 @@ if ($model->getIdentity() instanceof IPictureIdentity) {
 }
 $this->widget($this->module->detailViewClass, array('data' => $model, 'attributes' => $attributes));
 
+if ($this->module->hybridauthEnabled()) {
+    echo '<p>';
+    $this->renderPartial('_login_remote', array('model'=>$model));
+    echo '</p>';
+}

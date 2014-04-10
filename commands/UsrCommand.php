@@ -11,7 +11,8 @@ class UsrCommand extends CConsoleCommand
 		if ($extra_char === null)
 			$extra_char = $usrModule->dicewareExtraChar;
 
-		$diceware = new Diceware;
+		require dirname(__FILE__) . '/../extensions/diceware/Diceware.php';
+		$diceware = new \nineinchnick\diceware\Diceware(Yii::app()->language);
 		for ($i = 0; $i < $count; $i++)
 			echo $diceware->get_phrase($length, $extra_digit, $extra_char) . "\n";
 	}

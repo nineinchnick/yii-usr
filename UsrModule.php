@@ -256,7 +256,7 @@ class UsrModule extends CWebModule
 	 */
 	public function getVersion()
 	{
-		return '0.9.9';
+		return '1.1.0';
 	}
 
 	/**
@@ -324,7 +324,7 @@ class UsrModule extends CWebModule
 
 	/**
 	 * Gets the Hybridauth object
-	 * @return Hybrid_Auth 
+	 * @return Hybrid_Auth
 	 */
 	public function getHybridAuth()
 	{

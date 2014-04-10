@@ -23,9 +23,10 @@
  * @property integer $one_time_password_counter
  *
  * The followings are the available model relations:
+ * @property UserLoginAttempt[] $userLoginAttempts
+ * @property UserProfilePicture[] $userProfilePictures
  * @property UserRemoteIdentity[] $userRemoteIdentities
  * @property UserUsedPassword[] $userUsedPassword
- * @property UserProfilePicture[] $userProfilePictures
  */
 abstract class ExampleUser extends CActiveRecord
 {
@@ -62,9 +63,10 @@ abstract class ExampleUser extends CActiveRecord
 	public function relations()
 	{
 		return array(
+			'userLoginAttempts' => array(self::HAS_MANY, 'UserLoginAttempt', 'user_id', 'order'=>'performed_on DESC'),
+			'userProfilePictures' => array(self::HAS_MANY, 'UserProfilePicture', 'user_id'),
 			'userRemoteIdentities' => array(self::HAS_MANY, 'UserRemoteIdentity', 'user_id'),
 			'userUsedPasswords' => array(self::HAS_MANY, 'UserUsedPassword', 'user_id', 'order'=>'set_on DESC'),
-			'userProfilePictures' => array(self::HAS_MANY, 'UserProfilePicture', 'user_id'),
 		);
 	}
 
