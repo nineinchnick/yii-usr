@@ -34,7 +34,7 @@ class ManagerController extends UsrController
 	{
 		return array(
 			array('allow', 'actions'=>array('index'), 'roles'=>array('usr.read')),
-			array('allow', 'actions'=>array('update'), 'users'=>array('@')),
+			array('allow', 'actions'=>array('update'), 'users'=>array('usr.update')),
 			array('allow', 'actions'=>array('delete'), 'roles'=>array('usr.delete')),
 			array('allow', 'actions'=>array('verify', 'activate', 'disable'), 'roles'=>array('usr.update.status')),
 			array('deny', 'users'=>array('*')),
