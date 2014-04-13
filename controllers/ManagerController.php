@@ -21,7 +21,6 @@ class ManagerController extends UsrController
 	{
 		return array(
 			'accessControl',
-			'postOnly + delete,verify,activate,disable',
 		);
 	}
 
