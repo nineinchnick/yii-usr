@@ -684,7 +684,7 @@ abstract class ExampleUserIdentity extends CUserIdentity
 		switch($status) {
 		case self::STATUS_EMAIL_VERIFIED: $attributes['email_verified'] = !$record->email_verified; break;
 		case self::STATUS_IS_ACTIVE: $attributes['is_active'] = !$record->is_active; break;
-		case self::STATUS_IS_DISABLED: $attributes['is_disable'] = !$record->is_disabled; break;
+		case self::STATUS_IS_DISABLED: $attributes['is_disabled'] = !$record->is_disabled; break;
 		}
 		return $record->saveAttributes($attributes);
 	}
