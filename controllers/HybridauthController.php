@@ -94,6 +94,7 @@ class HybridauthController extends UsrController
                         Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to associate current user with {provider}.', array('{provider}'=>$remoteLogin->provider)));
                         $this->redirect(array('login', 'provider'=>$remoteLogin->provider));
                     }
+                    $this->afterLogin();
                 }
                 if (!empty($this->module->associateByAttributes)) {
                     $userIdentityClass = $localProfile->userIdentityClass;
