@@ -139,7 +139,8 @@ class HybridauthController extends UsrController
     {
 		/** @var ProfileForm */
 		$model = $this->module->createFormModel('ProfileForm');
-        $model->getIdentity()->removeRemoteIdentity($provider);
+        // HybridauthForm creates an association using lowercase provider
+        $model->getIdentity()->removeRemoteIdentity(strtolower($provider));
 		$this->redirect($returnUrl !== null ? $returnUrl : Yii::app()->homeUrl);
     }
 
