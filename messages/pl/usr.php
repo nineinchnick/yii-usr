@@ -34,6 +34,7 @@ return array (
   'Changing email address requires providing the current password.' => 'Przy zmianie adresu email wymagane jest podanie bieżącego hasła.',
   'Current password has been used too long and needs to be changed.' => 'Bieżące hasło jest używane zbyt długo i musi zostać zmienione.',
   'Disable' => 'Wyłącz',
+  'Disconnect with {provider}' => 'Rozłącz z {provider}',
   'Don\'t have an account yet?' => 'Nie masz jeszcze konta?',
   'Don\'t remember username or password?' => 'Nie pamiętasz nazwy użytkownika lub hasła?',
   'Email' => 'Email',
