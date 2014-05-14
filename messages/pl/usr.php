@@ -25,6 +25,7 @@ return array (
   'Activation key is too old.' => 'Klucz aktywacyjny został wygenerowany zbyt dawno temu.',
   'An email containing further instructions has been sent to the email address associated with the specified user account.' => 'Email zawierający dalsze instrukcje został wysłany na adres przypisany do podanego konta użytkownika.',
   'An email containing further instructions has been sent to the provided email address.' => 'Email zawierający dalsze instrukcje został wysłany na podany adres.',
+  'Associate this profile with {provider}' => 'Powiąż ten profil z {provider}',
   'Change password' => 'Zmień hasło',
   'Changes have been saved successfully.' => 'Zmiany zostały pomyślnie zapisane.',
   'Continue' => 'Kontynuuj',

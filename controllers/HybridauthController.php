@@ -48,6 +48,12 @@ class HybridauthController extends UsrController
         Yii::app()->end();
     }
 
+    /**
+     * Tries to log in. If no local account has been associated yet, it tries to locate a matching one
+     * and asks to authenticate. A new local profile could also be created, either automatically or manually
+     * if there are any form errors.
+     * @param string $provider name of the remote provider
+     */
     public function actionLogin($provider=null)
     {
         if ($provider!==null)
@@ -58,6 +64,7 @@ class HybridauthController extends UsrController
         $localLogin = $this->module->createFormModel('LoginForm', 'hybridauth');
         /** @var ProfileForm */
         $localProfile = $this->module->createFormModel('ProfileForm', 'register');
+		$localProfile->detachBehavior('captcha');
 
         if(isset($_POST['ajax'])) {
             if ($_POST['ajax']==='remoteLogin-form')
@@ -122,6 +129,18 @@ class HybridauthController extends UsrController
             'localLogin'=>$localLogin,
             'localProfile'=>$localProfile,
         ));
+    }
+
+    /**
+     * This action actually removes association with a remote profile instead of logging out.
+     * @param string $provider name of the remote provider
+     */
+    public function actionLogout($provider=null, $returnUrl=null)
+    {
+		/** @var ProfileForm */
+		$model = $this->module->createFormModel('ProfileForm');
+        $model->getIdentity()->removeRemoteIdentity($provider);
+		$this->redirect($returnUrl !== null ? $returnUrl : Yii::app()->homeUrl);
     }
 
     /**

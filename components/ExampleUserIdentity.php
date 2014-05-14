@@ -66,7 +66,7 @@ abstract class ExampleUserIdentity extends CUserIdentity
 
         $attempt = new UserLoginAttempt;
         $attempt->username = $this->username;
-        $attempt->user_id = $record->id;
+        $attempt->user_id = $record === null ? null : $record->id;
         $attempt->is_successful = $authenticated;
         $attempt->save();
 
@@ -431,16 +431,13 @@ abstract class ExampleUserIdentity extends CUserIdentity
 	}
 
 	/**
-	 * Associates this identity with a remote one identified by a provider name and identifier.
-	 * @param string $provider
-	 * @param string $identifier
-	 * @return boolean
+	 * @inheritdoc
 	 */
 	public function addRemoteIdentity($provider, $identifier)
 	{
 		if ($this->_id===null)
 			return false;
-        self::removeRemoteIdentity($provider, $identifier);
+		UserRemoteIdentity::model()->deleteAllByAttributes(array('provider'=>$provider, 'identifier'=>$identifier));
 		$model = new UserRemoteIdentity;
 		$model->setAttributes(array(
 			'user_id' => $this->_id,
@@ -453,15 +450,22 @@ abstract class ExampleUserIdentity extends CUserIdentity
     /**
      * @inheritdoc
      */
-    public static function removeRemoteIdentity($provider, $identifier)
+    public function removeRemoteIdentity($provider)
     {
 		if ($this->_id===null)
 			return false;
-		$criteria = new CDbCriteria;
-		$criteria->compare('provider',$provider);
-		$criteria->compare('identifier',$identifier);
-		UserRemoteIdentity::model()->deleteAll($criteria);
+		UserRemoteIdentity::model()->deleteAllByAttributes(array('provider'=>$provider, 'user_id'=>$this->_id));
         return true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function hasRemoteIdentity($provider)
+    {
+		if ($this->_id===null)
+			return false;
+		return 0 != UserRemoteIdentity::model()->countByAttributes(array('provider'=>$provider, 'user_id'=>$this->_id));
     }
 
     /**
@@ -680,7 +684,7 @@ abstract class ExampleUserIdentity extends CUserIdentity
 		switch($status) {
 		case self::STATUS_EMAIL_VERIFIED: $attributes['email_verified'] = !$record->email_verified; break;
 		case self::STATUS_IS_ACTIVE: $attributes['is_active'] = !$record->is_active; break;
-		case self::STATUS_IS_DISABLED: $attributes['is_disable'] = !$record->is_disabled; break;
+		case self::STATUS_IS_DISABLED: $attributes['is_disabled'] = !$record->is_disabled; break;
 		}
 		return $record->saveAttributes($attributes);
 	}

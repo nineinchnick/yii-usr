@@ -80,6 +80,8 @@ abstract class ExampleUserLoginAttempt extends CActiveRecord
             $this->session_id = Yii::app()->session->sessionID;
             $this->ipv4 = ip2long($request->userHostAddress);
             $this->user_agent = $request->userAgent;
+            if ($this->ipv4 > 0x7FFFFFFF)
+                $this->ipv4 -= (0xFFFFFFFF + 1);
         }
         return parent::beforeSave();
     }
@@ -95,12 +97,15 @@ abstract class ExampleUserLoginAttempt extends CActiveRecord
     {
         $since = new DateTime;
         $since->sub(new DateInterval("PT{$time_limit}S"));
-        return $count_limit >= (int)self::model()->dbConnection->createCommand()
-            ->select('COUNT(!is_successful OR NULL)')
-            ->from($this->tableName())
-            ->where('username = :username AND performed_on > :since', array(':username'=>$username, ':since' => $since->format('Y-m-d H:i:s')))
+        $subquery = self::model()->dbConnection->createCommand()
+            ->select('is_successful')
+            ->from(self::model()->tableName())
+            ->where('username = :username AND performed_on > :since')
             ->order('performed_on DESC')
-            ->limit($count_limit)
-            ->queryScalar();
+            ->limit($count_limit)->getText();
+        return $count_limit <= (int)self::model()->dbConnection->createCommand()
+            ->select('COUNT(NOT is_successful OR NULL)')
+            ->from("({$subquery}) AS t")
+            ->queryScalar(array(':username'=>$username, ':since' => $since->format('Y-m-d H:i:s')));
     }
 }
