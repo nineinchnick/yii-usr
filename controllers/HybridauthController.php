@@ -135,8 +135,12 @@ class HybridauthController extends UsrController
      * This action actually removes association with a remote profile instead of logging out.
      * @param string $provider name of the remote provider
      */
-    public function actionLogout($provider=null)
+    public function actionLogout($provider=null, $returnUrl=null)
     {
+		/** @var ProfileForm */
+		$model = $this->module->createFormModel('ProfileForm');
+        $model->getIdentity()->removeRemoteIdentity($provider);
+		$this->redirect($returnUrl !== null ? $returnUrl : Yii::app()->homeUrl);
     }
 
     /**
