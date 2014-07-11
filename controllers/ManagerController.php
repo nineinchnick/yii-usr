@@ -118,7 +118,7 @@ class ManagerController extends UsrController
 						}
 					}
 					if (!Yii::app()->user->hasFlash('success')) {
-						Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'User account has been successfully created or updated.'));
+						Yii::app()->user->setFlash('success', Yii::t('UsrModule.manager', 'User account has been successfully created or updated.'));
 					}
 					$this->redirect(array('index'));
 				}
