@@ -95,9 +95,10 @@ class UsrCommand extends CConsoleCommand
     /**
      * Creating users using this command DOES NOT send the activation email.
      * @param string $profile a POST (username=XX&password=YY) or JSON object with the profile form, can contain the password field
+     * @param string $authItems a comma separated list of auth items to assign
      * @param boolean $generatePassword if true, a random password will be generated even if profile contains one
      */
-    public function actionRegister($profile, $generatePassword = false)
+    public function actionRegister($profile, $authItems = null, $generatePassword = false, $unlock = false)
     {
         $module = Yii::app()->getModule('usr');
 		/** @var ProfileForm */
@@ -128,6 +129,20 @@ class UsrCommand extends CConsoleCommand
             } else {
                 $trx->commit();
                 echo $model->username.' '.$passwordForm->newPassword."\n";
+                $identity = $model->getIdentity();
+                if ($authItems !== null) {
+                    $authItems = array_map('trim', explode(',', trim($authItems," \t\n\r\b\x0B,")));
+                    $authManager = Yii::app()->authManager;
+                    foreach($authItems as $authItemName) {
+                        $authManager->assign($authItemName, $identity->getId());
+                    }
+                }
+                if ($unlock) {
+                    if (!$identity->isActive())
+                        $identity->toggleStatus($identity::STATUS_IS_ACTIVE);
+                    if ($identity->isDisabled())
+                        $identity->toggleStatus($identity::STATUS_IS_DISABLED);
+                }
                 return true;
             }
         }
