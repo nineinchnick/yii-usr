@@ -87,7 +87,7 @@ class ManagerController extends UsrController
 			if ($profileForm->validate() && (!$updatePassword || $passwordForm->validate())) {
 				$trx = Yii::app()->db->beginTransaction();
 				$oldEmail = $profileForm->getIdentity()->getEmail();
-				if (($canUpdateAttributes && !$profileForm->save()) || ($updatePassword && !$passwordForm->resetPassword($profileForm->getIdentity()))) {
+				if (($canUpdateAttributes && !$profileForm->save($this->module->requireVerifiedEmail)) || ($updatePassword && !$passwordForm->resetPassword($profileForm->getIdentity()))) {
 					$trx->rollback();
 					Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to register a new user.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
 				} else {

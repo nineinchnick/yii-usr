@@ -269,7 +269,7 @@ class DefaultController extends UsrController
 				$passwordForm->setAttributes($_POST['PasswordForm']);
 			if ($model->validate() && $passwordForm->validate()) {
 				$trx = Yii::app()->db->beginTransaction();
-				if (!$model->save() || !$passwordForm->resetPassword($model->getIdentity())) {
+				if (!$model->save($this->module->requireVerifiedEmail) || !$passwordForm->resetPassword($model->getIdentity())) {
 					$trx->rollback();
 					Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to register a new user.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
 				} else {
@@ -343,7 +343,7 @@ class DefaultController extends UsrController
 			}
 			if ($model->validate()) {
 				$oldEmail = $model->getIdentity()->getEmail();
-				if ($model->save()) {
+				if ($model->save($this->module->requireVerifiedEmail)) {
 					if ($this->module->requireVerifiedEmail && $oldEmail != $model->email) {
 						if ($this->sendEmail($model, 'verify')) {
 							$flashes['success'][] = Yii::t('UsrModule.usr', 'An email containing further instructions has been sent to the provided email address.');

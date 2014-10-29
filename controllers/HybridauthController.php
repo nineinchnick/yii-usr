@@ -200,7 +200,7 @@ class HybridauthController extends UsrController
         }
 
         $trx = Yii::app()->db->beginTransaction();
-        if (!$localProfile->save()) {
+        if (!$localProfile->save($this->module->requireVerifiedEmail)) {
             $trx->rollback();
             Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to register a new user.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
             return $localProfile;

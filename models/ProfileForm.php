@@ -153,16 +153,16 @@ class ProfileForm extends BaseUsrForm
 
 	/**
 	 * Updates the identity with this models attributes and saves it.
-	 * @param CUserIdentity $identity
+	 * @param boolean $requireVerifiedEmail the Usr module property
 	 * @return boolean whether saving is successful
 	 */
-	public function save()
+	public function save($requireVerifiedEmail = false)
 	{
 		if (($identity=$this->getIdentity()) === null)
 			return false;
 
 		$identity->setAttributes($this->getAttributes());
-		if ($identity->save(Yii::app()->controller->module->requireVerifiedEmail)) {
+		if ($identity->save($requireVerifiedEmail)) {
 			if ((!($this->picture instanceof CUploadedFile) || $identity->savePicture($this->picture)) && (!$this->removePicture || $identity->removePicture())) {
 				$this->_identity = $identity;
 				return true;
