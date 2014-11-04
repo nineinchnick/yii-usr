@@ -41,6 +41,17 @@ class ManagerController extends UsrController
 		);
 	}
 
+    /**
+     * @inheritdoc
+     */
+    protected function afterAction($action)
+    {
+        if (in_array($action->id, array('delete', 'verify', 'activate', 'disable'))) {
+            if(!isset($_GET['ajax']))
+                $this->redirect(isset($_REQUEST['returnUrl']) ? $_REQUEST['returnUrl'] : array('index'));
+        }
+    }
+
 	/**
 	 * Updates a particular model.
 	 * If update is successful, the browser will be redirected to the 'index' page.
@@ -138,10 +149,6 @@ class ManagerController extends UsrController
 		if (!$this->loadModel($id)->delete()) {
 			throw new CHttpException(409,'User account could not be deleted.');
 		}
-
-		// if AJAX request (triggered by deletion via index grid view), we should not redirect the browser
-		if(!isset($_GET['ajax']))
-			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
 	}
 
 	/**
@@ -151,9 +158,6 @@ class ManagerController extends UsrController
 	public function actionVerify($id)
 	{
 		$this->loadModel($id)->toggleStatus(IManagedIdentity::STATUS_EMAIL_VERIFIED);
-
-		if(!isset($_GET['ajax']))
-			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
 	}
 
 	/**
@@ -163,9 +167,6 @@ class ManagerController extends UsrController
 	public function actionActivate($id)
 	{
 		$this->loadModel($id)->toggleStatus(IManagedIdentity::STATUS_IS_ACTIVE);
-
-		if(!isset($_GET['ajax']))
-			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
 	}
 
 	/**
@@ -175,9 +176,6 @@ class ManagerController extends UsrController
 	public function actionDisable($id)
 	{
 		$this->loadModel($id)->toggleStatus(IManagedIdentity::STATUS_IS_DISABLED);
-
-		if(!isset($_GET['ajax']))
-			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
 	}
 
 	/**
