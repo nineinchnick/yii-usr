@@ -41,6 +41,7 @@ return array (
   'Not active' => 'Nieaktywny',
   'Password Set On' => 'Hasło ustawione dnia',
   'Save' => 'Zapisz',
+  'Search' => 'Szukaj',
   'Unverified' => 'Niezweryfikowany',
   'Update' => 'Aktualizuj',
   'Update user {id}' => 'Aktualizuj użytkownika {id}',
