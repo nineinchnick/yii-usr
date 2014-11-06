@@ -184,8 +184,8 @@ class ManagerController extends UsrController
 	public function actionIndex()
 	{
 		$model = $this->module->createFormModel('SearchForm');
-		if (isset($_GET['SearchForm'])) {
-			$model->attributes = $_GET['SearchForm'];
+		if (isset($_REQUEST['SearchForm'])) {
+			$model->attributes = $_REQUEST['SearchForm'];
 			$model->validate();
 			$errors = $model->getErrors();
 			$model->unsetAttributes(array_keys($errors));
