@@ -87,7 +87,7 @@ class DefaultController extends UsrController
 				throw new CHttpException(403,Yii::t('UsrModule.usr', 'Password recovery has not been enabled.'));
 			}
 			if (!Yii::app()->user->isGuest) {
-				$this->redirect(Yii::app()->user->returnUrl);
+                $this->redirect(Yii::app()->user->returnUrl !== Yii::app()->request->getRequestUri() ? Yii::app()->user->returnUrl : array(Yii::app()->defaultController));
 				return false;
 			}
 			break;
