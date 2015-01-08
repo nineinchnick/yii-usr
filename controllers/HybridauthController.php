@@ -13,20 +13,6 @@ class HybridauthController extends UsrController
         $this->redirect('default/login');
     }
 
-    /**
-     * Redirects user either to returnUrl or main page.
-     */
-    protected function afterLogin()
-    {
-        $returnUrlParts = explode('/',Yii::app()->user->returnUrl);
-        if(end($returnUrlParts)=='index.php'){
-            $url = '/';
-        }else{
-            $url = Yii::app()->user->returnUrl;
-        }
-        $this->redirect($url);
-    }
-
     public function actionPopup($provider=null)
     {
         /** @var HybridauthForm */

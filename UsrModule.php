@@ -228,6 +228,8 @@ class UsrModule extends CWebModule
      */
     public $profileFormBehaviors;
 
+    public $loginFormBehaviors;
+
 	/**
 	 * @var GoogleAuthenticator set if $oneTimePasswordMode is not UsrModule::OTP_NONE
 	 */
@@ -250,6 +252,11 @@ class UsrModule extends CWebModule
 		'profilePicture' => 'usr.controllers.DefaultController',
 		'password' => 'usr.controllers.DefaultController',
 	);
+
+    /**
+     * @var array
+     */
+    public $scenarios;
 
 	/**
 	 * @inheritdoc
@@ -379,24 +386,13 @@ class UsrModule extends CWebModule
 				}
 				break;
 			case 'LoginForm':
-				if ($this->oneTimePasswordMode != UsrModule::OTP_NONE) {
-					$form->attachBehavior('oneTimePasswordBehavior', array(
-						'class' => 'OneTimePasswordFormBehavior',
-						'oneTimePasswordConfig' => array(
-							'authenticator' => $this->googleAuthenticator,
-							'mode' => $this->oneTimePasswordMode,
-							'required' => $this->oneTimePasswordRequired,
-							'timeout' => $this->oneTimePasswordTimeout,
-						),
-						'controller' => Yii::app()->controller,
-					));
-				}
-				if ($this->passwordTimeout !== null) {
-					$form->attachBehavior('expiredPasswordBehavior', array(
-						'class' => 'ExpiredPasswordBehavior',
-						'passwordTimeout' => $this->passwordTimeout,
-					));
-				}
+                $loginFormBehaviors = $this->getLoginFormBehaviors();
+                $controller = Yii::app()->controller;
+                foreach ($loginFormBehaviors as $name => $config) {
+                    $behavior = $form->attachBehavior($name, $config);
+                    $controller->attachHandler($behavior, 'afterLogin');
+                    $controller->attachHandler($behavior, 'beforeLogin');
+                }
 				break;
             case 'HybridauthForm':
                 $form->setValidProviders($this->hybridauthProviders);
@@ -405,4 +401,32 @@ class UsrModule extends CWebModule
 		}
 		return $form;
 	}
+
+    public function getLoginFormBehaviors()
+    {
+//        oneTimePasswordMode
+//        oneTimePasswordTimeout
+        return array_merge(array(
+                'oneTimePasswordBehavior' => array(
+                    'class' => 'OneTimePasswordFormBehavior',
+                    'oneTimePasswordConfig' => array(
+                        'authenticator' => $this->googleAuthenticator,
+                        'mode' => $this->oneTimePasswordMode,
+                        'required' => $this->oneTimePasswordRequired,
+                        'timeout' => $this->oneTimePasswordTimeout,
+                    ),
+                    'controller' => Yii::app()->controller,
+                ),
+                'expiredPasswordBehavior' => array(
+                    'class' => 'ExpiredPasswordBehavior',
+                    'passwordTimeout' => $this->passwordTimeout,
+                ),
+                'tosAcceptBehavior' => array(
+                    'class' => 'TosAcceptBehavior',
+                    'module' => $this,
+                )
+            ),
+            is_array($this->loginFormBehaviors) ? $this->loginFormBehaviors : array()
+        );
+    }
 }

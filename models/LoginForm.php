@@ -98,7 +98,7 @@ class LoginForm extends BasePasswordForm
 	 */
 	public function validOneTimePassword($attribute, $params)
 	{
-		if (($behavior=$this->asa('oneTimePasswordBehavior')) !== null) {
+		if (($behavior=$this->asa('oneTimePasswordBehavior')) !== null && ! $behavior->isMode(UsrModule::OTP_NONE)) {
 			return $behavior->validOneTimePassword($attribute, $params);
 		}
 		return true;

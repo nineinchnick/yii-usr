@@ -212,4 +212,9 @@ class OneTimePasswordFormBehavior extends FormModelBehavior
 		$validHash = Yii::app()->getSecurityManager()->computeHMAC(serialize($data), $secret);
 		return ($timeout <= 0 || $creationTime + $timeout >= $time) && $hash === $validHash;
 	}
+
+    public function isMode($mode)
+    {
+        return ($this->_oneTimePasswordConfig['mode']===$mode);
+    }
 }

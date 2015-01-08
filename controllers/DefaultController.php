@@ -118,16 +118,6 @@ class DefaultController extends UsrController
 	}
 
 	/**
-	 * Redirects user either to returnUrl or main page.
-	 */ 
-	protected function afterLogin()
-	{
-		$returnUrlParts = explode('/',Yii::app()->user->returnUrl);
-		$url = end($returnUrlParts)=='index.php' ? '/' : Yii::app()->user->returnUrl;
-		$this->redirect($url);
-	}
-
-	/**
 	 * Performs user login, expired password reset or one time password verification.
 	 * @param string $scenario
 	 * @return string
@@ -136,7 +126,7 @@ class DefaultController extends UsrController
 	{
 		/** @var LoginForm */
 		$model = $this->module->createFormModel('LoginForm');
-		if ($scenario !== null && in_array($scenario, array('reset', 'verifyOTP'))) {
+		if ($scenario !== null && in_array($scenario, array('reset', 'verifyOTP', 'changeTOS'))) {
 			$model->scenario = $scenario;
 		}
 
@@ -148,19 +138,14 @@ class DefaultController extends UsrController
 		if (isset($_POST['LoginForm'])) {
 			$model->setAttributes($_POST['LoginForm']);
 			if ($model->validate()) {
-				if (($model->scenario !== 'reset' || $model->resetPassword()) && $model->login($this->module->rememberMeDuration)) {
-					$this->afterLogin();
+				if (($model->scenario !== 'reset' || $model->resetPassword()) && $this->beforeLogin() && $model->login($this->module->rememberMeDuration)) {
+                    $this->afterLogin();
 				} else {
 					Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to change password or log in using new password.'));
 				}
 			}
 		}
-		switch($model->scenario) {
-		default: $view = 'login'; break;
-		case 'reset': $view = 'reset'; break;
-		case 'verifyOTP': $view = 'verifyOTP'; break;
-		}
-		$this->render($view, array('model'=>$model));
+		$this->render($this->getScenarioView($model->scenario, 'login'), array('model'=>$model));
 	}
 
 	/**
@@ -215,7 +200,7 @@ class DefaultController extends UsrController
 					// regenerate the activation key to prevent reply attack
 					$model->getIdentity()->getActivationKey();
 					if ($model->resetPassword() && $model->login()) {
-						$this->afterLogin();
+                        $this->afterLogin();
 					} else {
 						Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to change password or log in using new password.'));
 					}
@@ -283,7 +268,7 @@ class DefaultController extends UsrController
 					}
 					if ($model->getIdentity()->isActive()) {
 						if ($model->login()) {
-							$this->afterLogin();
+                            $this->afterLogin();
 						} else {
 							Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to log in.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
 						}
