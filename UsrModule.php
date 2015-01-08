@@ -429,6 +429,9 @@ class UsrModule extends CWebModule
     public function getUser()
     {
         $userComponent = $this->userComponent;
-        return Yii::app()->$userComponent !== null ? Yii::app()->$userComponent : Yii::app()->user;
+        if (trim($userComponent)!=='' && Yii::app()->$userComponent !== null) {
+            return Yii::app()->$userComponent;
+        }
+        return Yii::app()->user;
     }
 }
