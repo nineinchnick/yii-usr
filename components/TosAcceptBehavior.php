@@ -13,11 +13,9 @@ Yii::import('niix-utils.components.*');
  *
  * @author lukas
  */
-class TosAcceptBehavior extends FormModelBehavior implements TosAcceptBehaviorInterface
+class TosAcceptBehavior extends FormModelBehavior
 {
 	public $acceptTos;
-
-	public $module;
 
 	/**
 	 * @inheritdoc

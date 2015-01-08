@@ -420,10 +420,6 @@ class UsrModule extends CWebModule
                 'expiredPasswordBehavior' => array(
                     'class' => 'ExpiredPasswordBehavior',
                     'passwordTimeout' => $this->passwordTimeout,
-                ),
-                'tosAcceptBehavior' => array(
-                    'class' => 'TosAcceptBehavior',
-                    'module' => $this,
                 )
             ),
             is_array($this->loginFormBehaviors) ? $this->loginFormBehaviors : array()

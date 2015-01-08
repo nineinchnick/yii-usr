@@ -88,6 +88,7 @@ abstract class UsrController extends CController
      */
     public function onBeforeLogin()
     {
+        // We nedd to transfer response via CEvent::param property becouse events do not returns result
         $event = new CEvent($this, array('success'=>true));
         $this->raiseEvent('onBeforeLogin', new CEvent($this));
         return isset($event->params['success']) ? $event->params['success'] : true;
