@@ -52,6 +52,26 @@ class ManagerController extends UsrController
         }
     }
 
+    protected function updateAuthItems($id, $profileForm)
+    {
+        $identity = $profileForm->getIdentity();
+        $authManager = Yii::app()->authManager;
+        $assignedRoles = $id === null ? array() : $authManager->getAuthItems(CAuthItem::TYPE_ROLE, $id);
+
+        if (isset($_POST['roles']) && is_array($_POST['roles'])) {
+            foreach($_POST['roles'] as $roleName) {
+                if (!isset($assignedRoles[$roleName])) {
+                    $authManager->assign($roleName, $identity->getId());
+                } else {
+                    unset($assignedRoles[$roleName]);
+                }
+            }
+        }
+        foreach($assignedRoles as $roleName=>$role) {
+            $authManager->revoke($roleName, $identity->getId());
+        }
+    }
+
 	/**
 	 * Updates a particular model.
 	 * If update is successful, the browser will be redirected to the 'index' page.
@@ -103,22 +123,7 @@ class ManagerController extends UsrController
 					Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to register a new user.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
 				} else {
 					if ($canUpdateAuth) {
-						$identity = $profileForm->getIdentity();
-						$authManager = Yii::app()->authManager;
-						$assignedRoles = $id === null ? array() : $authManager->getAuthItems(CAuthItem::TYPE_ROLE, $id);
-
-						if (isset($_POST['roles']) && is_array($_POST['roles'])) {
-							foreach($_POST['roles'] as $roleName) {
-								if (!isset($assignedRoles[$roleName])) {
-									$authManager->assign($roleName, $identity->getId());
-								} else {
-									unset($assignedRoles[$roleName]);
-								}
-							}
-						}
-						foreach($assignedRoles as $roleName=>$role) {
-							$authManager->revoke($roleName, $identity->getId());
-						}
+                        $this->updateAuthItems($id, $profileForm);
 					}
 					$trx->commit();
 					if ($this->module->requireVerifiedEmail && $oldEmail != $profileForm->getIdentity()->email) {
@@ -136,7 +141,11 @@ class ManagerController extends UsrController
 			}
 		}
 
-		$this->render('update', array('id'=>$id, 'profileForm'=>$profileForm, 'passwordForm'=>$passwordForm));
+        $this->render('update', array(
+            'id' => $id,
+            'profileForm' => $profileForm,
+            'passwordForm' => $passwordForm,
+        ));
 	}
 
 	/**
