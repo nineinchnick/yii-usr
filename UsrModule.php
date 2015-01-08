@@ -228,8 +228,21 @@ class UsrModule extends CWebModule
      */
     public $profileFormBehaviors;
 
+    /**
+     * @var array Extra behaviors to attach to the login form. If the views are overriden in a theme
+     * this can be used to placed extra logic. @see FormModelBehavior
+     */
     public $loginFormBehaviors;
 
+    /**
+     * @var string Name of the user application component
+     */
+    public $userComponent = 'user';
+
+    /**
+     * @var array Scenarios configuration
+     */
+    public $scenarios;
 	/**
 	 * @var GoogleAuthenticator set if $oneTimePasswordMode is not UsrModule::OTP_NONE
 	 */
@@ -252,11 +265,6 @@ class UsrModule extends CWebModule
 		'profilePicture' => 'usr.controllers.DefaultController',
 		'password' => 'usr.controllers.DefaultController',
 	);
-
-    /**
-     * @var array
-     */
-    public $userComponent;
 
 	/**
 	 * @inheritdoc
@@ -390,8 +398,8 @@ class UsrModule extends CWebModule
                 $controller = Yii::app()->controller;
                 foreach ($loginFormBehaviors as $name => $config) {
                     $behavior = $form->attachBehavior($name, $config);
-                    $controller->attachHandler($behavior, 'afterLogin');
-                    $controller->attachHandler($behavior, 'beforeLogin');
+                    $form->attachHandler($behavior, 'afterLogin');
+                    $form->attachHandler($behavior, 'beforeLogin');
                 }
 				break;
             case 'HybridauthForm':
@@ -428,10 +436,6 @@ class UsrModule extends CWebModule
 
     public function getUser()
     {
-        $userComponent = $this->userComponent;
-        if (trim($userComponent)!=='' && Yii::app()->$userComponent !== null) {
-            return Yii::app()->$userComponent;
-        }
-        return Yii::app()->user;
+        return Yii::app()->{$this->userComponent};
     }
 }

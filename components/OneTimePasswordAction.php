@@ -7,7 +7,7 @@
 class OneTimePasswordAction extends CAction
 {
 	public function run() {
-		if (Yii::app()->user->isGuest)
+		if ($this->controller->module->isGuest)
 			$this->controller->redirect(array('login'));
 		/** @var UsrModule */
 		$module = $this->controller->module;

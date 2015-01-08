@@ -18,7 +18,7 @@ class UsrAlerts extends CWidget
 	 */
 	public function run()
 	{
-		if (($flashMessages = Yii::app()->user->getFlashes())) {
+		if (($flashMessages = $this->getOwner()->module->getUser()->getFlashes())) {
 			echo '<ul class="flashes">';
 			foreach($flashMessages as $key => $message) {
 				echo '<li><div class="'.$this->cssClassPrefix.$key.'">'.$message.'</div></li>';

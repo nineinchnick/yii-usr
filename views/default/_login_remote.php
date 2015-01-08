@@ -28,7 +28,7 @@ Yii::app()->clientScript->registerScript(__CLASS__.'#popup', $popupScript, CClie
         <ul>
 <?php foreach ($this->module->hybridauthProviders as $provider => $settings): if(!$settings['enabled']) continue; ?>
             <li>
-                <?php if (Yii::app()->user->isGuest): ?>
+                <?php if ($this->module->getUser()->isGuest): ?>
                 <a class="zocial <?php echo strtolower($provider); ?>" href="<?php echo $this->createUrl('hybridauth/popup', array('provider'=>$provider)); ?>"
                     onclick="return PopupCenter($(this).attr('href'), 'Hybridauth', 400, 550);">
                     <?php echo Yii::t('UsrModule.usr', 'Log in using {provider}', array('{provider}'=>$provider)); ?>

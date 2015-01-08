@@ -144,11 +144,11 @@ class ProfileForm extends BaseUsrForm
 	 * Logs in the user using the given username.
 	 * @return boolean whether login is successful
 	 */
-	public function login()
+	public function login($controller)
 	{
 		$identity = $this->getIdentity();
 
-		return Yii::app()->user->login($identity,0);
+		return $controller->module->getUser()->login($identity,0);
 	}
 
 	/**

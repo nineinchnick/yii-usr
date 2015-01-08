@@ -60,61 +60,11 @@ abstract class UsrController extends CController
     /**
      * Redirects user either to returnUrl or main page.
      */
-    public function beforeLogin()
+    public function afterLogin()
     {
-        return $this->onBeforeLogin();
-    }
-
-    /**
-     * Redirects user either to returnUrl or main page.
-     */
-    public function afterLogin($fireEvents=true, $redirect=true)
-    {
-        if ($fireEvents) {
-            $this->onAfterLogin();
-        }
-
-        if ($redirect) {
-            $returnUrl = Yii::app()->user->returnUrl;
-            $returnUrlParts = explode('/', is_array($returnUrl) ? reset($returnUrl) : $returnUrl);
-            $url = end($returnUrlParts)=='index.php' ? '/' : Yii::app()->user->returnUrl;
-            $this->redirect($url);
-        }
-    }
-
-    /**
-     * Fire afterLogin events
-     * @param CFormModel $model
-     */
-    public function onBeforeLogin()
-    {
-        // We nedd to transfer response via CEvent::param property becouse events do not returns result
-        $event = new CEvent($this, array('success'=>true));
-        $this->raiseEvent('onBeforeLogin', new CEvent($this));
-        return isset($event->params['success']) ? $event->params['success'] : true;
-    }
-
-    /**
-     * Fire afterLogin events
-     * @param CFormModel $model
-     */
-    public function onAfterLogin()
-    {
-        $this->raiseEvent('onAfterLogin', new CEvent($this, array('success'=>true)));
-    }
-
-    /**
-     * Attach handler to event.
-     * (Chceck if event is correctly prepared)
-     * 
-     * @param CComponent $object
-     * @param string $handler
-     */
-    public function attachHandler($object, $handler)
-    {
-        $method = 'on' . ucfirst($handler);
-        if (method_exists($object, $handler) && method_exists($this, $method)) {
-            $this->$method = array($object, $handler);
-        }
+        $returnUrl = $this->module->getUser()->returnUrl;
+        $returnUrlParts = explode('/', is_array($returnUrl) ? reset($returnUrl) : $returnUrl);
+        $url = end($returnUrlParts)=='index.php' ? '/' : $this->module->getUser()->returnUrl;
+        $this->redirect($url);
     }
 }

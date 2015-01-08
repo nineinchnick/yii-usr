@@ -126,16 +126,63 @@ class LoginForm extends BasePasswordForm
 	 * @param integer $duration For how long the user will be logged in without any activity, in seconds.
 	 * @return boolean whether login is successful
 	 */
-	public function login($duration = 0)
+	public function login($controller, $duration = 0)
 	{
+        
 		$identity = $this->getIdentity();
 		if ($this->scenario === 'reset') {
 			$identity->password = $this->newPassword;
 			$identity->authenticate();
 		}
 		if($identity->getIsAuthenticated()) {
-			return Yii::app()->user->login($identity, $this->rememberMe ? $duration : 0);
+			return $controller->module->getUser()->login($identity, $this->rememberMe ? $duration : 0);
 		}
 		return false;
 	}
+
+    public function beforeLogin()
+    {
+        return $this->onBeforeLogin();
+    }
+
+    public function afterLogin()
+    {
+        return $this->onAfterLogin();
+    }
+
+    /**
+     * Fire afterLogin events
+     * @param CFormModel $model
+     */
+    public function onBeforeLogin()
+    {
+        // We nedd to transfer response via CEvent::param property becouse events do not returns result
+        $event = new CEvent($this, array('success'=>true));
+        $this->raiseEvent('onBeforeLogin', new CEvent($this));
+        return isset($event->params['success']) ? $event->params['success'] : true;
+    }
+
+    /**
+     * Fire afterLogin events
+     * @param CFormModel $model
+     */
+    public function onAfterLogin()
+    {
+        $this->raiseEvent('onAfterLogin', new CEvent($this, array('success'=>true)));
+    }
+
+    /**
+     * Attach handler to event.
+     * (Chceck if event is correctly prepared)
+     *
+     * @param CComponent $object
+     * @param string $handler
+     */
+    public function attachHandler($object, $handler)
+    {
+        $method = 'on' . ucfirst($handler);
+        if (method_exists($object, $handler) && method_exists($this, $method)) {
+            $this->$method = array($object, $handler);
+        }
+    }
 }

@@ -133,13 +133,13 @@ class RecoveryForm extends BasePasswordForm
 	 * Logs in the user using the given username and new password.
 	 * @return boolean whether login is successful
 	 */
-	public function login() {
+	public function login($controller) {
 		$identity = $this->getIdentity();
 
 		$identity->password = $this->newPassword;
 		$identity->authenticate();
 		if($identity->getIsAuthenticated()) {
-			return Yii::app()->user->login($identity,0);
+			return $controller->module->getUser()->login($identity,0);
 		}
 		return false;
 	}

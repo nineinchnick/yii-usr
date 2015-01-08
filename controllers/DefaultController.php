@@ -76,7 +76,7 @@ class DefaultController extends UsrController
 		switch($action->id) {
 		case 'index':
 		case 'profile':
-			if (Yii::app()->user->isGuest) {
+			if ($this->module->getUser()->isGuest) {
 				$this->redirect(array('login'));
 				return false;
 			}
@@ -86,8 +86,8 @@ class DefaultController extends UsrController
 			if ($action->id === 'recovery' && !$this->module->recoveryEnabled) {
 				throw new CHttpException(403,Yii::t('UsrModule.usr', 'Password recovery has not been enabled.'));
 			}
-			if (!Yii::app()->user->isGuest) {
-				$this->redirect(Yii::app()->user->returnUrl);
+			if (!$this->module->getUser()->isGuest) {
+				$this->redirect($this->module->getUser()->returnUrl);
 				return false;
 			}
 			break;
@@ -95,7 +95,7 @@ class DefaultController extends UsrController
 			if (!$this->module->registrationEnabled) {
 				throw new CHttpException(403,Yii::t('UsrModule.usr', 'Registration has not been enabled.'));
 			}
-			if (!Yii::app()->user->isGuest) {
+			if (!$this->module->getUser()->isGuest) {
 				$this->redirect(array('profile'));
 				return false;
 			}
@@ -138,10 +138,10 @@ class DefaultController extends UsrController
 		if (isset($_POST['LoginForm'])) {
 			$model->setAttributes($_POST['LoginForm']);
 			if ($model->validate()) {
-				if (($model->scenario !== 'reset' || $model->resetPassword()) && $this->beforeLogin() && $model->login($this->module->rememberMeDuration)) {
+				if (($model->scenario !== 'reset' || $model->resetPassword()) && $model->login($this, $this->module->rememberMeDuration)) {
                     $this->afterLogin();
 				} else {
-					Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to change password or log in using new password.'));
+					$this->module->getUser()->setFlash('error', Yii::t('UsrModule.usr', 'Failed to change password or log in using new password.'));
 				}
 			}
 		}
@@ -153,8 +153,8 @@ class DefaultController extends UsrController
 	 */
 	public function actionLogout()
 	{
-		if (!Yii::app()->user->isGuest)
-			Yii::app()->user->logout();
+		if (!$this->module->getUser()->isGuest)
+			$this->module->getUser()->logout();
 		$this->redirect(Yii::app()->homeUrl);
 	}
 
@@ -190,19 +190,19 @@ class DefaultController extends UsrController
 					 * before password recovery. Also allows re-sending of verification emails.
 					 */
 					if ($this->sendEmail($model, $model->identity->isActive() ? 'recovery' : 'verify')) {
-						Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'An email containing further instructions has been sent to the email address associated with the specified user account.'));
+						$this->module->getUser()->setFlash('success', Yii::t('UsrModule.usr', 'An email containing further instructions has been sent to the email address associated with the specified user account.'));
 					} else {
-						Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to send an email.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
+						$this->module->getUser()->setFlash('error', Yii::t('UsrModule.usr', 'Failed to send an email.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
 					}
 				} else {
 					// a valid recovery form means the user confirmed his email address
 					$model->getIdentity()->verifyEmail($this->module->requireVerifiedEmail);
 					// regenerate the activation key to prevent reply attack
 					$model->getIdentity()->getActivationKey();
-					if ($model->resetPassword() && $model->login()) {
+					if ($model->resetPassword() && $model->login($this)) {
                         $this->afterLogin();
 					} else {
-						Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to change password or log in using new password.'));
+						$this->module->getUser()->setFlash('error', Yii::t('UsrModule.usr', 'Failed to change password or log in using new password.'));
 					}
 				}
 				$this->redirect(array('recovery'));
@@ -223,11 +223,11 @@ class DefaultController extends UsrController
 		if ($model->validate() && $model->getIdentity()->verifyEmail($this->module->requireVerifiedEmail)) {
 			// regenerate the activation key to prevent reply attack
 			$model->getIdentity()->getActivationKey();
-			Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'Your email address has been successfully verified.'));
+			$this->module->getUser()->setFlash('success', Yii::t('UsrModule.usr', 'Your email address has been successfully verified.'));
 		} else {
-			Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to verify your email address.'));
+			$this->module->getUser()->setFlash('error', Yii::t('UsrModule.usr', 'Failed to verify your email address.'));
 		}
-		$this->redirect(array(Yii::app()->user->isGuest ? 'login' : 'profile'));
+		$this->redirect(array($this->module->getUser()->isGuest ? 'login' : 'profile'));
 	}
 
 	/**
@@ -256,25 +256,25 @@ class DefaultController extends UsrController
 				$trx = Yii::app()->db->beginTransaction();
 				if (!$model->save($this->module->requireVerifiedEmail) || !$passwordForm->resetPassword($model->getIdentity())) {
 					$trx->rollback();
-					Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to register a new user.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
+					$this->module->getUser()->setFlash('error', Yii::t('UsrModule.usr', 'Failed to register a new user.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
 				} else {
 					$trx->commit();
 					if ($this->module->requireVerifiedEmail) {
 						if ($this->sendEmail($model, 'verify')) {
-							Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'An email containing further instructions has been sent to the provided email address.'));
+							$this->module->getUser()->setFlash('success', Yii::t('UsrModule.usr', 'An email containing further instructions has been sent to the provided email address.'));
 						} else {
-							Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to send an email.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
+							$this->module->getUser()->setFlash('error', Yii::t('UsrModule.usr', 'Failed to send an email.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
 						}
 					}
 					if ($model->getIdentity()->isActive()) {
-						if ($model->login()) {
+						if ($model->login($this)) {
                             $this->afterLogin();
 						} else {
-							Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to log in.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
+							$this->module->getUser()->setFlash('error', Yii::t('UsrModule.usr', 'Failed to log in.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
 						}
 					} else {
-						if (!Yii::app()->user->hasFlash('success'))
-							Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'Please wait for the account to be activated. A notification will be send to provided email address.'));
+						if (!$this->module->getUser()->hasFlash('success'))
+							$this->module->getUser()->setFlash('success', Yii::t('UsrModule.usr', 'Please wait for the account to be activated. A notification will be send to provided email address.'));
 						$this->redirect(array('login'));
 					}
 				}
@@ -338,9 +338,9 @@ class DefaultController extends UsrController
 					}
 					$flashes['success'][] = Yii::t('UsrModule.usr', 'Changes have been saved successfully.');
 					if (!empty($flashes['success']))
-						Yii::app()->user->setFlash('success', implode('<br/>',$flashes['success']));
+						$this->module->getUser()->setFlash('success', implode('<br/>',$flashes['success']));
 					if (!empty($flashes['error']))
-						Yii::app()->user->setFlash('error', implode('<br/>',$flashes['error']));
+						$this->module->getUser()->setFlash('error', implode('<br/>',$flashes['error']));
 					$this->redirect(array('profile'));
 				} else {
 					$flashes['error'][] = Yii::t('UsrModule.usr', 'Failed to update profile.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.');
@@ -348,9 +348,9 @@ class DefaultController extends UsrController
 			}
 		}
 		if (!empty($flashes['success']))
-			Yii::app()->user->setFlash('success', implode('<br/>',$flashes['success']));
+			$this->module->getUser()->setFlash('success', implode('<br/>',$flashes['success']));
 		if (!empty($flashes['error']))
-			Yii::app()->user->setFlash('error', implode('<br/>',$flashes['error']));
+			$this->module->getUser()->setFlash('error', implode('<br/>',$flashes['error']));
 		if ($update) {
 			$this->render('updateProfile',array('model'=>$model, 'passwordForm'=>$passwordForm));
 		} else {
