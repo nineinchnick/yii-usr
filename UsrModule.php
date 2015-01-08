@@ -256,7 +256,7 @@ class UsrModule extends CWebModule
     /**
      * @var array
      */
-    public $scenarios;
+    public $userComponent;
 
 	/**
 	 * @inheritdoc
@@ -424,5 +424,11 @@ class UsrModule extends CWebModule
             ),
             is_array($this->loginFormBehaviors) ? $this->loginFormBehaviors : array()
         );
+    }
+
+    public function getUser()
+    {
+        $userComponent = $this->userComponent;
+        return Yii::app()->$userComponent !== null ? Yii::app()->$userComponent : Yii::app()->user;
     }
 }
