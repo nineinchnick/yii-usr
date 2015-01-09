@@ -115,5 +115,4 @@ return array (
   'registration' => 'rejestracji',
   'update' => 'aktualizuj',
   '{attribute} has already been used by another user.' => '{attribute} został już wykorzystany przez innego użytkownika.',
-  'Accept TOS' => 'Akceptuję regulamin',
 );

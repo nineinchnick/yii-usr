@@ -85,7 +85,7 @@ class LoginForm extends BasePasswordForm
 	 */
 	public function passwordHasNotExpired($attribute, $params)
 	{
-		if (($behavior=$this->asa('expiredPasswordBehavior')) !== null && $behavior->passwordTimeout !== null) {
+		if (($behavior=$this->asa('expiredPasswordBehavior')) !== null) {
 			return $behavior->passwordHasNotExpired($attribute, $params);
 		}
 		return true;
@@ -98,7 +98,7 @@ class LoginForm extends BasePasswordForm
 	 */
 	public function validOneTimePassword($attribute, $params)
 	{
-		if (($behavior=$this->asa('oneTimePasswordBehavior')) !== null && ! $behavior->isMode(UsrModule::OTP_NONE)) {
+		if (($behavior=$this->asa('oneTimePasswordBehavior')) !== null) {
 			return $behavior->validOneTimePassword($attribute, $params);
 		}
 		return true;
