@@ -86,7 +86,7 @@ class DefaultController extends UsrController
 			if ($action->id === 'recovery' && !$this->module->recoveryEnabled) {
 				throw new CHttpException(403,Yii::t('UsrModule.usr', 'Password recovery has not been enabled.'));
 			}
-			if (!$this->module->getUser()) {
+			if (!$this->module->getUser()->isGuest()) {
 				$this->redirect($this->module->getUser()->returnUrl);
 				return false;
 			}
@@ -126,7 +126,7 @@ class DefaultController extends UsrController
 	{
 		/** @var LoginForm */
 		$model = $this->module->createFormModel('LoginForm');
-		if ($scenario !== null && in_array($scenario, array('reset', 'verifyOTP', 'changeTOS'))) {
+		if ($scenario !== null && in_array($scenario, array('reset', 'verifyOTP'))) {
 			$model->scenario = $scenario;
 		}
 
