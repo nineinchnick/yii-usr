@@ -397,8 +397,7 @@ class UsrModule extends CWebModule
 			case 'LoginForm':
                 if ($this->loginFormBehaviors!==null && is_array($this->loginFormBehaviors)) {
                     foreach ($this->loginFormBehaviors as $name => $config) {
-                        $behavior = $form->attachBehavior($name, $config);
-                        $behavior->controller = Yii::app()->controller;
+                        $form->attachBehavior($name, $config);
                     }
                 }
 				break;

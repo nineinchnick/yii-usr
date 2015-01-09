@@ -98,6 +98,57 @@ This interface allow saving and retrieving a secret used to generate one time pa
 
 Allows users to upload a profile picture. The example identity uses [Gravatar](http://gravatar.com/) to provide a default picture.
 
+# Custom behaviors
+
+Do akcji logowania można podpinać dodatkowe Behaviory za pomocą zdefiniowania właściwości loginFormBehaviors w konfiguracji modułu. Pozwalają one na dodanie własnej logiki do operacji logowania uzytkowników.
+
+## Moduł dostarcza 2 wbudowane behaviory:
+* ExpiredPasswordBehavior
+* OneTimePasswordFormBehavior
+
+
+### ExpiredPasswordBehavior
+
+Obsługuje zachowanie pozwalające na wymuszenie na użytkownikach zmiany hasła co pewien czas.
+
+* passwordTimeout - pozwala na zdefiniowanie czasu co jaki powinno zostać zmienione hasło
+
+### OneTimePasswordFormBehavior
+
+Obsługuję obsługe jędnorazowych haseł.
+
+Dodatkowe parametry:
+
+* authenticator - 
+* required - boolean Should the user be allowed to log in even if a secret hasn't been generated yet. This only makes sense when mode is 'counter', secrets are generated when registering users and a code is sent via email.
+* timeout - int DEFAULT: -1 Number of seconds for how long is the last verified code valid
+* mode - one of otp mode values: 'otp', 'time', 'counter', 'none' DEFAULT: 'none'. If set to 'time' or 'counter' two step authentication is enabled using one time passwords
+
+
+## Przykładowa instalacja behaviorów
+~~~php
+'loginFormBehaviors' => array(
+    'expiredPasswordBehavior' => array(
+        'class' => 'usr.components.ExpiredPasswordBehavior',
+        'passwordTimeout' => 10,
+    ),
+    'oneTimePasswordBehavior' => array(
+        'class' => 'OneTimePasswordFormBehavior',
+        'oneTimePasswordConfig' => array(
+            'authenticator' => $this->googleAuthenticator,
+            'mode' => 'time',
+            'required' => true,
+            'timeout' => 123,
+        ),
+        'controller' => Yii::app()->controller,
+    ),
+    'myCustomBehavior' => array(
+        'class' => 'application.components.MyCustomBehavior',
+        'customBehaviorConf' => 'some value',
+    ),
+),
+~~~
+
 ## Managable
 
 Allows to manage users:
