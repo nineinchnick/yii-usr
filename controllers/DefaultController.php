@@ -86,7 +86,7 @@ class DefaultController extends UsrController
 			if ($action->id === 'recovery' && !$this->module->recoveryEnabled) {
 				throw new CHttpException(403,Yii::t('UsrModule.usr', 'Password recovery has not been enabled.'));
 			}
-			if (!$this->module->getUser()->isGuest) {
+			if (!$this->module->getUser()) {
 				$this->redirect($this->module->getUser()->returnUrl);
 				return false;
 			}
