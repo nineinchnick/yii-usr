@@ -100,7 +100,7 @@ class HybridauthForm extends BaseUsrForm
 		return ($adapter=$this->getHybridAuthAdapter()) !== null && $adapter->isUserConnected();
 	}
 
-	public function login($controller)
+	public function login()
 	{
 		$userIdentityClass = $this->userIdentityClass;
 		$fakeIdentity = new $userIdentityClass(null, null);
@@ -116,7 +116,7 @@ class HybridauthForm extends BaseUsrForm
 		if ($this->_hybridAuthAdapter->isUserConnected()) {
 			$profile = $this->_hybridAuthAdapter->getUserProfile();
 			if (($this->_identity=$userIdentityClass::findByProvider(strtolower($this->provider), $profile->identifier)) !== null) {
-				return $controller->module->getUser()->login($this->_identity,0);
+				return $this->webUser->login($this->_identity,0);
 			}
 		}
 		return false;

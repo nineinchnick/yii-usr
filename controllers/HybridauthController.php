@@ -23,7 +23,7 @@ class HybridauthController extends UsrController
             $remoteLogin->scenario = strtolower($remoteLogin->provider);
 
             if($remoteLogin->validate()) {
-                $remoteLogin->login($this);
+                $remoteLogin->login();
             }
         }
         // if we got here that means Hybridauth did not perform a redirect,
@@ -67,7 +67,7 @@ class HybridauthController extends UsrController
             $remoteLogin->scenario = strtolower($remoteLogin->provider);
 
             if($remoteLogin->validate()) {
-                if ($remoteLogin->login($this)) {
+                if ($remoteLogin->login()) {
                     // user is already associated with remote identity and has been logged in
                     $this->afterLogin();
                 } elseif (($adapter=$remoteLogin->getHybridAuthAdapter()) === null || !$adapter->isUserConnected()) {
@@ -150,7 +150,7 @@ class HybridauthController extends UsrController
             }
         }
         $localLogin->setAttributes($_POST['LoginForm']);
-        if($localLogin->validate() && $localLogin->login($this)) {
+        if($localLogin->validate() && $localLogin->login()) {
             // don't forget to associate the new profile with remote provider
             if (!$remoteLogin->associate($localLogin->getIdentity()->getId())) {
                 $this->module->getUser()->setFlash('error', Yii::t('UsrModule.usr', 'Failed to associate current user with {provider}.', array('{provider}'=>$remoteLogin->provider)));

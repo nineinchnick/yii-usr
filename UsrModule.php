@@ -371,6 +371,7 @@ class UsrModule extends CWebModule
 	{
 		/** @var CFormModel */
 		$form = new $class($scenario);
+        $form->webUser = $this->getUser();
 		$form->userIdentityClass = $this->userIdentityClass;
 		if ($form instanceof BasePasswordForm) {
 			$form->passwordStrengthRules = $this->passwordStrengthRules;
@@ -394,12 +395,11 @@ class UsrModule extends CWebModule
 				}
 				break;
 			case 'LoginForm':
-                $loginFormBehaviors = $this->getLoginFormBehaviors();
-                $controller = Yii::app()->controller;
-                foreach ($loginFormBehaviors as $name => $config) {
-                    $behavior = $form->attachBehavior($name, $config);
-                    $form->attachHandler($behavior, 'afterLogin');
-                    $form->attachHandler($behavior, 'beforeLogin');
+                if ($this->loginFormBehaviors!==null && is_array($this->loginFormBehaviors)) {
+                    foreach ($this->loginFormBehaviors as $name => $config) {
+                        $behavior = $form->attachBehavior($name, $config);
+                        $behavior->controller = Yii::app()->controller;
+                    }
                 }
 				break;
             case 'HybridauthForm':
@@ -410,29 +410,30 @@ class UsrModule extends CWebModule
 		return $form;
 	}
 
-    public function getLoginFormBehaviors()
-    {
-//        oneTimePasswordMode
-//        oneTimePasswordTimeout
-        return array_merge(array(
-                'oneTimePasswordBehavior' => array(
-                    'class' => 'OneTimePasswordFormBehavior',
-                    'oneTimePasswordConfig' => array(
-                        'authenticator' => $this->googleAuthenticator,
-                        'mode' => $this->oneTimePasswordMode,
-                        'required' => $this->oneTimePasswordRequired,
-                        'timeout' => $this->oneTimePasswordTimeout,
-                    ),
-                    'controller' => Yii::app()->controller,
-                ),
-                'expiredPasswordBehavior' => array(
-                    'class' => 'ExpiredPasswordBehavior',
-                    'passwordTimeout' => $this->passwordTimeout,
-                )
-            ),
-            is_array($this->loginFormBehaviors) ? $this->loginFormBehaviors : array()
-        );
-    }
+//    public function getLoginFormBehaviors()
+//    {
+//        // Dokumentacj do tego...
+////        oneTimePasswordMode
+////        oneTimePasswordTimeout
+//        return array_merge(array(
+//                'oneTimePasswordBehavior' => array(
+//                    'class' => 'OneTimePasswordFormBehavior',
+//                    'oneTimePasswordConfig' => array(
+//                        'authenticator' => $this->googleAuthenticator,
+//                        'mode' => $this->oneTimePasswordMode,
+//                        'required' => $this->oneTimePasswordRequired,
+//                        'timeout' => $this->oneTimePasswordTimeout,
+//                    ),
+//                    'controller' => Yii::app()->controller,
+//                ),
+//                'expiredPasswordBehavior' => array(
+//                    'class' => 'ExpiredPasswordBehavior',
+//                    'passwordTimeout' => $this->passwordTimeout,
+//                )
+//            ),
+//            is_array($this->loginFormBehaviors) ? $this->loginFormBehaviors : array()
+//        );
+//    }
 
     public function getUser()
     {

@@ -126,18 +126,23 @@ class LoginForm extends BasePasswordForm
 	 * @param integer $duration For how long the user will be logged in without any activity, in seconds.
 	 * @return boolean whether login is successful
 	 */
-	public function login($controller, $duration = 0)
+	public function login($duration = 0)
 	{
-        
-		$identity = $this->getIdentity();
-		if ($this->scenario === 'reset') {
-			$identity->password = $this->newPassword;
-			$identity->authenticate();
-		}
-		if($identity->getIsAuthenticated()) {
-			return $controller->module->getUser()->login($identity, $this->rememberMe ? $duration : 0);
-		}
-		return false;
+        if ($this->beforeLogin()) {
+            $identity = $this->getIdentity();
+            if ($this->scenario === 'reset') {
+                $identity->password = $this->newPassword;
+                $identity->authenticate();
+            }
+            if($identity->getIsAuthenticated()) {
+                $result = $this->webUser->login($identity, $this->rememberMe ? $duration : 0);
+                if ($result) {
+                    $this->afterLogin();
+                }
+                return $result;
+            }
+        }
+        return false;
 	}
 
     public function beforeLogin()
@@ -171,18 +176,4 @@ class LoginForm extends BasePasswordForm
         $this->raiseEvent('onAfterLogin', new CEvent($this, array('success'=>true)));
     }
 
-    /**
-     * Attach handler to event.
-     * (Chceck if event is correctly prepared)
-     *
-     * @param CComponent $object
-     * @param string $handler
-     */
-    public function attachHandler($object, $handler)
-    {
-        $method = 'on' . ucfirst($handler);
-        if (method_exists($object, $handler) && method_exists($this, $method)) {
-            $this->$method = array($object, $handler);
-        }
-    }
 }

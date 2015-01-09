@@ -6,6 +6,11 @@
  */
 abstract class BaseUsrForm extends CFormModel
 {
+    /**
+     * @var CWebUser Instance of WebUser application component
+     */
+    public $webUser;
+
 	private static $_names=array();
 	/**
 	 * @inheritdoc

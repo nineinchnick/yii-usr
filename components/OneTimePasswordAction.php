@@ -7,7 +7,7 @@
 class OneTimePasswordAction extends CAction
 {
 	public function run() {
-		if ($this->controller->module->isGuest)
+		if ($this->controller->module->getUser()->isGuest)
 			$this->controller->redirect(array('login'));
 		/** @var UsrModule */
 		$module = $this->controller->module;

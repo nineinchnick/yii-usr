@@ -133,13 +133,13 @@ class RecoveryForm extends BasePasswordForm
 	 * Logs in the user using the given username and new password.
 	 * @return boolean whether login is successful
 	 */
-	public function login($controller) {
+	public function login() {
 		$identity = $this->getIdentity();
 
 		$identity->password = $this->newPassword;
 		$identity->authenticate();
 		if($identity->getIsAuthenticated()) {
-			return $controller->module->getUser()->login($identity,0);
+			return $this->webUser->login($identity,0);
 		}
 		return false;
 	}

@@ -144,11 +144,11 @@ class ProfileForm extends BaseUsrForm
 	 * Logs in the user using the given username.
 	 * @return boolean whether login is successful
 	 */
-	public function login($controller)
+	public function login()
 	{
 		$identity = $this->getIdentity();
 
-		return $controller->module->getUser()->login($identity,0);
+		return $this->webUser->login($identity,0);
 	}
 
 	/**

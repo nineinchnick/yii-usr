@@ -138,7 +138,7 @@ class DefaultController extends UsrController
 		if (isset($_POST['LoginForm'])) {
 			$model->setAttributes($_POST['LoginForm']);
 			if ($model->validate()) {
-				if (($model->scenario !== 'reset' || $model->resetPassword()) && $model->login($this, $this->module->rememberMeDuration)) {
+				if (($model->scenario !== 'reset' || $model->resetPassword()) && $model->login($this->module->rememberMeDuration)) {
                     $this->afterLogin();
 				} else {
 					$this->module->getUser()->setFlash('error', Yii::t('UsrModule.usr', 'Failed to change password or log in using new password.'));
@@ -199,7 +199,7 @@ class DefaultController extends UsrController
 					$model->getIdentity()->verifyEmail($this->module->requireVerifiedEmail);
 					// regenerate the activation key to prevent reply attack
 					$model->getIdentity()->getActivationKey();
-					if ($model->resetPassword() && $model->login($this)) {
+					if ($model->resetPassword() && $model->login()) {
                         $this->afterLogin();
 					} else {
 						$this->module->getUser()->setFlash('error', Yii::t('UsrModule.usr', 'Failed to change password or log in using new password.'));
@@ -267,7 +267,7 @@ class DefaultController extends UsrController
 						}
 					}
 					if ($model->getIdentity()->isActive()) {
-						if ($model->login($this)) {
+						if ($model->login()) {
                             $this->afterLogin();
 						} else {
 							$this->module->getUser()->setFlash('error', Yii::t('UsrModule.usr', 'Failed to log in.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));

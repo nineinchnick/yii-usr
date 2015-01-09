@@ -15,6 +15,11 @@
  */
 abstract class FormModelBehavior extends CModelBehavior
 {
+    /**
+     * @var CController Reference to Application controller
+     */
+    public $controller;
+
 	private static $_names=array();
 
 	private $_ruleOptions = array();
