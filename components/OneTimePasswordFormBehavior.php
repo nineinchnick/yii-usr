@@ -96,6 +96,11 @@ class OneTimePasswordFormBehavior extends FormModelBehavior
 			'previousCode' => $previousCode,
 			'previousCounter' => $previousCounter,
 		));
+
+        if (! isset($this->_oneTimePasswordConfig['authenticator']) || $this->_oneTimePasswordConfig['authenticator'] == null) {
+				require dirname(__FILE__) . '/extensions/GoogleAuthenticator.php/lib/GoogleAuthenticator.php';
+			$this->_oneTimePasswordConfig['authenticator'] = new GoogleAuthenticator;
+        }
 		return $this;
 	}
 

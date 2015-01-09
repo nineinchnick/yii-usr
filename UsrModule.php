@@ -201,21 +201,6 @@ class UsrModule extends CWebModule
      * If the attribute list is empty a full pre-filled registration and login forms are displayed.
      */
     public $associateByAttributes = array('email');
-	/**
-	 * @var string If set to UsrModule::OTP_TIME or UsrModule::OTP_COUNTER, two step authentication is enabled using one time passwords.
-	 * Time mode uses codes generated using current time and requires the user to use an external application, like Google Authenticator on Android.
-	 * Counter mode uses codes generated using a sequence and sends them to user's email.
-	 */
-	public $oneTimePasswordMode = self::OTP_NONE;
-	/**
-	 * @var integer Number of seconds for how long is the last verified code valid.
-	 */
-	public $oneTimePasswordTimeout = -1;
-	/**
-	 * @var boolean Should the user be allowed to log in even if a secret hasn't been generated yet (is null).
-	 * This only makes sense when mode is 'counter', secrets are generated when registering users and a code is sent via email.
-	 */
-	public $oneTimePasswordRequired = false;
 
 	/**
 	 * @var array If not null, CAPTCHA will be enabled on the registration and recovery form and this will be passed as arguments to the CCaptcha widget.
@@ -243,10 +228,6 @@ class UsrModule extends CWebModule
      * @var array Scenarios configuration
      */
     public $scenarios;
-	/**
-	 * @var GoogleAuthenticator set if $oneTimePasswordMode is not UsrModule::OTP_NONE
-	 */
-	protected $_googleAuthenticator;
 	/**
 	 * @var Hybrid_Auth set if $hybridauthProviders are not empty
 	 */
@@ -347,19 +328,6 @@ class UsrModule extends CWebModule
 	}
 
 	/**
-	 * Gets the GoogleAuthenticator object
-	 * @return GoogleAuthenticator
-	 */
-	public function getGoogleAuthenticator()
-	{
-		if ($this->_googleAuthenticator === null) {
-				require dirname(__FILE__) . '/extensions/GoogleAuthenticator.php/lib/GoogleAuthenticator.php';
-			$this->_googleAuthenticator = new GoogleAuthenticator;
-		}
-		return $this->_googleAuthenticator;
-	}
-
-	/**
 	 * A factory to create pre-configured form models. Only model class names from the nineinchnick\usr\models namespace are allowed.
 	 * Sets scenario, password strength rules for models extending BasePasswordForm and attaches behaviors.
 	 *
@@ -408,31 +376,6 @@ class UsrModule extends CWebModule
 		}
 		return $form;
 	}
-
-//    public function getLoginFormBehaviors()
-//    {
-//        // Dokumentacj do tego...
-////        oneTimePasswordMode
-////        oneTimePasswordTimeout
-//        return array_merge(array(
-//                'oneTimePasswordBehavior' => array(
-//                    'class' => 'OneTimePasswordFormBehavior',
-//                    'oneTimePasswordConfig' => array(
-//                        'authenticator' => $this->googleAuthenticator,
-//                        'mode' => $this->oneTimePasswordMode,
-//                        'required' => $this->oneTimePasswordRequired,
-//                        'timeout' => $this->oneTimePasswordTimeout,
-//                    ),
-//                    'controller' => Yii::app()->controller,
-//                ),
-//                'expiredPasswordBehavior' => array(
-//                    'class' => 'ExpiredPasswordBehavior',
-//                    'passwordTimeout' => $this->passwordTimeout,
-//                )
-//            ),
-//            is_array($this->loginFormBehaviors) ? $this->loginFormBehaviors : array()
-//        );
-//    }
 
     public function getUser()
     {

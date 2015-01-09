@@ -106,16 +106,17 @@ Do akcji logowania można podpinać dodatkowe Behaviory za pomocą zdefiniowania
 * ExpiredPasswordBehavior
 * OneTimePasswordFormBehavior
 
-
 ### ExpiredPasswordBehavior
 
 Obsługuje zachowanie pozwalające na wymuszenie na użytkownikach zmiany hasła co pewien czas.
+
+Dodatkowe parametry:
 
 * passwordTimeout - pozwala na zdefiniowanie czasu co jaki powinno zostać zmienione hasło
 
 ### OneTimePasswordFormBehavior
 
-Obsługuję obsługe jędnorazowych haseł.
+Obsługuję obsługe jednorazowych haseł.
 
 Dodatkowe parametry:
 
@@ -123,7 +124,6 @@ Dodatkowe parametry:
 * required - boolean Should the user be allowed to log in even if a secret hasn't been generated yet. This only makes sense when mode is 'counter', secrets are generated when registering users and a code is sent via email.
 * timeout - int DEFAULT: -1 Number of seconds for how long is the last verified code valid
 * mode - one of otp mode values: 'otp', 'time', 'counter', 'none' DEFAULT: 'none'. If set to 'time' or 'counter' two step authentication is enabled using one time passwords
-
 
 ## Przykładowa instalacja behaviorów
 ~~~php
