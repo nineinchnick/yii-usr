@@ -108,7 +108,7 @@ class OneTimePasswordFormBehavior extends FormModelBehavior
         foreach ($this->_oneTimePasswordConfig as $configName => $configValue) {
             if ($configValue===null) {
                 if ($configName=='authenticator') {
-                        require dirname(__FILE__) . '/extensions/GoogleAuthenticator.php/lib/GoogleAuthenticator.php';
+                    require dirname(__FILE__) . '/extensions/GoogleAuthenticator.php/lib/GoogleAuthenticator.php';
                     $this->_oneTimePasswordConfig[$configName] = new GoogleAuthenticator;
                 } elseif (isset($this->$configName)) {
                     $this->_oneTimePasswordConfig[$configName] = $this->$configName;
