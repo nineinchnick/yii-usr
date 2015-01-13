@@ -28,6 +28,19 @@ abstract class BaseUsrForm extends CFormModel
 		$this->_userIdentityClass = $value;
 	}
 
+    /**
+     * Retrieve list of scenarios aviable in model
+     * @return array
+     */
+    public function getAvailableScenarios()
+    {
+        $scenarios = array();
+        foreach ($this->_behaviors as $name) {
+            $behavior = $this->asa($name);
+            $scenarios = array_merge($scenarios, $behavior->getAvailableScenarios());
+        }
+        return $scenarios;
+    }
 
 	/**
 	 * @inheritdoc

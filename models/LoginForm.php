@@ -11,12 +11,32 @@ class LoginForm extends BasePasswordForm
 	public $password;
 	public $rememberMe;
 
+    /**
+     * @var string Error message string
+     */
+    public $errorMesssage;
+
 	/**
 	 * @var IdentityInterface cached object returned by @see getIdentity()
 	 */
 	private $_identity;
 
-	/**
+    public function init()
+    {
+        $this->errorMesssage = Yii::t('UsrModule.usr', 'Failed to change password or log in using new password.');
+        return parent::init();
+    }
+
+    /**
+     * Retrieve list of scenarios aviable in model
+     * @return array
+     */
+    public function getAvailableScenarios()
+    {
+        return array_merge(parent::getAvailableScenarios(), array('reset', 'verifyOTP'));
+    }
+
+    /**
 	 * Declares the validation rules.
 	 * The rules state that username and password are required,
 	 * and password needs to be authenticated.
@@ -161,9 +181,10 @@ class LoginForm extends BasePasswordForm
      */
     public function onBeforeLogin()
     {
-        // We nedd to transfer response via CEvent::param property becouse events do not returns result
+        // We nedd to transfer response via CEvent::param property
+        // becouse events do not returns result
         $event = new CEvent($this, array('success'=>true));
-        $this->raiseEvent('onBeforeLogin', new CEvent($this));
+        $this->raiseEvent('onBeforeLogin', $event);
         return isset($event->params['success']) ? $event->params['success'] : true;
     }
 
@@ -176,4 +197,12 @@ class LoginForm extends BasePasswordForm
         $this->raiseEvent('onAfterLogin', new CEvent($this, array('success'=>true)));
     }
 
+    /**
+     * Retrieve message to display as error
+     * @return string
+     */
+    public function getErrorMessage()
+    {
+        return $this->errorMesssage;
+    }
 }

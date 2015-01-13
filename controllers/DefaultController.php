@@ -126,7 +126,7 @@ class DefaultController extends UsrController
 	{
 		/** @var LoginForm */
 		$model = $this->module->createFormModel('LoginForm');
-		if ($scenario !== null && in_array($scenario, array('reset', 'verifyOTP'))) {
+		if ($scenario !== null && in_array($scenario, $model->getAvailableScenarios())) {
 			$model->scenario = $scenario;
 		}
 
@@ -141,7 +141,7 @@ class DefaultController extends UsrController
 				if (($model->scenario !== 'reset' || $model->resetPassword()) && $model->login($this->module->rememberMeDuration)) {
                     $this->afterLogin();
 				} else {
-					$this->module->getUser()->setFlash('error', Yii::t('UsrModule.usr', 'Failed to change password or log in using new password.'));
+					$this->module->getUser()->setFlash('error', $model->getErrorMessage());
 				}
 			}
 		}
