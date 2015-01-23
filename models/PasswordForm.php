@@ -87,6 +87,7 @@ class PasswordForm extends BasePasswordForm
 		}
 		if ($identity === null)
 			$identity = $this->getIdentity();
+        $identity->password = $this->password;
 		if (!$identity->resetPassword($this->newPassword)) {
 			$this->addError('newPassword',Yii::t('UsrModule.usr','Failed to reset the password.'));
 			return false;
