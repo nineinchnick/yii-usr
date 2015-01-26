@@ -88,8 +88,8 @@ class PasswordForm extends BasePasswordForm
 		if ($identity === null)
 			$identity = $this->getIdentity();
         $identity->password = $this->password;
-		if (!$identity->resetPassword($this->newPassword)) {
-			$this->addError('newPassword',Yii::t('UsrModule.usr','Failed to reset the password.'));
+		if (($message = $identity->resetPassword($this->newPassword)) !== true) {
+			$this->addError('newPassword', is_string($message) ? $message : Yii::t('UsrModule.usr','Failed to reset the password.'));
 			return false;
 		}
 		return true;

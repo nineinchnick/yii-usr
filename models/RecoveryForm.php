@@ -126,7 +126,11 @@ class RecoveryForm extends BasePasswordForm
 	 */
 	public function resetPassword() {
 		$identity = $this->getIdentity();
-		return $identity->resetPassword($this->newPassword);
+		if (($message = $identity->resetPassword($this->newPassword)) !== true) {
+			$this->addError('newPassword', is_string($message) ? $message : Yii::t('UsrModule.usr','Failed to reset the password.'));
+			return false;
+        }
+        return true;
 	}
 
 	/**
