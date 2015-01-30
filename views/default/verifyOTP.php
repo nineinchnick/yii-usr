@@ -6,6 +6,8 @@ $title = Yii::t('UsrModule.usr', 'Two step authentication');
 if (isset($this->breadcrumbs))
 	$this->breadcrumbs=array($this->module->id, $title);
 $this->pageTitle = Yii::app()->name.' - '.$title;
+
+$otp = $model->asa('oneTimePasswordBehavior');
 ?>
 <h1><?php echo $title; ?></h1>
 
@@ -27,9 +29,9 @@ $this->pageTitle = Yii::app()->name.' - '.$title;
 	<?php echo $form->errorSummary($model); ?>
 
 	<p>
-<?php if ($this->module->oneTimePasswordMode === UsrModule::OTP_TIME): ?>
+<?php if ($otp->mode === OneTimePasswordFormBehavior::OTP_TIME): ?>
 		<?php echo Yii::t('UsrModule.usr', 'Use the Google Authenticator application to generate a one time password and enter it below.'); ?><br/>
-<?php elseif ($this->module->oneTimePasswordMode === UsrModule::OTP_COUNTER): ?>
+<?php elseif ($otp->mode === OneTimePasswordFormBehavior::OTP_COUNTER): ?>
 		<?php echo Yii::t('UsrModule.usr', 'A one time password has been sent to your email. Enter it below.'); ?><br/>
 <?php endif; ?>
 	</p>

@@ -79,7 +79,7 @@ class ManagerController extends UsrController
 	 */
 	public function actionUpdate($id=null)
 	{
-		if (!$this->module->getUser()->checkAccess($id === null ? 'usr.create' : 'usr.update')) {
+		if (!Yii::app()->user->checkAccess($id === null ? 'usr.create' : 'usr.update')) {
 			throw new CHttpException(403, Yii::t('yii','You are not authorized to perform this action.'));
 		}
 
@@ -100,9 +100,9 @@ class ManagerController extends UsrController
 		/**
 		 * @todo Check for detailed auth items
 		 */
-		$canUpdateAttributes = $this->module->getUser()->checkAccess('usr.update.attributes');
-		$canUpdatePassword = $this->module->getUser()->checkAccess('usr.update.password');
-		$canUpdateAuth = $this->module->getUser()->checkAccess('usr.update.auth');
+		$canUpdateAttributes = Yii::app()->user->checkAccess('usr.update.attributes');
+		$canUpdatePassword = Yii::app()->user->checkAccess('usr.update.password');
+		$canUpdateAuth = Yii::app()->user->checkAccess('usr.update.auth');
 
 		if(isset($_POST['ProfileForm'])) {
 			$profileForm->setAttributes($_POST['ProfileForm']);
@@ -120,7 +120,7 @@ class ManagerController extends UsrController
 				$oldEmail = $profileForm->getIdentity()->getEmail();
 				if (($canUpdateAttributes && !$profileForm->save($this->module->requireVerifiedEmail)) || ($updatePassword && !$passwordForm->resetPassword($profileForm->getIdentity()))) {
 					$trx->rollback();
-					$this->module->getUser()->setFlash('error', Yii::t('UsrModule.usr', 'Failed to register a new user.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
+					Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to register a new user.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
 				} else {
 					if ($canUpdateAuth) {
                         $this->updateAuthItems($id, $profileForm);
@@ -128,13 +128,13 @@ class ManagerController extends UsrController
 					$trx->commit();
 					if ($this->module->requireVerifiedEmail && $oldEmail != $profileForm->getIdentity()->email) {
 						if ($this->sendEmail($profileForm, 'verify')) {
-							$this->module->getUser()->setFlash('success', Yii::t('UsrModule.usr', 'An email containing further instructions has been sent to the provided email address.'));
+							Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'An email containing further instructions has been sent to the provided email address.'));
 						} else {
-							$this->module->getUser()->setFlash('error', Yii::t('UsrModule.usr', 'Failed to send an email.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
+							Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to send an email.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
 						}
 					}
-					if (!$this->module->getUser()->hasFlash('success')) {
-						$this->module->getUser()->setFlash('success', Yii::t('UsrModule.manager', 'User account has been successfully created or updated.'));
+					if (!Yii::app()->user->hasFlash('success')) {
+						Yii::app()->user->setFlash('success', Yii::t('UsrModule.manager', 'User account has been successfully created or updated.'));
 					}
 					$this->redirect(array('index'));
 				}

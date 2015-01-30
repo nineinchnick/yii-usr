@@ -11,21 +11,10 @@ class LoginForm extends BasePasswordForm
 	public $password;
 	public $rememberMe;
 
-    /**
-     * @var string Error message string
-     */
-    public $errorMesssage;
-
 	/**
 	 * @var IdentityInterface cached object returned by @see getIdentity()
 	 */
 	private $_identity;
-
-    public function init()
-    {
-        $this->errorMesssage = Yii::t('UsrModule.usr', 'Failed to change password or log in using new password.');
-        return parent::init();
-    }
 
     /**
      * Retrieve list of scenarios aviable in model
@@ -195,14 +184,5 @@ class LoginForm extends BasePasswordForm
     public function onAfterLogin()
     {
         $this->raiseEvent('onAfterLogin', new CEvent($this, array('success'=>true)));
-    }
-
-    /**
-     * Retrieve message to display as error
-     * @return string
-     */
-    public function getErrorMessage()
-    {
-        return $this->errorMesssage;
     }
 }

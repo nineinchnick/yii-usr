@@ -93,7 +93,7 @@ if ($id !== null) {
 
 <?php $this->renderPartial('/default/_form', array('form'=>$form, 'model'=>$profileForm, 'passwordForm'=>$passwordForm)); ?>
 
-<?php if ($this->module->getUser()->checkAccess('usr.update.auth') && !empty($allRoles)): ?>
+<?php if (Yii::app()->user->checkAccess('usr.update.auth') && !empty($allRoles)): ?>
 	<div class="control-group">
 		<?php echo CHtml::label(Yii::t('UsrModule.manager', 'Authorization roles'), 'roles'); ?>
 		<?php echo CHtml::checkBoxList('roles', array_keys($assignedRoles), CHtml::listData($allRoles, 'name', 'description'), array('template'=>'{beginLabel}{input}{labelTitle}{endLabel}')); ?>

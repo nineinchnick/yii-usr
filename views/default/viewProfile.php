@@ -13,8 +13,7 @@ $this->pageTitle = Yii::app()->name.' - '.$title;
 
 <?php
 $attributes = array('username', 'email', 'firstName', 'lastName');
-$otp = $model->asa('oneTimePasswordBehavior');
-if (($otp!==null) && ($otp->oneTimePasswordMode === UsrModule::OTP_TIME || $this->module->oneTimePasswordMode === UsrModule::OTP_COUNTER)) {
+if (($otp=$model->asa('oneTimePasswordBehavior'))!==null && ($otp->mode === OneTimePasswordFormBehavior::OTP_TIME || $otp->mode === OneTimePasswordFormBehavior::OTP_COUNTER)) {
 	$attributes[] = array(
 		'name'=>'twoStepAuth',
 		'type'=>'raw',

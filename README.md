@@ -86,6 +86,8 @@ Remember to invalidate the email if it changes in the save() method from the Edi
 
 This interface allows password reset with optional tracking of used passwords. This allows to detect expired passwords and avoid reusing old passwords by users.
 
+See the ExpiredPasswordBehavior description below.
+
 ## Hybridauth
 
 This interface allows finding local identity associated with a remote one (from an external social site) and creating such associations.
@@ -94,60 +96,11 @@ This interface allows finding local identity associated with a remote one (from 
 
 This interface allow saving and retrieving a secret used to generate one time passwords. Also, last used password and counter used to generate last password are saved and retrieve to protect against reply attacks.
 
+See the OneTimePasswordFormBehavior description below.
+
 ## Profile Pictures
 
 Allows users to upload a profile picture. The example identity uses [Gravatar](http://gravatar.com/) to provide a default picture.
-
-# Custom behaviors
-
-Do akcji logowania można podpinać dodatkowe Behaviory za pomocą zdefiniowania właściwości loginFormBehaviors w konfiguracji modułu. Pozwalają one na dodanie własnej logiki do operacji logowania uzytkowników.
-
-## Moduł dostarcza 2 wbudowane behaviory:
-* ExpiredPasswordBehavior
-* OneTimePasswordFormBehavior
-
-### ExpiredPasswordBehavior
-
-Obsługuje zachowanie pozwalające na wymuszenie na użytkownikach zmiany hasła co pewien czas.
-
-Dodatkowe parametry:
-
-* passwordTimeout - pozwala na zdefiniowanie czasu co jaki powinno zostać zmienione hasło
-
-### OneTimePasswordFormBehavior
-
-Obsługuję obsługe jednorazowych haseł.
-
-Dodatkowe parametry:
-
-* authenticator - 
-* required - boolean Should the user be allowed to log in even if a secret hasn't been generated yet. This only makes sense when mode is 'counter', secrets are generated when registering users and a code is sent via email.
-* timeout - int DEFAULT: -1 Number of seconds for how long is the last verified code valid
-* mode - one of otp mode values: 'otp', 'time', 'counter', 'none' DEFAULT: 'none'. If set to 'time' or 'counter' two step authentication is enabled using one time passwords
-
-## Przykładowa instalacja behaviorów
-~~~php
-'loginFormBehaviors' => array(
-    'expiredPasswordBehavior' => array(
-        'class' => 'usr.components.ExpiredPasswordBehavior',
-        'passwordTimeout' => 10,
-    ),
-    'oneTimePasswordBehavior' => array(
-        'class' => 'OneTimePasswordFormBehavior',
-        'oneTimePasswordConfig' => array(
-            'authenticator' => $this->googleAuthenticator,
-            'mode' => 'time',
-            'required' => true,
-            'timeout' => 123,
-        ),
-        'controller' => Yii::app()->controller,
-    ),
-    'myCustomBehavior' => array(
-        'class' => 'application.components.MyCustomBehavior',
-        'customBehaviorConf' => 'some value',
-    ),
-),
-~~~
 
 ## Managable
 
@@ -158,6 +111,54 @@ Allows to manage users:
 * assign authorization roles
 * activate/disable and mark email as verified
 * see details as timestamps of account creation, last profile update and last visit
+
+# Custom login behaviors
+
+The login action can be extended by attaching custom behaviors to the LoginForm. This is done by configuring the UsrModule.loginFormBehaviors property.
+
+There are two such behaviors provided by yii-usr module:
+
+* ExpiredPasswordBehavior
+* OneTimePasswordFormBehavior
+
+### ExpiredPasswordBehavior
+
+Validates if current password has expired and forces the users to change it before logging in.
+
+Options:
+
+* passwordTimeout - number of days after which user is requred to reset his password after logging in
+
+### OneTimePasswordFormBehavior
+
+Two step authentication using one time passwords.
+
+Options:
+
+* authenticator - if null, set to a new instance of GoogleAuthenticator class.
+* mode - if set to OneTimePasswordFormBehavior::OTP_TIME or OneTimePasswordFormBehavior::OTP_COUNTER, two step authentication is enabled using one time passwords. Time mode uses codes generated using current time and requires the user to use an external application, like Google Authenticator on Android. Counter mode uses codes generated using a sequence and sends them to user's email.
+* required - should the user be allowed to log in even if a secret hasn't been generated yet (is null). This only makes sense when mode is 'counter', secrets are generated when registering users and a code is sent via email.
+* timeout - Number of seconds for how long is the last verified code valid.
+
+## Example usage
+
+~~~php
+'loginFormBehaviors' => array(
+    'expiredPasswordBehavior' => array(
+        'class' => 'ExpiredPasswordBehavior',
+        'passwordTimeout' => 10,
+    ),
+    'oneTimePasswordBehavior' => array(
+        'class' => 'OneTimePasswordFormBehavior',
+        'oneTimePasswordConfig' => array(
+            'mode' => OneTimePasswordFormBehavior::OTP_TIME,
+            'required' => true,
+            'timeout' => 123,
+        ),
+    ),
+    // ... other behaviors
+),
+~~~
 
 # User model example
 
@@ -201,7 +202,7 @@ Feel free to send new and updated translations to the author.
 
 # Usage scenarios
 
-Varios scenarios can be created by enabling or disabling following features:
+Various scenarios can be created by enabling or disabling following features:
 
 * registration
 * email verification

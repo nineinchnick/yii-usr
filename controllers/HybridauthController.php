@@ -71,13 +71,13 @@ class HybridauthController extends UsrController
                     // user is already associated with remote identity and has been logged in
                     $this->afterLogin();
                 } elseif (($adapter=$remoteLogin->getHybridAuthAdapter()) === null || !$adapter->isUserConnected()) {
-                    $this->module->getUser()->setFlash('error', Yii::t('UsrModule.usr', 'Failed to log in using {provider}.', array('{provider}'=>$remoteLogin->provider)));
+                    Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to log in using {provider}.', array('{provider}'=>$remoteLogin->provider)));
                     $this->redirect(array('login', 'provider'=>$remoteLogin->provider));
                 }
-                if (!$this->module->getUser()->isGuest) {
+                if (!Yii::app()->user->isGuest) {
                     // user is already logged in and needs to be associated with remote identity
-                    if (!$remoteLogin->associate($this->module->getUser()->getId())) {
-                        $this->module->getUser()->setFlash('error', Yii::t('UsrModule.usr', 'Failed to associate current user with {provider}.', array('{provider}'=>$remoteLogin->provider)));
+                    if (!$remoteLogin->associate(Yii::app()->user->getId())) {
+                        Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to associate current user with {provider}.', array('{provider}'=>$remoteLogin->provider)));
                         $this->redirect(array('login', 'provider'=>$remoteLogin->provider));
                     }
                     $this->afterLogin();
@@ -153,7 +153,7 @@ class HybridauthController extends UsrController
         if($localLogin->validate() && $localLogin->login()) {
             // don't forget to associate the new profile with remote provider
             if (!$remoteLogin->associate($localLogin->getIdentity()->getId())) {
-                $this->module->getUser()->setFlash('error', Yii::t('UsrModule.usr', 'Failed to associate current user with {provider}.', array('{provider}'=>$remoteLogin->provider)));
+                Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to associate current user with {provider}.', array('{provider}'=>$remoteLogin->provider)));
                 $this->redirect(array('login', 'provider'=>$remoteLogin->provider));
             }
 
@@ -188,35 +188,35 @@ class HybridauthController extends UsrController
         $trx = Yii::app()->db->beginTransaction();
         if (!$localProfile->save($this->module->requireVerifiedEmail)) {
             $trx->rollback();
-            $this->module->getUser()->setFlash('error', Yii::t('UsrModule.usr', 'Failed to register a new user.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
+            Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to register a new user.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
             return $localProfile;
         }
 
         $trx->commit();
         if ($this->module->requireVerifiedEmail) {
             if ($this->sendEmail($localProfile, 'verify')) {
-                $this->module->getUser()->setFlash('success', Yii::t('UsrModule.usr', 'An email containing further instructions has been sent to the provided email address.'));
+                Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'An email containing further instructions has been sent to the provided email address.'));
             } else {
-                $this->module->getUser()->setFlash('error', Yii::t('UsrModule.usr', 'Failed to send an email.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
+                Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to send an email.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
             }
         }
 
         // don't forget to associate the new profile with remote provider
         if (!$remoteLogin->associate($localProfile->getIdentity()->getId())) {
-            $this->module->getUser()->setFlash('error', Yii::t('UsrModule.usr', 'Failed to associate current user with {provider}.', array('{provider}'=>$remoteLogin->provider)));
+            Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to associate current user with {provider}.', array('{provider}'=>$remoteLogin->provider)));
             $this->redirect(array('login', 'provider'=>$remoteLogin->provider));
         }
 
         if ($localProfile->getIdentity()->isActive()) {
             // don't use the $localProfile->login() method because there is no password set so we can't authenticate this identity
-            if ($this->module->getUser()->login($localProfile->getIdentity(),0)) {
+            if (Yii::app()->user->login($localProfile->getIdentity(),0)) {
                 $this->afterLogin();
             } else {
-                $this->module->getUser()->setFlash('error', Yii::t('UsrModule.usr', 'Failed to log in.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
+                Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to log in.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
             }
         } else {
-            if (!$this->module->getUser()->hasFlash('success'))
-                $this->module->getUser()->setFlash('success', Yii::t('UsrModule.usr', 'Please wait for the account to be activated. A notification will be send to provided email address.'));
+            if (!Yii::app()->user->hasFlash('success'))
+                Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'Please wait for the account to be activated. A notification will be send to provided email address.'));
             $this->redirect(array('login', 'provider'=>$remoteLogin->provider));
         }
         return $localProfile;

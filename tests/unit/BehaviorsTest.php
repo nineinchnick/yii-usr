@@ -37,7 +37,7 @@ class BehaviorsTest extends CTestCase
 			'class' => 'OneTimePasswordFormBehavior',
 			'oneTimePasswordConfig' => array(
 				'authenticator' => $googleAuthenticator,
-				'mode' => UsrModule::OTP_COUNTER,
+				'mode' => OneTimePasswordFormBehavior::OTP_COUNTER,
 				'required' => false,
 				'timeout' => 300,
 			),

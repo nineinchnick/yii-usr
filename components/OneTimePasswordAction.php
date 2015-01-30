@@ -6,12 +6,21 @@
  */
 class OneTimePasswordAction extends CAction
 {
+    /**
+     * @var array Same configuration as set for @see OneTimePasswordFormBehavior.
+     */
+    public $configuration = array(
+        'authenticator' => null,
+        'mode'          => null,
+        'required'      => null,
+        'timeout'       => null,
+    );
+
 	public function run() {
-		if ($this->controller->module->getUser()->isGuest)
+		if (Yii::app()->user->isGuest)
 			$this->controller->redirect(array('login'));
 		/** @var UsrModule */
-		$module = $this->controller->module;
-		if ($module->oneTimePasswordRequired)
+		if ($this->configuration['required'])
 			$this->controller->redirect(array('profile'));
 
 		$model = new OneTimePasswordForm;
@@ -22,22 +31,22 @@ class OneTimePasswordAction extends CAction
 		 */
 		if ($identity->getOneTimePasswordSecret() !== null) {
 			$identity->setOneTimePasswordSecret(null);
-			Yii::app()->request->cookies->remove(UsrModule::OTP_COOKIE);
+			Yii::app()->request->cookies->remove(OneTimePasswordFormBehavior::OTP_COOKIE);
 			$this->controller->redirect('profile');
 			return;
 		}
 
-		$model->setMode($module->oneTimePasswordMode)->setAuthenticator($module->googleAuthenticator);
+		$model->setMode($this->configuration['mode'])->setAuthenticator($this->configuration['authenticator']);
 
 		/**
 		 * When no secret has been set yet, generate a new secret and save it in session.
 		 * Do it if it hasn't been done yet.
 		 */
-		if (($secret=Yii::app()->session[UsrModule::OTP_SECRET_PREFIX.'newSecret']) === null) {
-			$secret = Yii::app()->session[UsrModule::OTP_SECRET_PREFIX.'newSecret'] = $module->googleAuthenticator->generateSecret();
+		if (($secret=Yii::app()->session[OneTimePasswordFormBehavior::OTP_SECRET_PREFIX.'newSecret']) === null) {
+			$secret = Yii::app()->session[OneTimePasswordFormBehavior::OTP_SECRET_PREFIX.'newSecret'] = $this->configuration['authenticator']->generateSecret();
 
 			$model->setSecret($secret);
-			if ($module->oneTimePasswordMode === UsrModule::OTP_COUNTER) {
+			if ($this->configuration['mode'] === OneTimePasswordFormBehavior::OTP_COUNTER) {
 				$this->controller->sendEmail($model, 'oneTimePassword');
 			}
 		}
@@ -48,23 +57,27 @@ class OneTimePasswordAction extends CAction
 			if ($model->validate()) {
 				// save secret
 				$identity->setOneTimePasswordSecret($secret);
-				Yii::app()->session[UsrModule::OTP_SECRET_PREFIX.'newSecret'] = null;
+				Yii::app()->session[OneTimePasswordFormBehavior::OTP_SECRET_PREFIX.'newSecret'] = null;
 				// save current code as used
-				$identity->setOneTimePassword($model->oneTimePassword, $module->oneTimePasswordMode === UsrModule::OTP_TIME ? floor(time() / 30) : $model->getPreviousCounter() + 1);
+				$identity->setOneTimePassword($model->oneTimePassword, $this->configuration['mode'] === OneTimePasswordFormBehavior::OTP_TIME ? floor(time() / 30) : $model->getPreviousCounter() + 1);
 				$this->controller->redirect('profile');
 			}
 		}
 		if (YII_DEBUG) {
-			$model->oneTimePassword = $module->googleAuthenticator->getCode($secret, $module->oneTimePasswordMode === UsrModule::OTP_TIME ? null : $model->getPreviousCounter());
+			$model->oneTimePassword = $this->configuration['authenticator']->getCode($secret, $this->configuration['mode'] === OneTimePasswordFormBehavior::OTP_TIME ? null : $model->getPreviousCounter());
 		}
 
-		if ($module->oneTimePasswordMode === UsrModule::OTP_TIME) {
+		if ($this->configuration['mode'] === OneTimePasswordFormBehavior::OTP_TIME) {
 			$hostInfo = Yii::app()->request->hostInfo;
 			$url = $model->getUrl($identity->username, parse_url($hostInfo, PHP_URL_HOST), $secret);
 		} else {
 			$url = '';
 		}
 
-		$this->controller->render('generateOTPSecret', array('model'=>$model, 'url'=>$url));
+        $this->controller->render('generateOTPSecret', array(
+            'model' => $model,
+            'url'   => $url,
+            'mode'  => $this->configuration['mode'],
+        ));
 	}
 }

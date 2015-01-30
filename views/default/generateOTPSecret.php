@@ -1,7 +1,9 @@
 <?php /*
 @var $this DefaultController
 @var $model OneTimePasswordForm
-@var $url string */
+@var $url string
+@var $mode string
+ */
 
 $title = Yii::t('UsrModule.usr', 'One Time Password Secret');
 if (isset($this->breadcrumbs))
@@ -25,11 +27,11 @@ $this->pageTitle = Yii::app()->name.' - '.$title;
 	<?php echo $form->errorSummary($model); ?>
 
 	<p>
-<?php if ($this->module->oneTimePasswordMode === UsrModule::OTP_TIME): ?>
+<?php if ($mode === OneTimePasswordFormBehavior::OTP_TIME): ?>
 		<?php echo Yii::t('UsrModule.usr', 'Scan this QR code using the Google Authenticator application in your mobile phone.'); ?><br/>
 		<?php echo CHtml::image($url, Yii::t('UsrModule.usr', 'One Time Password Secret')); ?><br/>
 		<?php echo Yii::t('UsrModule.usr', 'Use the Google Authenticator application to generate a one time password and enter it below.'); ?><br/>
-<?php elseif ($this->module->oneTimePasswordMode === UsrModule::OTP_COUNTER): ?>
+<?php elseif ($mode === OneTimePasswordFormBehavior::OTP_COUNTER): ?>
 		<?php echo Yii::t('UsrModule.usr', 'A one time password has been sent to your email. Enter it below.'); ?><br/>
 <?php endif; ?>
 	</p>

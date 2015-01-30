@@ -35,7 +35,7 @@
  *
  * # Usage scenarios
  *
- * Varios scenarios can be created by enabling or disabling following features:
+ * Various scenarios can be created by enabling or disabling following features:
  *
  * * registration
  * * email verification
@@ -82,12 +82,6 @@
  */
 class UsrModule extends CWebModule
 {
-	const OTP_SECRET_PREFIX = 'UsrModule.oneTimePassword.';
-	const OTP_COOKIE = 'otp';
-	const OTP_NONE = 'none';
-	const OTP_TIME = 'time';
-	const OTP_COUNTER = 'counter';
-
 	/**
 	 * @var boolean Is new user registration enabled.
 	 */
@@ -104,11 +98,6 @@ class UsrModule extends CWebModule
 	 * @var integer For how long the user will be logged in without any activity, in seconds. Defaults to 3600*24*30 seconds (30 days).
 	 */
 	public $rememberMeDuration = 2592000;
-	/**
-	 * @var integer Timeout in days after which user is requred to reset his password after logging in.
-	 * If not null, the user identity class must implement IPasswordHistoryIdentity interface.
-	 */
-	public $passwordTimeout;
 	/**
 	 * @var array Set of rules to measure the password strength when choosing new password in the registration or recovery forms.
 	 * Rules should NOT include attribute name, it will be added when they are used.
@@ -128,7 +117,6 @@ class UsrModule extends CWebModule
 	public $pictureUploadRules;
 	/**
 	 * @var string Class name of user identity object used to authenticate user.
-	 * Must implement the IPasswordHistoryIdentity interface if passwordTimeout is set.
 	 */
 	public $userIdentityClass = 'CUserIdentity';
 	/**
@@ -156,7 +144,8 @@ class UsrModule extends CWebModule
 	 */
 	public $submitButtonCssClass = '';
 	/**
-	 * @var array configuration for PHPMailer, values which are arrays will trigger methods for each value instead of setting properties.
+     * @var array configuration for PHPMailer, values which are arrays will trigger methods
+     * for each value instead of setting properties.
 	 * For a full reference, please resolve to PHPMailer documentation.
 	 */
 	public $mailerConfig = array(
@@ -191,20 +180,29 @@ class UsrModule extends CWebModule
 	 */
 	public $dicewareExtraChar = false;
 	/**
-	 * @var array Available Hybridauth providers, indexed by name, defined as array('enabled'=>true|false, 'keys'=>array('id'=>string, 'key'=>string, 'secret'=>string), 'scope'=>string)
+     * @var array Available Hybridauth providers, indexed by name, defined as
+     * array(
+     *   'enabled'=>true|false,
+     *   'keys'=>array('id'=>string, 'key'=>string, 'secret'=>string),
+     *   'scope'=>string,
+     * )
 	 * @see http://hybridauth.sourceforge.net/userguide.html
 	 */
 	public $hybridauthProviders = array();
     /**
-     * @var array list of identity attribute names that should be passed to UserIdentity::find() to find a local identity matching a remote one.
-     * If one is found, user must authorize to associate it. If none has been found, a new local identity is automatically registered.
+     * @var array list of identity attribute names that should be passed to UserIdentity::find()
+     * to find a local identity matching a remote one.
+     * If one is found, user must authorize to associate it. If none has been found,
+     * a new local identity is automatically registered.
      * If the attribute list is empty a full pre-filled registration and login forms are displayed.
      */
     public $associateByAttributes = array('email');
 
 	/**
-	 * @var array If not null, CAPTCHA will be enabled on the registration and recovery form and this will be passed as arguments to the CCaptcha widget.
-	 * Remember to include the 'captchaAction'=>'/usr/default/captcha' property. Adjust the module id.
+     * @var array If not null, CAPTCHA will be enabled on the registration and recovery form
+     * and this will be passed as arguments to the CCaptcha widget.
+     * Remember to include the 'captchaAction'=>'/usr/default/captcha' property.
+     * Adjust the module id.
 	 */
 	public $captcha;
     /**
@@ -220,12 +218,8 @@ class UsrModule extends CWebModule
     public $loginFormBehaviors;
 
     /**
-     * @var string Name of the user application component
-     */
-    public $userComponent = 'user';
-
-    /**
-     * @var array Scenarios configuration
+     * @var array View params used in different LoginForm model scenarios.
+     * View name can be changed by setting the 'view' key.
      */
     public $scenarios;
 	/**
@@ -339,7 +333,7 @@ class UsrModule extends CWebModule
 	{
 		/** @var CFormModel */
 		$form = new $class($scenario);
-        $form->webUser = $this->getUser();
+        $form->webUser = Yii::app()->user;
 		$form->userIdentityClass = $this->userIdentityClass;
 		if ($form instanceof BasePasswordForm) {
 			$form->passwordStrengthRules = $this->passwordStrengthRules;
@@ -376,9 +370,4 @@ class UsrModule extends CWebModule
 		}
 		return $form;
 	}
-
-    public function getUser()
-    {
-        return Yii::app()->{$this->userComponent};
-    }
 }

@@ -62,9 +62,9 @@ abstract class UsrController extends CController
      */
     public function afterLogin()
     {
-        $returnUrl = $this->module->getUser()->returnUrl;
+        $returnUrl = Yii::app()->user->returnUrl;
         $returnUrlParts = explode('/', is_array($returnUrl) ? reset($returnUrl) : $returnUrl);
-        $url = end($returnUrlParts)=='index.php' ? '/' : $this->module->getUser()->returnUrl;
+        $url = end($returnUrlParts)=='index.php' ? '/' : Yii::app()->user->returnUrl;
         $this->redirect($url);
     }
 }
