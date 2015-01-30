@@ -127,14 +127,12 @@ abstract class BasePasswordForm extends BaseUsrForm
 			return true;
 		}
 		// check if new password is not the same as current one
-		if ($identity !== null) {
-			$newIdentity = clone $identity;
-			$newIdentity->password = $this->newPassword;
-			if ($newIdentity->authenticate()) {
-				$this->addError('newPassword',Yii::t('UsrModule.usr','New password must be different than the old one.'));
-				return false;
-			}
-		}
+        if (property_exists($this, 'password')) {
+            if ($this->password === $this->newPassword) {
+                $this->addError('newPassword',Yii::t('UsrModule.usr','New password must be different than the old one.'));
+                return false;
+            }
+        }
 		return true;
 	}
 }
