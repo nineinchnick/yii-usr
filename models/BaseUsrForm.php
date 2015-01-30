@@ -112,16 +112,17 @@ abstract class BaseUsrForm extends CFormModel
 	}
 
 	/**
-	 * Returns rules defined in attached behaviors that extend FormModelBehavior.
+     * Filters base rules through each attached behavior that extend FormModelBehavior,
+     * which may add their own rules or remove existing ones.
+     * @param array base form model rules
 	 * @return array validation rules
 	 * @see CModel::rules()
 	 */
-	public function getBehaviorRules()
+	public function filterRules($rules)
 	{
-		$rules = array();
 		foreach($this->_behaviors as $name=>$foo) {
 			if (($behavior=$this->asa($name)) instanceof FormModelBehavior)
-				$rules = array_merge($rules, $behavior->rules());
+				$rules = $behavior->filterRules($rules);
 		}
 		return $rules;
 	}

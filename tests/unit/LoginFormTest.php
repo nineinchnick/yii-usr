@@ -61,7 +61,7 @@ class LoginFormTest extends CDbTestCase
 		$formLabels = $form->attributeLabels();
 		$form->attachBehavior('captcha', array('class' => 'CaptchaFormBehavior'));
 		$behaviorAttributes = $form->asa('captcha')->attributeNames();
-		$behaviorRules = $form->asa('captcha')->rules();
+		$behaviorRules = $form->asa('captcha')->filterRules();
 		$behaviorLabels = $form->asa('captcha')->attributeLabels();
 		$this->assertEquals(array_merge($formAttributes, $behaviorAttributes), $form->attributeNames());
 		$this->assertEquals(array_merge($formRules, $behaviorRules), $form->rules());

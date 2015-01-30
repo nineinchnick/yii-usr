@@ -20,13 +20,13 @@ abstract class FormModelBehavior extends CModelBehavior
 	private $_ruleOptions = array();
 
 	/**
-	 * Validation rules for attributes of this behavior, that should be merged with rules in the owner model.
+	 * Adds validation rules for attributes of this behavior or removes rules from the owner model.
 	 * @return array validation rules
 	 * @see CModel::rules()
 	 */
-	public function rules()
+	public function filterRules($rules = array())
 	{
-		return array();
+		return $rules;
 	}
 
 	/**

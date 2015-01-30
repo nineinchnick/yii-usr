@@ -52,7 +52,7 @@ class ProfileForm extends BaseUsrForm
 	 */
 	public function rules()
 	{
-		return array_merge($this->getBehaviorRules(), array(
+		return $this->filterRules(array_merge(array(
 			array('username, email, firstName, lastName, removePicture', 'filter', 'filter'=>'trim'),
 			array('username, email, firstName, lastName, removePicture', 'default', 'setOnEmpty'=>true, 'value' => null),
 
@@ -61,7 +61,7 @@ class ProfileForm extends BaseUsrForm
 			array('email', 'email'),
 			array('removePicture', 'boolean'),
 			array('password', 'validCurrentPassword', 'except'=>'register'),
-		), $this->pictureUploadRules);
+		), $this->pictureUploadRules));
 	}
 
 	/**

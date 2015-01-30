@@ -59,15 +59,15 @@ class OneTimePasswordFormBehavior extends FormModelBehavior
 	/**
 	 * @inheritdoc
 	 */
-	public function rules()
+	public function filterRules($rules = array())
 	{
-		$rules = array(
+		$behaviorRules = array(
 			array('oneTimePassword', 'filter', 'filter'=>'trim', 'on'=>'verifyOTP'),
 			array('oneTimePassword', 'default', 'setOnEmpty'=>true, 'value' => null, 'on'=>'verifyOTP'),
 			array('oneTimePassword', 'required', 'on'=>'verifyOTP'),
 			array('oneTimePassword', 'validOneTimePassword', 'except'=>'hybridauth'),
 		);
-		return $this->applyRuleOptions($rules);
+		return array_merge($rules, $this->applyRuleOptions($behaviorRules));
 	}
 
 	/**

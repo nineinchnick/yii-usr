@@ -22,7 +22,7 @@ class RecoveryForm extends BasePasswordForm
 	 * and password needs to be authenticated.
 	 */
 	public function rules() {
-		$rules = array_merge($this->getBehaviorRules(), array(
+		$rules = $this->filterRules(array_merge(array(
 			array('username, email', 'filter', 'filter'=>'trim'),
 			array('username, email', 'default', 'setOnEmpty'=>true, 'value' => null),
 			array('username, email', 'existingIdentity'),
@@ -32,7 +32,7 @@ class RecoveryForm extends BasePasswordForm
 			array('activationKey', 'default', 'setOnEmpty'=>true, 'value' => null, 'on'=>'reset,verify'),
 			array('activationKey', 'required', 'on'=>'reset,verify'),
 			array('activationKey', 'validActivationKey', 'on'=>'reset,verify'),
-		), $this->rulesAddScenario(parent::rules(), 'reset'));
+		), $this->rulesAddScenario(parent::rules(), 'reset')));
 
 		return $rules;
 	}

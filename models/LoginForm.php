@@ -32,12 +32,12 @@ class LoginForm extends BasePasswordForm
 	 */
 	public function rules()
 	{
-		$rules = array_merge(array(
+		$rules = $this->filterRules(array_merge(array(
 			array('username, password', 'filter', 'filter'=>'trim'),
 			array('username, password', 'required'),
 			array('rememberMe', 'boolean'),
 			array('password', 'authenticate'),
-		), $this->rulesAddScenario(parent::rules(), 'reset'), $this->getBehaviorRules());
+		), $this->rulesAddScenario(parent::rules(), 'reset')));
 
 		return $rules;
 	}
