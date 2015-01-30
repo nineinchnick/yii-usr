@@ -43,18 +43,29 @@ abstract class UsrController extends CController
 	}
 
     /**
-     * Retreive view name based on scenario name and module configuration
-     * 
+     * Retreive view name and params based on scenario name and module configuration.
+     *
      * @param string $scenario
-     * @param string $default
+     * @param string $default default view name if scenario is null
+     * @return array two values, view name (string) and view params (array)
      */
     public function getScenarioView($scenario, $default)
     {
+        if ($scenario === null) {
+            $scenario = $default;
+        }
+        if (!isset($this->module->scenarioViews[$scenario])) {
+            return array($scenario, array());
+        }
         // config, scenario, default
-        $module = $this->module;
-        $scenarioConf = isset($module->scenarios[$scenario]) ? $module->scenarios[$scenario] : null;
-        $view = empty($scenarioConf['view'])?(empty($scenario)?$default:$scenario):$scenarioConf['view'];
-        return $view;
+        $config = $this->module->scenarioViews[$scenario];
+        if (isset($config['view'])) {
+            $view = $config['view'];
+            unset($config['view']);
+        } else {
+            $view = $scenario;
+        }
+        return array($view, $config);
     }
 
     /**

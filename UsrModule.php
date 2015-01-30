@@ -221,7 +221,10 @@ class UsrModule extends CWebModule
      * @var array View params used in different LoginForm model scenarios.
      * View name can be changed by setting the 'view' key.
      */
-    public $scenarios;
+    public $scenarioViews = array(
+        'reset' => array('view' => 'reset'),
+        'verifyOTP' => array('view' => 'verifyOTP'),
+    );
 	/**
 	 * @var Hybrid_Auth set if $hybridauthProviders are not empty
 	 */
