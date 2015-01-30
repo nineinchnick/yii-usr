@@ -64,6 +64,15 @@ abstract class FormModelBehavior extends CModelBehavior
 			return self::$_names[$className];
 	}
 
+    /**
+     * Lists valid model scenarios.
+     * @return array
+     */
+    public function getAvailableScenarios()
+    {
+        return array();
+    }
+
 	/**
 	 * Adds current rule options to the given set of rules.
 	 * @param array $rules

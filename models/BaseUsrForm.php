@@ -29,15 +29,16 @@ abstract class BaseUsrForm extends CFormModel
 	}
 
     /**
-     * Retrieve list of scenarios aviable in model
+     * Lists valid model scenarios.
      * @return array
      */
     public function getAvailableScenarios()
     {
         $scenarios = array();
         foreach ($this->_behaviors as $name) {
-            $behavior = $this->asa($name);
-            $scenarios = array_merge($scenarios, $behavior->getAvailableScenarios());
+            if (($behavior=$this->asa($name)) instanceof FormModelBehavior) {
+                $scenarios = array_merge($scenarios, $behavior->getAvailableScenarios());
+            }
         }
         return $scenarios;
     }
