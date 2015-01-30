@@ -51,7 +51,7 @@ abstract class UsrController extends CController
      */
     public function getScenarioView($scenario, $default)
     {
-        if ($scenario === null) {
+        if (empty($scenario)) {
             $scenario = $default;
         }
         if (!isset($this->module->scenarioViews[$scenario])) {
