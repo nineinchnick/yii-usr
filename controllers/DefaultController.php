@@ -54,7 +54,7 @@ class DefaultController extends UsrController
 				'extraChar'=>$this->module->dicewareExtraChar,
 			);
 		}
-		if (isset($this->module->loginFormBehaviors['oneTimePasswordBehavior']) && $this->module->loginFormBehaviors['oneTimePasswordBehavior']['mode'] != OneTimePasswordFormBehavior::OTP_NONE) {
+		if (isset($this->module->loginFormBehaviors['oneTimePasswordBehavior']) && $this->module->loginFormBehaviors['oneTimePasswordBehavior']['oneTimePasswordConfig']['mode'] != OneTimePasswordFormBehavior::OTP_NONE) {
             $configuration = $this->module->loginFormBehaviors['oneTimePasswordBehavior'];
             if (!isset($configuration['authenticator'])) {
                 $configuration['authenticator'] = OneTimePasswordFormBehavior::getDefaultAuthenticator();
