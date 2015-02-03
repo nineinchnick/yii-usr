@@ -35,12 +35,10 @@ class BehaviorsTest extends CTestCase
 		$googleAuthenticator = new GoogleAuthenticator;
 		$otp = Yii::createComponent(array(
 			'class' => 'OneTimePasswordFormBehavior',
-			'oneTimePasswordConfig' => array(
-				'authenticator' => $googleAuthenticator,
-				'mode' => OneTimePasswordFormBehavior::OTP_COUNTER,
-				'required' => false,
-				'timeout' => 300,
-			),
+            'authenticator' => $googleAuthenticator,
+            'mode' => OneTimePasswordFormBehavior::OTP_COUNTER,
+            'required' => false,
+            'timeout' => 300,
 		));
 		$otp->setEnabled(true);
 		$otp->attach($this->owner);

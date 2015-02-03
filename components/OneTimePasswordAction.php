@@ -9,17 +9,17 @@ class OneTimePasswordAction extends CAction
     /**
      * @var array Same configuration as set for @see OneTimePasswordFormBehavior.
      */
-    public $configuration = array(
-        'authenticator' => null,
-        'mode'          => null,
-        'required'      => null,
-        'timeout'       => null,
-    );
+    public $configuration;
 
 	public function run() {
 		if (Yii::app()->user->isGuest)
 			$this->controller->redirect(array('login'));
-		/** @var UsrModule */
+        $this->configuration = array_merge(array(
+            'authenticator' => null,
+            'mode'          => null,
+            'required'      => null,
+            'timeout'       => null,
+        ), $this->configuration);
 		if ($this->configuration['required'])
 			$this->controller->redirect(array('profile'));
 

@@ -6,6 +6,10 @@ $title = Yii::t('UsrModule.usr', 'User profile');
 if (isset($this->breadcrumbs))
 	$this->breadcrumbs=array($this->module->id, $title);
 $this->pageTitle = Yii::app()->name.' - '.$title;
+
+if (isset($this->module->loginFormBehaviors['oneTimePasswordBehavior'])) {
+    $otp = $this->module->loginFormBehaviors['oneTimePasswordBehavior'];
+}
 ?>
 <h1><?php echo $title; ?><small style="margin-left: 1em;"><?php echo CHtml::link(Yii::t('UsrModule.usr', 'update'), array('profile', 'update'=>true)); ?></small></h1>
 
@@ -13,7 +17,7 @@ $this->pageTitle = Yii::app()->name.' - '.$title;
 
 <?php
 $attributes = array('username', 'email', 'firstName', 'lastName');
-if (($otp=$model->asa('oneTimePasswordBehavior'))!==null && ($otp->mode === OneTimePasswordFormBehavior::OTP_TIME || $otp->mode === OneTimePasswordFormBehavior::OTP_COUNTER)) {
+if (isset($otp) && ($otp['mode'] === OneTimePasswordFormBehavior::OTP_TIME || $otp['mode'] === OneTimePasswordFormBehavior::OTP_COUNTER)) {
 	$attributes[] = array(
 		'name'=>'twoStepAuth',
 		'type'=>'raw',
