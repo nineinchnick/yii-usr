@@ -21,4 +21,6 @@ return array (
   'Current password' => 'Aktuální heslo',
   'New password' => 'Nové heslo',
   'Verify' => 'Ověřit',
+  'Username' => 'Uživatelské jméno',
+  'Password' => 'Heslo',
 );
