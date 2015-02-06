@@ -156,7 +156,9 @@ class LoginForm extends BasePasswordForm
 
     public function beforeLogin()
     {
-        return $this->onBeforeLogin();
+        $event = new CModelEvent();
+        $this->onBeforeLogin($event);
+        return $event->isValid;
     }
 
     public function afterLogin()
@@ -168,13 +170,9 @@ class LoginForm extends BasePasswordForm
      * Fire afterLogin events
      * @param CFormModel $model
      */
-    public function onBeforeLogin()
+    public function onBeforeLogin($event)
     {
-        // We nedd to transfer response via CEvent::param property
-        // becouse events do not returns result
-        $event = new CEvent($this, array('success'=>true));
         $this->raiseEvent('onBeforeLogin', $event);
-        return isset($event->params['success']) ? $event->params['success'] : true;
     }
 
     /**
