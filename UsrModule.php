@@ -336,7 +336,9 @@ class UsrModule extends CWebModule
 	{
 		/** @var CFormModel */
 		$form = new $class($scenario);
-        $form->webUser = Yii::app()->user;
+		if ($form instanceof BaseUsrForm) {
+            $form->webUser = Yii::app()->user;
+        }
 		$form->userIdentityClass = $this->userIdentityClass;
 		if ($form instanceof BasePasswordForm) {
 			$form->passwordStrengthRules = $this->passwordStrengthRules;
