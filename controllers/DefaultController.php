@@ -321,12 +321,10 @@ class DefaultController extends UsrController
 		 */
 		if (isset($_POST['PasswordForm']) && trim($_POST['PasswordForm']['newPassword']) !== '') {
 			$passwordForm->setAttributes($_POST['PasswordForm']);
-			if ($passwordForm->validate()) {
-				if ($passwordForm->resetPassword($model->getIdentity())) {
-					$flashes['success'][] = Yii::t('UsrModule.usr', 'Changes have been saved successfully.');
-				} else {
-					$flashes['error'][] = Yii::t('UsrModule.usr', 'Failed to change password.');
-				}
+			if ($passwordForm->validate() && $passwordForm->resetPassword($model->getIdentity())) {
+				$flashes['success'][] = Yii::t('UsrModule.usr', 'Changes have been saved successfully.');
+			} else {
+				$flashes['error'][] = Yii::t('UsrModule.usr', 'Failed to change password.');
 			}
 		}
 		if (isset($_POST['ProfileForm']) && empty($flashes['error'])) {
