@@ -48,13 +48,13 @@ class BehaviorsTest extends CTestCase
 		$this->assertEquals(array('oneTimePassword'), $otp->attributeNames());
 		$this->assertEquals(array('oneTimePassword'), $otp->attributeNames());
 		$this->assertEquals(array('oneTimePassword' => Yii::t('UsrModule.usr','One Time Password')), $otp->attributeLabels());
-		$rules = $otp->rules();
+		$rules = $otp->filterRules();
 
 		$ruleOptions = array('on'=>'reset');
 		$otp->setRuleOptions($ruleOptions);
 		$this->assertEquals($ruleOptions, $otp->getRuleOptions());
 
-		$modifiedRules = $otp->rules();
+		$modifiedRules = $otp->filterRules();
 		foreach($modifiedRules as $rule) {
 			foreach($ruleOptions as $key=>$value) {
 				$this->assertEquals($value, $rule[$key]);
@@ -94,7 +94,7 @@ class BehaviorsTest extends CTestCase
 
 		$this->assertEquals(array('verifyCode'), $captcha->attributeNames());
 		$this->assertEquals(array('verifyCode' => Yii::t('UsrModule.usr','Verification code')), $captcha->attributeLabels());
-		$this->assertEquals(array(array('verifyCode', 'captcha', 'captchaAction' => 'usr/default/captcha')), $captcha->rules());
+		$this->assertEquals(array(array('verifyCode', 'captcha', 'captchaAction' => 'usr/default/captcha')), $captcha->filterRules());
 	}
 
 	public function testExpiredPassword()

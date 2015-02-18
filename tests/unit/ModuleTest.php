@@ -14,7 +14,12 @@ class ModuleTest extends CTestCase
 	public function testCreateForm()
 	{
 		$module = new UsrModule('usr',Yii::app());
-		$module->passwordTimeout = 300;
+        $module->loginFormBehaviors = array(
+            'expiredPasswordBehavior' => array(
+                'class' => 'ExpiredPasswordBehavior',
+                'passwordTimeout' => 300,
+            ),
+        );
 		$form = $module->createFormModel('LoginForm');
 		$this->assertTrue($form->asa('expiredPasswordBehavior') instanceof ExpiredPasswordBehavior);
 	}
