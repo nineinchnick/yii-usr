@@ -94,7 +94,7 @@ class DefaultController extends UsrController
 				throw new CHttpException(403,Yii::t('UsrModule.usr', 'Password recovery has not been enabled.'));
 			}
 			if (!Yii::app()->user->isGuest) {
-                $this->redirect(Yii::app()->user->returnUrl !== Yii::app()->request->getRequestUri() ? Yii::app()->user->returnUrl : array(Yii::app()->defaultController));
+				$this->redirect(Yii::app()->user->returnUrl);
 				return false;
 			}
 			break;
@@ -105,7 +105,10 @@ class DefaultController extends UsrController
 			if (!Yii::app()->user->isGuest) {
 				$this->redirect(array('profile'));
 				return false;
-			}
+			}           
+            if(class_exists('SubscribeBehavior')) {
+                $this->attachBehavior('subscribeUser', new SubscribeBehavior);
+            }
 			break;
 		case 'verify':
 			if (!isset($_GET['activationKey'])) {
@@ -267,6 +270,8 @@ class DefaultController extends UsrController
 					Yii::app()->user->setFlash('error', Yii::t('UsrModule.usr', 'Failed to register a new user.').' '.Yii::t('UsrModule.usr', 'Try again or contact the site administrator.'));
 				} else {
 					$trx->commit();
+                    $userId = $model->getIdentity()->getId();
+                    $this->addUserToNotifications($userId);
 					if ($this->module->requireVerifiedEmail) {
 						if ($this->sendEmail($model, 'verify')) {
 							Yii::app()->user->setFlash('success', Yii::t('UsrModule.usr', 'An email containing further instructions has been sent to the provided email address.'));
@@ -382,5 +387,26 @@ class DefaultController extends UsrController
 		}
 		header('Content-Type:'.$picture['mimetype']);
 		echo $picture['picture'];
-	}
+	} 
+    
+    public function addUserToNotifications($userId)
+    {
+        if (class_exists('SubscribeBehavior')) {
+            $this->subscribeUser($userId, 'registerUser', 'Nowa rejestracja', 'user_' . $userId);
+            if (isset(Yii::app()->notificationsQueue)) {
+                $notificationsQueue = Yii::app()->notificationsQueue;
+                $queueId = (isset($notificationsQueue->id)) ? $notificationsQueue->id : 'notificationsQueue';
+                $label = (isset($notificationsQueue->label)) ? $notificationsQueue->label : 'Powiadomienia';
+                $this->subscribeUser($userId, $queueId, $label, $queueId . '_' . $userId);
+            }
+            if (isset(Yii::app()->popupNotificationsQueue)) {
+                $popupNotificationsQueue = Yii::app()->popupNotificationsQueue;
+                $queueId = (isset($popupNotificationsQueue->id)) ? $popupNotificationsQueue->id : 'popupNotificationsQueue';
+                $label = (isset($popupNotificationsQueue->label)) ? $popupNotificationsQueue->label : 'Wyskakujące powiadomienia';
+                $this->subscribeUser($userId, $queueId, $label, $queueId . '_' . $userId);
+            }
+        }
+        return true;
+    }
+
 }
