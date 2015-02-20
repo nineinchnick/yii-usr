@@ -97,13 +97,13 @@ abstract class ExampleUserLoginAttempt extends CActiveRecord
     {
         $since = new DateTime;
         $since->sub(new DateInterval("PT{$time_limit}S"));
-        $subquery = self::model()->dbConnection->createCommand()
+        $subquery = UserLoginAttempt::model()->dbConnection->createCommand()
             ->select('is_successful')
-            ->from(self::model()->tableName())
+            ->from(UserLoginAttempt::model()->tableName())
             ->where('username = :username AND performed_on > :since')
             ->order('performed_on DESC')
             ->limit($count_limit)->getText();
-        return $count_limit <= (int)self::model()->dbConnection->createCommand()
+        return $count_limit <= (int)UserLoginAttempt::model()->dbConnection->createCommand()
             ->select('COUNT(NOT is_successful OR NULL)')
             ->from("({$subquery}) AS t")
             ->queryScalar(array(':username'=>$username, ':since' => $since->format('Y-m-d H:i:s')));

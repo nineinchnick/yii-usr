@@ -10,8 +10,19 @@ return array(
 		'usr'=>array(
 			'class'=>'vendors.nineinchnick.yii-usr.UsrModule',
 			'userIdentityClass' => 'UserIdentity',
-			'oneTimePasswordMode' => 'time',
 			'captcha' => array('clickableImage'=>true,'showRefreshButton'=>false),
+            'loginFormBehaviors' => array(
+                'expiredPasswordBehavior' => array(
+                    'class' => 'ExpiredPasswordBehavior',
+                    'passwordTimeout' => 10,
+                ),
+                'oneTimePasswordBehavior' => array(
+                    'class' => 'OneTimePasswordFormBehavior',
+                    'mode' => 'time', // cannot use OneTimePasswordFormBehavior::OTP_TIME here as it hasn't been loaded yet
+                    'required' => true,
+                    'timeout' => 123,
+                ),
+            ),
 		),
 	),
 	'components'=>array(

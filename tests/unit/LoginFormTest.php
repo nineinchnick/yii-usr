@@ -2,6 +2,7 @@
 
 Yii::import('vendors.nineinchnick.yii-usr.tests.User');
 Yii::import('vendors.nineinchnick.yii-usr.tests.UserIdentity');
+Yii::import('vendors.nineinchnick.yii-usr.tests.UserLoginAttempt');
 Yii::import('vendors.nineinchnick.yii-usr.models.BaseUsrForm');
 Yii::import('vendors.nineinchnick.yii-usr.models.LoginForm');
 
