@@ -6,22 +6,23 @@
  */
 
 $title = Yii::t('UsrModule.usr', 'One Time Password Secret');
-if (isset($this->breadcrumbs))
-	$this->breadcrumbs=array($this->module->id, $title);
+if (isset($this->breadcrumbs)) {
+    $this->breadcrumbs = array($this->module->id, $title);
+}
 $this->pageTitle = Yii::app()->name.' - '.$title;
 ?>
 <h1><?php echo $title; ?></h1>
 
-<?php $this->widget('usr.components.UsrAlerts', array('cssClassPrefix'=>$this->module->alertCssClassPrefix)); ?>
+<?php $this->widget('usr.components.UsrAlerts', array('cssClassPrefix' => $this->module->alertCssClassPrefix)); ?>
 
 <div class="<?php echo $this->module->formCssClass; ?>">
-<?php $form=$this->beginWidget($this->module->formClass, array(
-	'id'=>'secret-form',
-	'enableClientValidation'=>false,
-	'clientOptions'=>array(
-		'validateOnSubmit'=>false,
-	),
-	'focus'=>array($model,'code'),
+<?php $form = $this->beginWidget($this->module->formClass, array(
+    'id' => 'secret-form',
+    'enableClientValidation' => false,
+    'clientOptions' => array(
+        'validateOnSubmit' => false,
+    ),
+    'focus' => array($model, 'code'),
 )); ?>
 
 	<?php echo $form->errorSummary($model); ?>
@@ -37,13 +38,13 @@ $this->pageTitle = Yii::app()->name.' - '.$title;
 	</p>
 
 	<div class="control-group">
-		<?php echo $form->labelEx($model,'oneTimePassword'); ?>
-		<?php echo $form->textField($model,'oneTimePassword'); ?>
-		<?php echo $form->error($model,'oneTimePassword'); ?>
+		<?php echo $form->labelEx($model, 'oneTimePassword'); ?>
+		<?php echo $form->textField($model, 'oneTimePassword'); ?>
+		<?php echo $form->error($model, 'oneTimePassword'); ?>
 	</div>
 
 	<div class="buttons">
-		<?php echo CHtml::submitButton(Yii::t('UsrModule.usr', 'Submit'), array('class'=>$this->module->submitButtonCssClass)); ?>
+		<?php echo CHtml::submitButton(Yii::t('UsrModule.usr', 'Submit'), array('class' => $this->module->submitButtonCssClass)); ?>
 	</div>
 
 <?php $this->endWidget(); ?>

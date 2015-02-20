@@ -5,4 +5,3 @@
 
 <p>Enter this code on the page that requested it:</p>
 <h3><?php echo $code; ?></h3>
-

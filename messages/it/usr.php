@@ -16,7 +16,7 @@
  *
  * NOTE, this file must be saved in UTF-8 encoding.
  */
-return array (
+return array(
   'A one time password has been sent to your email. Enter it below.' => 'Una password a singlo utilizzo è stata inviata la vostro indirizzo email. Inseritela nel campo sottostante.',
   'Create a new account' => 'Crea nuovo account',
   'Current password' => 'Password Corrente',

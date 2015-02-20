@@ -16,7 +16,7 @@
  *
  * NOTE, this file must be saved in UTF-8 encoding.
  */
-return array (
+return array(
   'Create users' => 'Crear usuarios',
   'Delete any user' => 'Eliminar cualquier usuario',
   'Manage users' => 'Gestionar usuarios',

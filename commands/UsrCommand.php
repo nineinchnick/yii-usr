@@ -4,22 +4,26 @@ class UsrCommand extends CConsoleCommand
 {
     public function actionPassword($count = 1, $length = null, $extra_digit = null, $extra_char = null)
     {
-		$usrModule = Yii::app()->getModule('usr');
-		if ($length === null)
-			$length = $usrModule->dicewareLength;
-		if ($extra_digit === null)
-			$extra_digit = $usrModule->dicewareExtraDigit;
-		if ($extra_char === null)
-			$extra_char = $usrModule->dicewareExtraChar;
+        $usrModule = Yii::app()->getModule('usr');
+        if ($length === null) {
+            $length = $usrModule->dicewareLength;
+        }
+        if ($extra_digit === null) {
+            $extra_digit = $usrModule->dicewareExtraDigit;
+        }
+        if ($extra_char === null) {
+            $extra_char = $usrModule->dicewareExtraChar;
+        }
 
-		require dirname(__FILE__) . '/../extensions/diceware/Diceware.php';
-		$diceware = new \nineinchnick\diceware\Diceware(Yii::app()->language);
-		for ($i = 0; $i < $count; $i++)
-			echo $diceware->get_phrase($length, $extra_digit, $extra_char) . "\n";
-	}
+        require dirname(__FILE__).'/../extensions/diceware/Diceware.php';
+        $diceware = new \nineinchnick\diceware\Diceware(Yii::app()->language);
+        for ($i = 0; $i < $count; $i++) {
+            echo $diceware->get_phrase($length, $extra_digit, $extra_char)."\n";
+        }
+    }
 
     /**
-	 * usr.manage
+     * usr.manage
      *   |-usr.create
      *   |-usr.read
      *   |-usr.update
@@ -32,15 +36,15 @@ class UsrCommand extends CConsoleCommand
     public function getTemplateAuthItems()
     {
         return array(
-            array('name'=> 'usr.manage',           'child' => null, 'type'=>CAuthItem::TYPE_TASK),
-            array('name'=> 'usr.create',           'child' => 'usr.manage'),
-            array('name'=> 'usr.read',             'child' => 'usr.manage'),
-            array('name'=> 'usr.update',           'child' => 'usr.manage'),
-            array('name'=> 'usr.update.status',    'child' => 'usr.update'),
-            array('name'=> 'usr.update.auth',      'child' => 'usr.update'),
-            array('name'=> 'usr.update.attributes','child' => 'usr.update'),
-            array('name'=> 'usr.update.password',  'child' => 'usr.update'),
-            array('name'=> 'usr.delete',           'child' => 'usr.manage'),
+            array('name' => 'usr.manage',           'child' => null, 'type' => CAuthItem::TYPE_TASK),
+            array('name' => 'usr.create',           'child' => 'usr.manage'),
+            array('name' => 'usr.read',             'child' => 'usr.manage'),
+            array('name' => 'usr.update',           'child' => 'usr.manage'),
+            array('name' => 'usr.update.status',    'child' => 'usr.update'),
+            array('name' => 'usr.update.auth',      'child' => 'usr.update'),
+            array('name' => 'usr.update.attributes','child' => 'usr.update'),
+            array('name' => 'usr.update.password',  'child' => 'usr.update'),
+            array('name' => 'usr.delete',           'child' => 'usr.manage'),
         );
     }
 
@@ -61,50 +65,51 @@ class UsrCommand extends CConsoleCommand
 
     public function actionCreateAuthItems()
     {
-		$auth = Yii::app()->authManager;
+        $auth = Yii::app()->authManager;
 
         $newAuthItems = array();
         $descriptions = $this->getTemplateAuthItemDescriptions();
-        foreach($this->getTemplateAuthItems() as $template) {
+        foreach ($this->getTemplateAuthItems() as $template) {
             $newAuthItems[$template['name']] = $template;
         }
-		$existingAuthItems = $auth->getAuthItems();
-        foreach($existingAuthItems as $name=>$existingAuthItem) {
-            if (isset($newAuthItems[$name]))
+        $existingAuthItems = $auth->getAuthItems();
+        foreach ($existingAuthItems as $name => $existingAuthItem) {
+            if (isset($newAuthItems[$name])) {
                 unset($newAuthItems[$name]);
+            }
         }
-        foreach($newAuthItems as $template) {
-			$type = isset($template['type']) ? $template['type'] : CAuthItem::TYPE_OPERATION;
-			$bizRule = isset($template['bizRule']) ? $template['bizRule'] : null;
+        foreach ($newAuthItems as $template) {
+            $type = isset($template['type']) ? $template['type'] : CAuthItem::TYPE_OPERATION;
+            $bizRule = isset($template['bizRule']) ? $template['bizRule'] : null;
             $auth->createAuthItem($template['name'], $type, $descriptions[$template['name']], $bizRule);
             if (isset($template['child']) && $template['child'] !== null) {
                 $auth->addItemChild($template['child'], $template['name']);
             }
         }
-	}
+    }
 
     public function actionRemoveAuthItems()
     {
-		$auth = Yii::app()->authManager;
+        $auth = Yii::app()->authManager;
 
-        foreach($this->getTemplateAuthItems() as $template) {
+        foreach ($this->getTemplateAuthItems() as $template) {
             $auth->removeAuthItem($template['name']);
         }
     }
 
     /**
      * Creating users using this command DOES NOT send the activation email.
-     * @param string $profile a POST (username=XX&password=YY) or JSON object with the profile form, can contain the password field
-     * @param string $authItems a comma separated list of auth items to assign
+     * @param string  $profile          a POST (username=XX&password=YY) or JSON object with the profile form, can contain the password field
+     * @param string  $authItems        a comma separated list of auth items to assign
      * @param boolean $generatePassword if true, a random password will be generated even if profile contains one
      */
     public function actionRegister($profile, $authItems = null, $generatePassword = false, $unlock = false)
     {
         $module = Yii::app()->getModule('usr');
-		/** @var ProfileForm */
-		$model = $module->createFormModel('ProfileForm', 'register');
-		/** @var PasswordForm */
-		$passwordForm = $module->createFormModel('PasswordForm', 'register');
+        /** @var ProfileForm */
+        $model = $module->createFormModel('ProfileForm', 'register');
+        /** @var PasswordForm */
+        $passwordForm = $module->createFormModel('PasswordForm', 'register');
 
         if (($profileData = json_decode($profile)) === null) {
             parse_str($profile, $profileData);
@@ -114,7 +119,7 @@ class UsrCommand extends CConsoleCommand
             $passwordForm->setAttributes(array('newPassword' => $profile['password'], 'newVerify' => $profile['password']));
         }
         if ($generatePassword) {
-            require dirname(__FILE__) . '/../extensions/diceware/Diceware.php';
+            require dirname(__FILE__).'/../extensions/diceware/Diceware.php';
             $diceware = new \nineinchnick\diceware\Diceware(Yii::app()->language);
             $password = $diceware->get_phrase($module->dicewareLength, $module->dicewareExtraDigit, $module->dicewareExtraChar);
             $passwordForm->setAttributes(array('newPassword' => $password, 'newVerify' => $password));
@@ -125,28 +130,33 @@ class UsrCommand extends CConsoleCommand
             if (!$model->save() || !$passwordForm->resetPassword($model->getIdentity())) {
                 $trx->rollback();
                 echo Yii::t('UsrModule.usr', 'Failed to register a new user.')."\n";
+
                 return false;
             } else {
                 $trx->commit();
                 echo $model->username.' '.$passwordForm->newPassword."\n";
                 $identity = $model->getIdentity();
                 if ($authItems !== null) {
-                    $authItems = array_map('trim', explode(',', trim($authItems," \t\n\r\b\x0B,")));
+                    $authItems = array_map('trim', explode(',', trim($authItems, " \t\n\r\b\x0B,")));
                     $authManager = Yii::app()->authManager;
-                    foreach($authItems as $authItemName) {
+                    foreach ($authItems as $authItemName) {
                         $authManager->assign($authItemName, $identity->getId());
                     }
                 }
                 if ($unlock) {
-                    if (!$identity->isActive())
+                    if (!$identity->isActive()) {
                         $identity->toggleStatus($identity::STATUS_IS_ACTIVE);
-                    if ($identity->isDisabled())
+                    }
+                    if ($identity->isDisabled()) {
                         $identity->toggleStatus($identity::STATUS_IS_DISABLED);
+                    }
                 }
+
                 return true;
             }
         }
         echo "Invalid data: ".print_r($model->getErrors(), true)."\n";
+
         return false;
     }
 }

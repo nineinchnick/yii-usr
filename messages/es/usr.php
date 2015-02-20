@@ -16,7 +16,7 @@
  *
  * NOTE, this file must be saved in UTF-8 encoding.
  */
-return array (
+return array(
   'A matching local account has been found. Please type in your password to associate it.' => 'Se ha encontrado una cuenta local que coincide. Por favor, escriba su contraseña para asociarlo.',
   'A one time password has been sent to your email. Enter it below.' => 'Una contraseña temporal ha sido enviada a su correo electrónico. Escribirla a continuación.',
   'Activation Key' => 'Clave de activación',

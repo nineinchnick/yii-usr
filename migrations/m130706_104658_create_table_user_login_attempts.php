@@ -22,5 +22,4 @@ class m130706_104658_create_table_user_login_attempts extends CDbMigration
     {
         $this->dropTable('{{user_login_attempts}}');
     }
-
 }

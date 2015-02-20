@@ -9,4 +9,3 @@
 <p>
 Jeśli link nie otwiera się poprawnie, spróbuj skopiować go i wkleić w pasek adresu swojej przeglądarki.
 </p>
-

@@ -1,7 +1,7 @@
 	<div class="control-group">
-		<?php echo $form->labelEx($model,'newPassword'); ?>
-		<?php echo $form->passwordField($model,'newPassword', array('autocomplete'=>'off')); ?>
-		<?php echo $form->error($model,'newPassword'); ?>
+		<?php echo $form->labelEx($model, 'newPassword'); ?>
+		<?php echo $form->passwordField($model, 'newPassword', array('autocomplete' => 'off')); ?>
+		<?php echo $form->error($model, 'newPassword'); ?>
 <?php if ($this->module->dicewareEnabled): ?>
 		<span><a id="Users_generatePassword" href="#"><?php echo Yii::t('UsrModule.usr', 'Generate a password'); ?></a></span>
 <?php
@@ -27,7 +27,7 @@ Yii::app()->getClientScript()->registerScript(__CLASS__.'#diceware', $script);
 	</div>
 
 	<div class="control-group">
-		<?php echo $form->labelEx($model,'newVerify'); ?>
-		<?php echo $form->passwordField($model,'newVerify', array('autocomplete'=>'off')); ?>
-		<?php echo $form->error($model,'newVerify'); ?>
+		<?php echo $form->labelEx($model, 'newVerify'); ?>
+		<?php echo $form->passwordField($model, 'newVerify', array('autocomplete' => 'off')); ?>
+		<?php echo $form->error($model, 'newVerify'); ?>
 	</div>

@@ -16,7 +16,7 @@
  *
  * NOTE, this file must be saved in UTF-8 encoding.
  */
-return array (
+return array(
   'Change password' => 'Změna hesla',
   'Current password' => 'Aktuální heslo',
   'New password' => 'Nové heslo',
