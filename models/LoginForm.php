@@ -62,7 +62,6 @@ class LoginForm extends BasePasswordForm
         if ($this->_identity === null) {
             $userIdentityClass = $this->userIdentityClass;
             $this->_identity = new $userIdentityClass($this->username, $this->password);
-            $this->_identity->authenticate();
         }
 
         return $this->_identity;
@@ -81,6 +80,7 @@ class LoginForm extends BasePasswordForm
             return;
         }
         $identity = $this->getIdentity();
+        $identity->authenticate();
         if (!$identity->getIsAuthenticated()) {
             $this->addError('password', !empty($identity->errorMessage) ? $identity->errorMessage : Yii::t('UsrModule.usr', 'Invalid username or password.'));
 
