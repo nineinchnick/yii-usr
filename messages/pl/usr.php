@@ -76,7 +76,7 @@ return array(
   'OpenID Identifier' => 'Identyfikator OpenID',
   'Or create a new account' => 'Lub utwórz nowe konto',
   'Password' => 'Hasło',
-  'Password recovery' => 'Odzysikiwanie hasła',
+  'Password recovery' => 'Odzyskiwanie hasła',
   'Password recovery has not been enabled.' => 'Odzyskiwanie hasła nie zostało włączone.',
   'Password reset' => 'Zmiana hasła',
   'Picture with id {id} is not found.' => 'Obrazek o identyfikatorze {id} nie został odnaleziony.',
