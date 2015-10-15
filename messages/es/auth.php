@@ -17,13 +17,13 @@
  * NOTE, this file must be saved in UTF-8 encoding.
  */
 return array(
-  'Create users' => 'Tworzy użytkowników',
-  'Delete any user' => 'Usuwa dowolnego użytkownika',
-  'Manage users' => 'Zarządza użytkownikami',
-  'Read any user' => 'Odczytuje dowolnego użytkownika',
-  'Update any user' => 'Aktualizuje dowolnego użytkownika',
-  'Update any user\'s attributes' => 'Aktualizuje dane dowolnego użytkownika',
-  'Update any user\'s auth item assignments' => 'Aktualizuje przypisanie elementów uprawnień dowolnego użytkownika',
-  'Update any user\'s password' => 'Aktualizuje hasło dowolnego użytkownika',
-  'Update any user\'s status' => 'Aktualizuje status dowolnego użytkownika',
+  'Create users' => 'Crear usuarios',
+  'Delete any user' => 'Eliminar cualquier usuario',
+  'Manage users' => 'Gestionar usuarios',
+  'Read any user' => 'Leer cualquier usuario',
+  'Update any user' => 'Actualizar cualquier usuario',
+  'Update any user\'s attributes' => 'Actualizar atributos de cualquier usuario',
+  'Update any user\'s auth item assignments' => 'Actualizar asignaciones de elementos de autenticación de cualquier usuario',
+  'Update any user\'s password' => 'Actualizar la contraseña de cualquier usuario ',
+  'Update any user\'s status' => 'Actualizar el estado de cualquier usuario',
 );

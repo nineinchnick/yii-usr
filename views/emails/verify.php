@@ -10,4 +10,3 @@
 <p>
 If the link does not open correctly, try copying it and pasting in the browser's address bar.
 </p>
-

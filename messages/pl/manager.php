@@ -16,11 +16,12 @@
  *
  * NOTE, this file must be saved in UTF-8 encoding.
  */
-return array (
+return array(
   'Active' => 'Aktywny',
   'Advanced Search' => 'Szukanie zaawansowane',
   'Any' => 'Dowolnie',
   'Are you sure you want to delete this user?' => 'Na pewno usunąć tego użytkownika?',
+  'Authorization roles' => 'Profile uprawnień',
   'Create' => 'Utwórz',
   'Create user' => 'Utwórz użytkownika',
   'Created On' => 'Utworzony dnia',
@@ -40,10 +41,12 @@ return array (
   'Not active' => 'Nieaktywny',
   'Password Set On' => 'Hasło ustawione dnia',
   'Save' => 'Zapisz',
+  'Search' => 'Szukaj',
   'Unverified' => 'Niezweryfikowany',
   'Update' => 'Aktualizuj',
   'Update user {id}' => 'Aktualizuj użytkownika {id}',
   'Updated On' => 'Zaktualizowany dnia',
+  'User account has been successfully created or updated.' => 'Konto użytkownika zostało pomyślnie utworzone lub zaktualizowane.',
   'Users manager' => 'Zarządzanie użytkownikami',
   'Username' => 'Nazwa użytkownika',
   'Verified' => 'Zweryfikowany',

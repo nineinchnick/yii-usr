@@ -7,167 +7,176 @@
  */
 class ProfileForm extends BaseUsrForm
 {
-	public $username;
-	public $email;
-	public $firstName;
-	public $lastName;
-	public $picture;
-	public $removePicture;
-	public $password;
+    public $username;
+    public $email;
+    public $firstName;
+    public $lastName;
+    public $picture;
+    public $removePicture;
+    public $password;
 
-	/**
-	 * @var IdentityInterface cached object returned by @see getIdentity()
-	 */
-	private $_identity;
-	/**
-	 * @var array Picture upload validation rules.
-	 */
-	private $_pictureUploadRules;
+    /**
+     * @var IdentityInterface cached object returned by @see getIdentity()
+     */
+    private $_identity;
+    /**
+     * @var array Picture upload validation rules.
+     */
+    private $_pictureUploadRules;
 
-	/**
-	 * Returns rules for picture upload or an empty array if they are not set.
-	 * @return array
-	 */
-	public function getPictureUploadRules()
-	{
-		return $this->_pictureUploadRules === null ? array() : $this->_pictureUploadRules;
-	}
+    /**
+     * Returns rules for picture upload or an empty array if they are not set.
+     * @return array
+     */
+    public function getPictureUploadRules()
+    {
+        return $this->_pictureUploadRules === null ? array() : $this->_pictureUploadRules;
+    }
 
-	/**
-	 * Sets rules to validate uploaded picture. Rules should NOT contain attribute name as this method adds it.
-	 * @param array $rules
-	 */
-	public function setPictureUploadRules($rules)
-	{
-		$this->_pictureUploadRules = array();
-		if (!is_array($rules))
-			return;
-		foreach($rules as $rule) {
-			$this->_pictureUploadRules[] = array_merge(array('picture'), $rule);
-		}
-	}
+    /**
+     * Sets rules to validate uploaded picture. Rules should NOT contain attribute name as this method adds it.
+     * @param array $rules
+     */
+    public function setPictureUploadRules($rules)
+    {
+        $this->_pictureUploadRules = array();
+        if (!is_array($rules)) {
+            return;
+        }
+        foreach ($rules as $rule) {
+            $this->_pictureUploadRules[] = array_merge(array('picture'), $rule);
+        }
+    }
 
-	/**
-	 * Declares the validation rules.
-	 */
-	public function rules()
-	{
-		return array_merge($this->getBehaviorRules(), array(
-			array('username, email, firstName, lastName, removePicture', 'filter', 'filter'=>'trim'),
-			array('username, email, firstName, lastName, removePicture', 'default', 'setOnEmpty'=>true, 'value' => null),
+    /**
+     * Declares the validation rules.
+     */
+    public function rules()
+    {
+        return $this->filterRules(array_merge(array(
+            array('username, email, firstName, lastName, removePicture', 'filter', 'filter' => 'trim'),
+            array('username, email, firstName, lastName, removePicture', 'default', 'setOnEmpty' => true, 'value' => null),
 
-			array('username, email', 'required'),
-			array('username, email', 'uniqueIdentity'),
-			array('email', 'email'),
-			array('removePicture', 'boolean'),
-			array('password', 'validCurrentPassword', 'except'=>'register'),
-		), $this->pictureUploadRules);
-	}
+            array('username, email', 'required'),
+            array('username, email', 'uniqueIdentity'),
+            array('email', 'email'),
+            array('removePicture', 'boolean'),
+            array('password', 'validCurrentPassword', 'except' => 'register'),
+        ), $this->pictureUploadRules));
+    }
 
-	/**
-	 * Declares attribute labels.
-	 */
-	public function attributeLabels()
-	{
-		return array_merge($this->getBehaviorLabels(), array(
-			'username'		=> Yii::t('UsrModule.usr','Username'),
-			'email'			=> Yii::t('UsrModule.usr','Email'),
-			'firstName'		=> Yii::t('UsrModule.usr','First name'),
-			'lastName'		=> Yii::t('UsrModule.usr','Last name'),
-			'picture'		=> Yii::t('UsrModule.usr','Profile picture'),
-			'removePicture'	=> Yii::t('UsrModule.usr','Remove picture'),
-			'password'		=> Yii::t('UsrModule.usr','Current password'),
-		));
-	}
+    /**
+     * Declares attribute labels.
+     */
+    public function attributeLabels()
+    {
+        return array_merge($this->getBehaviorLabels(), array(
+            'username'        => Yii::t('UsrModule.usr', 'Username'),
+            'email'            => Yii::t('UsrModule.usr', 'Email'),
+            'firstName'        => Yii::t('UsrModule.usr', 'First name'),
+            'lastName'        => Yii::t('UsrModule.usr', 'Last name'),
+            'picture'        => Yii::t('UsrModule.usr', 'Profile picture'),
+            'removePicture'    => Yii::t('UsrModule.usr', 'Remove picture'),
+            'password'        => Yii::t('UsrModule.usr', 'Current password'),
+        ));
+    }
 
-	/**
-	 * @inheritdoc
-	 */
-	public function getIdentity()
-	{
-		if($this->_identity===null) {
-			$userIdentityClass = $this->userIdentityClass;
-			if ($this->scenario == 'register') {
-				$this->_identity = new $userIdentityClass(null, null);
-			} else {
-				$this->_identity = $userIdentityClass::find(array('id'=>Yii::app()->user->getId()));
-			}
-			if ($this->_identity !== null && !($this->_identity instanceof IEditableIdentity)) {
-				throw new CException(Yii::t('UsrModule.usr','The {class} class must implement the {interface} interface.',array('{class}'=>get_class($this->_identity),'{interface}'=>'IEditableIdentity')));
-			}
-		}
-		return $this->_identity;
-	}
+    /**
+     * @inheritdoc
+     */
+    public function getIdentity()
+    {
+        if ($this->_identity === null) {
+            $userIdentityClass = $this->userIdentityClass;
+            if ($this->scenario == 'register') {
+                $this->_identity = new $userIdentityClass(null, null);
+            } else {
+                $this->_identity = $userIdentityClass::find(array('id' => Yii::app()->user->getId()));
+            }
+            if ($this->_identity !== null && !($this->_identity instanceof IEditableIdentity)) {
+                throw new CException(Yii::t('UsrModule.usr', 'The {class} class must implement the {interface} interface.', array('{class}' => get_class($this->_identity), '{interface}' => 'IEditableIdentity')));
+            }
+        }
 
-	public function setIdentity($identity)
-	{
-		$this->_identity = $identity;
-	}
+        return $this->_identity;
+    }
 
-	public function uniqueIdentity($attribute,$params)
-	{
-		if($this->hasErrors()) {
-			return;
-		}
-		$userIdentityClass = $this->userIdentityClass;
-		$existingIdentity = $userIdentityClass::find(array($attribute => $this->$attribute));
-		if ($existingIdentity !== null && (($identity=$this->getIdentity()) !== null && $existingIdentity->getId() != $identity->getId())) {
-			$this->addError($attribute,Yii::t('UsrModule.usr','{attribute} has already been used by another user.', array('{attribute}'=>$this->$attribute)));
-			return false;
-		}
-		return true;
-	}
+    public function setIdentity($identity)
+    {
+        $this->_identity = $identity;
+    }
 
-	/**
-	 * A valid current password is required only when changing email.
-	 */
-	public function validCurrentPassword($attribute,$params)
-	{
-		if($this->hasErrors()) {
-			return;
-		}
-		if (($identity=$this->getIdentity()) === null) {
-			throw new CException('Current user has not been found in the database.');
-		}
-		if ($identity->getEmail() === $this->email) {
-			return true;
-		}
-		$identity->password = $this->$attribute;
-		if(!$identity->authenticate()) {
-			$this->addError($attribute, Yii::t('UsrModule.usr', 'Changing email address requires providing the current password.'));
-			return false;
-		}
-		return true;
-	}
+    public function uniqueIdentity($attribute, $params)
+    {
+        if ($this->hasErrors()) {
+            return;
+        }
+        $userIdentityClass = $this->userIdentityClass;
+        $existingIdentity = $userIdentityClass::find(array($attribute => $this->$attribute));
+        if ($existingIdentity !== null && (($identity = $this->getIdentity()) !== null && $existingIdentity->getId() != $identity->getId())) {
+            $this->addError($attribute, Yii::t('UsrModule.usr', '{attribute} has already been used by another user.', array('{attribute}' => $this->$attribute)));
 
-	/**
-	 * Logs in the user using the given username.
-	 * @return boolean whether login is successful
-	 */
-	public function login()
-	{
-		$identity = $this->getIdentity();
+            return false;
+        }
 
-		return Yii::app()->user->login($identity,0);
-	}
+        return true;
+    }
 
-	/**
-	 * Updates the identity with this models attributes and saves it.
-	 * @param CUserIdentity $identity
-	 * @return boolean whether saving is successful
-	 */
-	public function save()
-	{
-		if (($identity=$this->getIdentity()) === null)
-			return false;
+    /**
+     * A valid current password is required only when changing email.
+     */
+    public function validCurrentPassword($attribute, $params)
+    {
+        if ($this->hasErrors()) {
+            return;
+        }
+        if (($identity = $this->getIdentity()) === null) {
+            throw new CException('Current user has not been found in the database.');
+        }
+        if ($identity->getEmail() === $this->email) {
+            return true;
+        }
+        $identity->password = $this->$attribute;
+        if (!$identity->authenticate()) {
+            $this->addError($attribute, Yii::t('UsrModule.usr', 'Changing email address requires providing the current password.'));
 
-		$identity->setAttributes($this->getAttributes());
-		if ($identity->save(Yii::app()->controller->module->requireVerifiedEmail)) {
-			if ((!($this->picture instanceof CUploadedFile) || $identity->savePicture($this->picture)) && (!$this->removePicture || $identity->removePicture())) {
-				$this->_identity = $identity;
-				return true;
-			}
-		}
-		return false;
-	}
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Logs in the user using the given username.
+     * @return boolean whether login is successful
+     */
+    public function login()
+    {
+        $identity = $this->getIdentity();
+
+        return $this->webUser->login($identity, 0);
+    }
+
+    /**
+     * Updates the identity with this models attributes and saves it.
+     * @param  boolean $requireVerifiedEmail the Usr module property
+     * @return boolean whether saving is successful
+     */
+    public function save($requireVerifiedEmail = false)
+    {
+        if (($identity = $this->getIdentity()) === null) {
+            return false;
+        }
+
+        $identity->setAttributes($this->getAttributes());
+        if ($identity->save($requireVerifiedEmail)) {
+            if ((!($this->picture instanceof CUploadedFile) || $identity->savePicture($this->picture)) && (!$this->removePicture || $identity->removePicture())) {
+                $this->_identity = $identity;
+
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

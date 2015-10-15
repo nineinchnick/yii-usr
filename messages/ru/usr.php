@@ -16,7 +16,7 @@
  *
  * NOTE, this file must be saved in UTF-8 encoding.
  */
-return array (
+return array(
 //  'A one time password has been sent to your email. Enter it below.' => '',
 //  'Create a new account' => '',
 //  'Current password' => '',

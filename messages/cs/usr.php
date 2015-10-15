@@ -17,13 +17,10 @@
  * NOTE, this file must be saved in UTF-8 encoding.
  */
 return array(
-  'Create users' => 'Tworzy użytkowników',
-  'Delete any user' => 'Usuwa dowolnego użytkownika',
-  'Manage users' => 'Zarządza użytkownikami',
-  'Read any user' => 'Odczytuje dowolnego użytkownika',
-  'Update any user' => 'Aktualizuje dowolnego użytkownika',
-  'Update any user\'s attributes' => 'Aktualizuje dane dowolnego użytkownika',
-  'Update any user\'s auth item assignments' => 'Aktualizuje przypisanie elementów uprawnień dowolnego użytkownika',
-  'Update any user\'s password' => 'Aktualizuje hasło dowolnego użytkownika',
-  'Update any user\'s status' => 'Aktualizuje status dowolnego użytkownika',
+  'Change password' => 'Změna hesla',
+  'Current password' => 'Aktuální heslo',
+  'New password' => 'Nové heslo',
+  'Verify' => 'Ověřit',
+  'Username' => 'Uživatelské jméno',
+  'Password' => 'Heslo',
 );

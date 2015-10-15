@@ -16,7 +16,7 @@
  *
  * NOTE, this file must be saved in UTF-8 encoding.
  */
-return array (
+return array(
   'A one time password has been sent to your email. Enter it below.' => 'Ein einmaliges Passwort wurde an Ihre Emailadresse geschickt. Bitte unten bestätigen',
   'Create a new account' => 'Neuen Acoount anlegen',
   'Current password' => 'Aktuelles Passwort',
@@ -56,7 +56,7 @@ return array (
   'Changes have been saved successfully.' => 'Ihre Änderungen wurden gespeichert.',
   'Current password has been used too long and needs to be changed.' => 'Ihr aktuelles Passwort ist zu lange in gebrauch bitte ändern Sie es.',
   'Don\'t have an account yet?' => 'Sie haben sich noch nich regestriert ?',
-  'Don\'t remember username or password?' => 'Passwort / Username erinnern an ?',
+  'Don\'t remember username or password?' => 'Passwort / Benutzer erinnern an ?',
   'Email' => 'Email',
   'Email address verification' => 'E-Mail wiederholen',
   'Failed to change password or log in using new password.' => 'Fehler beim Passwort ändern oder melden Sie sich mit Ihrem neuen Passwort an.',
@@ -69,7 +69,7 @@ return array (
   'First name' => 'Vorname',
   'Generate a password' => 'Passwort generieren',
   'Go to {link}.' => 'Gehen Sie zu {link}.',
-  'Invalid username or password.' => 'Falscher Username oder Passwort.',
+  'Invalid username or password.' => 'Falscher Benutzer oder Passwort.',
   'Last name' => 'Nachname',
   'Log in' => 'Einloggen',
   'New password' => 'Neues Passwort',
@@ -82,7 +82,7 @@ return array (
   'Password recovery' => 'Passwort wiederherstellen',
   'Password recovery has not been enabled.' => 'Passwort wiederherstellen ist nicht aktiviert.',
   'Password reset' => 'Passwort zurücksetzen',
-  'Please specify username or email.' => 'Bitte geben Sie Username oder E-mail an.',
+  'Please specify username or email.' => 'Bitte geben Sie Benutzer oder E-mail an.',
   'Please type the same new password twice to verify it.' => 'Bitte wiederholen Sie das neue Passwort.',
   'Please wait for the account to be activated. A notification will be send to provided email address.' => 'Warten Sie bitte bis Ihr Account aktiviert wurde. Eine Nachricht wurde an Ihre E-Mail versendet.',
   'Registration' => 'Regestrieren',
@@ -94,8 +94,8 @@ return array (
   'Try again or contact the site administrator.' => 'Versuchen Sie es noch einmal oder informieren Sie den Administrator ',
   'Use this password?\\nTo copy it to the clipboard press Ctrl+C.' => 'Möchten Sie dieses Passwort verwenden dann drücken Sie bitte Ctrl+C / Cmd+C.',
   'User profile' => 'User Profil',
-  'Username' => 'Username',
-  'Username or password recovery' => 'Username oder Passwort vergessen ?',
+  'Username' => 'Benutzer',
+  'Username or password recovery' => 'Benutzer oder Passwort vergessen ?',
   'Verify' => 'Überprüfen',
   'Your email address has been successfully verified.' => 'Ihre E-Mail Adresse wurde überprüft.',
   'password recovery' => 'Passwort zurücksetzen',

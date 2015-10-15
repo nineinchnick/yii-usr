@@ -16,7 +16,7 @@
  *
  * NOTE, this file must be saved in UTF-8 encoding.
  */
-return array (
+return array(
   'A matching local account has been found. Please type in your password to associate it.' => 'Znaleziono pasujące lokalne konto użytkownika. Podaj hasło, aby je powiązać.',
   'A one time password has been sent to your email. Enter it below.' => 'Hasło jednorazowe zostało wysłane na Twój email. Wprowadź je poniżej.',
   'Activation Key' => 'Klucz aktywacyjny',
@@ -76,7 +76,7 @@ return array (
   'OpenID Identifier' => 'Identyfikator OpenID',
   'Or create a new account' => 'Lub utwórz nowe konto',
   'Password' => 'Hasło',
-  'Password recovery' => 'Odzysikiwanie hasła',
+  'Password recovery' => 'Odzyskiwanie hasła',
   'Password recovery has not been enabled.' => 'Odzyskiwanie hasła nie zostało włączone.',
   'Password reset' => 'Zmiana hasła',
   'Picture with id {id} is not found.' => 'Obrazek o identyfikatorze {id} nie został odnaleziony.',
