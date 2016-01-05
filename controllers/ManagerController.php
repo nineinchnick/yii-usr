@@ -156,8 +156,17 @@ class ManagerController extends UsrController
      */
     public function actionDelete($id)
     {
-        if (!$this->loadModel($id)->delete()) {
-            throw new CHttpException(409, 'User account could not be deleted.');
+        $deleteSuccessful = $this->loadModel($id)->delete();
+        if (Yii::app()->request->isAjaxRequest) {
+            $data = [
+                'success' => $deleteSuccessful,
+                'message' => $deleteSuccessful ? Yii::t('UsrModule.manager', 'User account is successfully deleted.') : Yii::t('UsrModule.manager', 'User account could not be deleted.'),
+            ];
+            header("Content-type: application/json");
+            Yii::app()->getClientScript()->reset();
+            echo CJSON::encode($data);
+        } else if (!$deleteSuccessful) {
+            throw new CHttpException(409, Yii::t('UsrModule.manager', 'User account could not be deleted.'));
         }
     }
 
