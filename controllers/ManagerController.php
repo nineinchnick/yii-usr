@@ -160,7 +160,7 @@ class ManagerController extends UsrController
         if (Yii::app()->request->isAjaxRequest) {
             $data = [
                 'success' => $deleteSuccessful,
-                'message' => $deleteSuccessful ? Yii::t('UsrModule.manager', 'User account is successfully deleted.') : Yii::t('UsrModule.manager', 'User account could not be deleted.'),
+                'message' => $deleteSuccessful ? Yii::t('UsrModule.manager', 'User account has been successfully deleted.') : Yii::t('UsrModule.manager', 'User account could not be deleted.'),
             ];
             header("Content-type: application/json");
             Yii::app()->getClientScript()->reset();
